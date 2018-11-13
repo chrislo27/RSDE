@@ -11,8 +11,15 @@ sourceCompatibility = 1.8
 sourceSets {
     gui {
         kotlin {
+            srcDirs "src/main/kotlin/", "src/gui/kotlin"
+
             compileClasspath += main.output
             runtimeClasspath += main.output
+        }
+    }
+    main {
+        kotlin {
+            srcDirs "src/main/kotlin"
         }
     }
 }
