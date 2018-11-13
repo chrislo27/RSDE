@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger
 
 class RSDE : Application() {
 
-
     companion object {
         val TITLE = "RHRE SFX Database Editor"
         val VERSION = Version(1, 0, 0, "DEVELOPMENT")
