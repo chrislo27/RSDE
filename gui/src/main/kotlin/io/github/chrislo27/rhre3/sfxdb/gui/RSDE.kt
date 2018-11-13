@@ -21,6 +21,6 @@ class RSDE : Application() {
 
     override fun start(primaryStage: Stage) {
         this.primaryStage = primaryStage
-
+        primaryStage.show()
     }
 }
