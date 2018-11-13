@@ -1,7 +1,5 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.util
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex
-import java.util.regex.MatchResult
 
 /**
  * A simple semantic version class. Comparisons can be made which only use [major], [minor], and [patch].
@@ -36,12 +34,13 @@ data class Version(val major: Int, val minor: Int, val patch: Int, val suffix: S
         }
 
         fun fromStringOrNull(thing: String): Version? {
-            val match: MatchResult = REGEX.matchEntire(thing) ?:
-                    return null
+            val match: MatchResult = REGEX.matchEntire(thing) ?: return null
 
             try {
-                return Version(Integer.parseInt(match.groupValues[1]), Integer.parseInt(match.groupValues[2]),
-                               Integer.parseInt(match.groupValues[3]), match.groupValues.getOrNull(4) ?: "")
+                return Version(
+                    Integer.parseInt(match.groupValues[1]), Integer.parseInt(match.groupValues[2]),
+                    Integer.parseInt(match.groupValues[3]), match.groupValues.getOrNull(4) ?: ""
+                )
             } catch (e: Exception) {
                 return null
             }
@@ -49,7 +48,8 @@ data class Version(val major: Int, val minor: Int, val patch: Int, val suffix: S
 
         fun fromNumber(numerical: Int, suffix: String = ""): Version {
             return fromNumberOrNull(numerical, suffix) ?: throw IllegalArgumentException(
-                    "Invalid arguments: $numerical, $suffix")
+                "Invalid arguments: $numerical, $suffix"
+            )
         }
 
         fun fromString(thing: String): Version {
