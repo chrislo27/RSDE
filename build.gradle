@@ -21,27 +21,28 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-//task coreJar(type: Jar) {
-//    classifier = "core"
-//    from sourceSets.main.allJava
-//}
-//
-//task guiJar(type: Jar) {
-//    classifier = "gui"
-//    from sourceSets.gui.allJava
-//}
-//
-//task sourcesJar(type: Jar) {
-//    classifier = "sources"
-//    from sourceSets.main.allSource
-//    from sourceSets.gui.allSource
-//}
+task coreJar(type: Jar, dependsOn: project(":main").build) {
+    classifier = "core"
+    from project(":main").sourceSets.main.output
+}
 
-//artifacts {
-//    archives coreJar
-//    archives guiJar
-//    archives sourcesJar
-//}
+task guiJar(type: Jar, dependsOn: [project(":main"), project(":gui")]*.build) {
+    classifier = "gui"
+    from project(":main").sourceSets.main.output
+    from project(":gui").sourceSets.main.output
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+    from subprojects*.sourceSets.main.allSource
+}
+
+artifacts {
+    archives coreJar
+    archives guiJar
+    archives sourcesJar
+}
 
 allprojects {
     repositories {
@@ -52,6 +53,10 @@ allprojects {
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib"
     }
+}
+
+subprojects {
+    sourceSets.main.java.srcDirs += "src/main/kotlin/"
 }
 
 project(":main") {
