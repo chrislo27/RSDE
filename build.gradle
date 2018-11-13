@@ -1,6 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 plugins {
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.0' apply false
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "kotlin"
 }
 
 group 'chrislo27'
@@ -8,52 +21,53 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
-sourceSets {
-    gui {
-        kotlin {
-            srcDirs "src/main/kotlin/", "src/gui/kotlin"
+//task coreJar(type: Jar) {
+//    classifier = "core"
+//    from sourceSets.main.allJava
+//}
+//
+//task guiJar(type: Jar) {
+//    classifier = "gui"
+//    from sourceSets.gui.allJava
+//}
+//
+//task sourcesJar(type: Jar) {
+//    classifier = "sources"
+//    from sourceSets.main.allSource
+//    from sourceSets.gui.allSource
+//}
 
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-        }
+//artifacts {
+//    archives coreJar
+//    archives guiJar
+//    archives sourcesJar
+//}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
-    main {
-        kotlin {
-            srcDirs "src/main/kotlin"
-        }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib"
     }
 }
 
-task coreJar(type: Jar) {
-    classifier = "core"
-    from sourceSets.main.allJava
+project(":main") {
+    dependencies {
+        implementation "com.fasterxml.jackson.module:jackson-module-afterburner:${jackson_version}"
+        implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
+    }
 }
 
-task guiJar(type: Jar) {
-    classifier = "gui"
-    from sourceSets.gui.allJava
-}
-
-task sourcesJar(type: Jar) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-    from sourceSets.gui.allSource
-}
-
-artifacts {
-    archives coreJar
-    archives guiJar
-    archives sourcesJar
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "com.fasterxml.jackson.module:jackson-module-afterburner:2.9.4"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4"
+project(":gui") {
+    dependencies {
+        implementation project(":main")
+        implementation "org.apache.logging.log4j:log4j-core:${log4j_version}"
+        implementation "org.apache.logging.log4j:log4j-api:${log4j_version}"
+        implementation "com.github.MinnDevelopment:java-discord-rpc:v2.0.1"
+    }
 }
 
 compileKotlin {

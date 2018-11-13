@@ -1,2 +1,2 @@
 rootProject.name = 'rsde'
-
+include "main", "gui"
