@@ -1,0 +1,17 @@
+@font-face {
+    src: url("../font/Roboto-Medium.ttf");
+}
+@font-face {
+    src: url("../font/Roboto-MediumItalic.ttf");
+}
+
+.root {
+    -fx-font-family: "Roboto";
+    -fx-font-size: 12pt;
+    -fx-font-style: normal;
+    -fx-base: white;
+}
+
+.button {
+    -fx-font-size: 14pt;
+}

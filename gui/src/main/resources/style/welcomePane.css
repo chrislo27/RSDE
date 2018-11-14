@@ -1,0 +1,23 @@
+#title {
+    -fx-font-size: 32pt;
+    -fx-font-weight: bold;
+}
+
+#version-subtitle {
+    -fx-font-size: 14pt;
+}
+
+#recently-opened-title {
+    -fx-padding: 0.1em 0.5em -0.2em 0.5em;
+}
+
+#centre-vbox {
+    -fx-padding: 2em 3em 2em 3em;
+}
+
+#left-vbox {
+    /*-fx-padding: 0 0 0 16;*/
+}
+
+#open-last {
+}

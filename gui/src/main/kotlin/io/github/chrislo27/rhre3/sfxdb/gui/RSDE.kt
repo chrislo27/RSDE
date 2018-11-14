@@ -1,7 +1,11 @@
 package io.github.chrislo27.rhre3.sfxdb.gui
 
+import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
+import io.github.chrislo27.rhre3.sfxdb.gui.util.addDebugAccelerators
+import io.github.chrislo27.rhre3.sfxdb.gui.util.setMinimumBoundsToSized
 import javafx.application.Application
+import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.apache.logging.log4j.LogManager
@@ -33,6 +37,13 @@ class RSDE : Application() {
         primaryStage.title = "$TITLE $VERSION"
         primaryStage.icons.addAll(Image("icon/16.png"), Image("icon/24.png"), Image("icon/32.png"))
 
+        val welcomeScene = Scene(WelcomePane(this)).apply {
+            addDebugAccelerators()
+            stylesheets += "style/main.css"
+            stylesheets += "style/welcomePane.css"
+        }
+        primaryStage.scene = welcomeScene
+        primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
     }
 }
