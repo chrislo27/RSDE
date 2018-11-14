@@ -1,9 +1,9 @@
 #title {
-    -fx-font: normal bold 32pt "Roboto";
+    -fx-font: normal bold 3em "Roboto";
 }
 
 #version-subtitle {
-    -fx-font-size: 14pt;
+    -fx-font-size: 1.25em;
 }
 
 #recently-opened-title {
