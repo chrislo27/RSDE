@@ -1,6 +1,5 @@
 #title {
-    -fx-font-size: 32pt;
-    -fx-font-weight: bold;
+    -fx-font: normal bold 32pt "Roboto";
 }
 
 #version-subtitle {

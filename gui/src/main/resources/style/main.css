@@ -1,14 +1,18 @@
 @font-face {
-    src: url("../font/Roboto-Medium.ttf");
+    src: url("../font/Roboto-Regular.ttf");
 }
 @font-face {
-    src: url("../font/Roboto-MediumItalic.ttf");
+    src: url("../font/Roboto-Italic.ttf");
+}
+@font-face {
+    src: url("../font/Roboto-Bold.ttf");
+}
+@font-face {
+    src: url("../font/Roboto-BoldItalic.ttf");
 }
 
 .root {
-    -fx-font-family: "Roboto";
-    -fx-font-size: 12pt;
-    -fx-font-style: normal;
+    -fx-font: normal 12pt "Roboto";
     -fx-base: white;
 }
 
