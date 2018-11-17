@@ -125,26 +125,27 @@ object Transformers {
         typeNode.checkNodeType(JsonNodeType.STRING)
         val type = typeNode.textValue() ?: error("Escaped node type check!")
 
+        val printProperties = false
         // The repetition of the run statements is required for reified types
         val datamodel: Pair<DatamodelObject, Boolean> = when(type) {
             "cue" -> CueObject().run {
-                Parser.buildStruct(this, node, true)
+                Parser.buildStruct(this, node, printProperties)
                 this to anyNonSuccess(this)
             }
             "pattern" -> PatternObject().run {
-                Parser.buildStruct(this, node, true)
+                Parser.buildStruct(this, node, printProperties)
                 this to anyNonSuccess(this)
             }
             "equidistant" -> EquidistantObject().run {
-                Parser.buildStruct(this, node, true)
+                Parser.buildStruct(this, node, printProperties)
                 this to anyNonSuccess(this)
             }
             "keepTheBeat" -> KeepTheBeatObject().run {
-                Parser.buildStruct(this, node, true)
+                Parser.buildStruct(this, node, printProperties)
                 this to anyNonSuccess(this)
             }
             "randomCue" -> RandomCueObject().run {
-                Parser.buildStruct(this, node, true)
+                Parser.buildStruct(this, node, printProperties)
                 this to anyNonSuccess(this)
             }
             else -> return@transformer Result.Failure(node, type, "Type of datamodel is not valid or not implemented")

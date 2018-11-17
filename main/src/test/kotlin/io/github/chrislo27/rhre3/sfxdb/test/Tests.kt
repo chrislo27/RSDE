@@ -39,14 +39,14 @@ object Tests {
 
     @Test
     fun parseOne() {
-        val animalAcrobatFolder = sfxFolder.resolve("animalAcrobat/")
+        val animalAcrobatFolder = sfxFolder.resolve("rapWomen/")
         assertEquals(true, animalAcrobatFolder.exists())
         val dataFile = animalAcrobatFolder.resolve("data.json")
         assertEquals(true, dataFile.exists())
 
         val rootNode = objectMapper.readTree(dataFile)
         val gameObject: GameObject = Parser.parseGameDefinition(rootNode)
-//        assertEquals(true, gameObject.)
+//        assertEquals(true, gameObject)
     }
 
 }

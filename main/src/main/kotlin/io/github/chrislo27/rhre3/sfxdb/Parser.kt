@@ -21,7 +21,7 @@ object Parser {
         propertyFields.forEach { property ->
             val name = property.property.name
             val node: JsonNode? = baseNode[name]
-            node?.let { n ->
+            node?.let {
                 property.delegatingToInstance.setJson(node)
             }
         }
