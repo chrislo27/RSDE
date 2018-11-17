@@ -62,9 +62,15 @@ subprojects {
 }
 
 project(":main") {
+    test {
+        useJUnitPlatform()
+    }
     dependencies {
         implementation "com.fasterxml.jackson.module:jackson-module-afterburner:${jackson_version}"
         implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
     }
 }
 
