@@ -1,5 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui
 
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
 import io.github.chrislo27.rhre3.sfxdb.gui.util.addDebugAccelerators
@@ -23,6 +25,8 @@ class RSDE : Application() {
 
         val LOGGER: Logger = LogManager.getContext(RSDE::class.java.classLoader, false).getLogger("RSDE")
 
+        val startTimeMillis: Long = System.currentTimeMillis()
+
         @JvmStatic
         fun main(args: Array<String>) {
             LOGGER.info("Launching $TITLE $VERSION...")
@@ -31,6 +35,10 @@ class RSDE : Application() {
     }
 
     private lateinit var primaryStage: Stage
+
+    override fun init() {
+        DiscordHelper.init(enabled = false)
+    }
 
     override fun start(primaryStage: Stage) {
         this.primaryStage = primaryStage
@@ -45,5 +53,7 @@ class RSDE : Application() {
         primaryStage.scene = welcomeScene
         primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
+
+        DiscordHelper.updatePresence(PresenceState.WelcomeScreen)
     }
 }
