@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.adt
 
 import io.github.chrislo27.rhre3.sfxdb.Series
+import io.github.chrislo27.rhre3.sfxdb.SubtitleTypes
 
 
 interface Struct
@@ -8,7 +9,7 @@ interface Struct
 class GameObject : Struct {
     val id: Result<String> by Property(Transformers.gameIdTransformer)
     val name: Result<String> by Property(Transformers.nonEmptyStringTransformer)
-    val series: Result<Series> by Property(Transformers.seriesTransformer)
+    val series: Result<Series> by Property(Transformers.seriesTransformer, Series.OTHER)
     val objects: Result<List<Result<DatamodelObject>>> by Property(Transformers.transformerToList(Transformers.datamodelTransformer))
 
     // Optional after this line
@@ -28,11 +29,11 @@ abstract class DatamodelObject : Struct {
 class CuePointerObject : Struct {
     val id: Result<String> by Property(Transformers.idTransformer)
 
-    val beat: Result<Float> by Property(Transformers.floatTransformer)
-    val duration: Result<Float> by Property(Transformers.positiveFloatTransformer("Duration must be positive", true))
-    val track: Result<Int> by Property(Transformers.intTransformer)
-    val semitone: Result<Int> by Property(Transformers.intTransformer)
-    val volume: Result<Int> by Property(Transformers.volumeTransformer)
+    var beat: Result<Float> by Property(Transformers.floatTransformer)
+    var duration: Result<Float> by Property(Transformers.positiveFloatTransformer("Duration must be positive", true), 0f)
+    val track: Result<Int> by Property(Transformers.intTransformer, 0)
+    val semitone: Result<Int> by Property(Transformers.intTransformer, 0)
+    val volume: Result<Int> by Property(Transformers.volumeTransformer, 100)
 }
 
 class CueObject : DatamodelObject() {
@@ -72,4 +73,11 @@ class RandomCueObject : DatamodelObject() {
 
     // Optional after this line
     val responseIDs: Result<List<String>> by Property(Transformers.responseIDsTransformer, listOf())
+}
+
+class EndRemixEntityObject : DatamodelObject()
+class ShakeEntityObject : DatamodelObject()
+class TextureEntityObject : DatamodelObject()
+class SubtitleEntityObject : DatamodelObject() {
+    val subtitleType: Result<SubtitleTypes> by Property(Transformers.subtitleTypesTransformer)
 }

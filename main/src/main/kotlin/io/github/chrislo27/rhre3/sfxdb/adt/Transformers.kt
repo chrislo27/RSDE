@@ -2,10 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.adt
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
-import io.github.chrislo27.rhre3.sfxdb.Constants
-import io.github.chrislo27.rhre3.sfxdb.Parser
-import io.github.chrislo27.rhre3.sfxdb.Series
-import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
+import io.github.chrislo27.rhre3.sfxdb.*
 import io.github.chrislo27.rhre3.sfxdb.util.findDelegatingPropertyInstances
 
 
@@ -38,10 +35,7 @@ object Transformers {
     }
     val floatTransformer: JsonTransformer<Float> = {
         it.checkNodeType(JsonNodeType.NUMBER)
-        if (!it.isFloatingPointNumber)
-            Result.Failure(it, it.toString(), "Expected float")
-        else
-            Result.Success(it.floatValue())
+        Result.Success(it.floatValue())
     }
     val booleanTransformer: JsonTransformer<Boolean> = {
         it.checkNodeType(JsonNodeType.BOOLEAN)
@@ -49,7 +43,7 @@ object Transformers {
     }
     val intTransformer: JsonTransformer<Int> = {
         it.checkNodeType(JsonNodeType.NUMBER)
-        if (!it.isInt)
+        if (!it.isInt /*&& it.floatValue() != it.intValue().toFloat()*/)
             Result.Failure(it, it.toString(), "Expected integer")
         else
             Result.Success(it.intValue())
@@ -119,6 +113,15 @@ object Transformers {
                 Result.Failure(node, value, "Volume is not in range: ${Constants.VOLUME_RANGE}")
         } else initial
     }
+    val subtitleTypesTransformer: JsonTransformer<SubtitleTypes> = {node ->
+        node.checkNodeType(JsonNodeType.STRING)
+        val st = node.textValue() ?: error("Escaped node type check!")
+        val type: SubtitleTypes? = SubtitleTypes.VALUES.find { it.type == st }
+        if (type == null)
+            Result.Failure(node, st, "No subtitle type found with that name. Supported: ${Series.VALUES.map(Series::jsonName)}")
+        else
+            Result.Success(type)
+    }
 
     val datamodelTransformer: JsonTransformer<DatamodelObject> = transformer@{ node ->
         val typeNode: JsonNode = node["type"] ?: return@transformer Result.Failure(node, null, "Missing type string field")
@@ -127,31 +130,47 @@ object Transformers {
 
         val printProperties = false
         // The repetition of the run statements is required for reified types
-        val datamodel: Pair<DatamodelObject, Boolean> = when(type) {
+        val datamodel: Pair<DatamodelObject, List<Result<*>>> = when (type) {
             "cue" -> CueObject().run {
                 Parser.buildStruct(this, node, printProperties)
-                this to anyNonSuccess(this)
+                this to getNonSuccess(this)
             }
             "pattern" -> PatternObject().run {
                 Parser.buildStruct(this, node, printProperties)
-                this to anyNonSuccess(this)
+                this to getNonSuccess(this)
             }
             "equidistant" -> EquidistantObject().run {
                 Parser.buildStruct(this, node, printProperties)
-                this to anyNonSuccess(this)
+                this to getNonSuccess(this)
             }
             "keepTheBeat" -> KeepTheBeatObject().run {
                 Parser.buildStruct(this, node, printProperties)
-                this to anyNonSuccess(this)
+                this to getNonSuccess(this)
             }
             "randomCue" -> RandomCueObject().run {
                 Parser.buildStruct(this, node, printProperties)
-                this to anyNonSuccess(this)
+                this to getNonSuccess(this)
+            }
+            "endEntity" -> EndRemixEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
+            }
+            "shakeEntity" -> ShakeEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
+            }
+            "textureEntity" -> TextureEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
+            }
+            "subtitleEntity" -> SubtitleEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
             }
             else -> return@transformer Result.Failure(node, type, "Type of datamodel is not valid or not implemented")
         }
-        if (datamodel.second)
-            Result.Failure(node, datamodel.first, "Error in datamodel")
+        if (datamodel.second.isNotEmpty())
+            Result.Failure(node, datamodel, "Error in datamodel")
         else Result.Success(datamodel.first)
     }
 
@@ -166,8 +185,22 @@ object Transformers {
         } else initial
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun cuePointerTransformer(beatNotUsed: Boolean = false, durationNotUsed: Boolean = false): JsonTransformer<CuePointerObject> = { node ->
-        Result.NotImplemented() // TODO
+        val (cpo, success) = CuePointerObject().run {
+            Parser.buildStruct(this, node, false)
+            if (beatNotUsed && beat is Result.Unset) {
+                beat = Result.Success(0f)
+            }
+            if (durationNotUsed && duration is Result.Unset) {
+                duration = Result.Success(0f)
+            }
+            this to anyNonSuccess(this)
+        }
+        if (success)
+            Result.Failure(node, getNonSuccess(cpo), "Error in cue pointer")
+        else
+            Result.Success(cpo)
     }
 
     fun <T> transformerToList(pointerTransformer: JsonTransformer<T>): JsonTransformer<List<Result<T>>> = { node ->
@@ -180,7 +213,17 @@ object Transformers {
     }
 
     inline fun <reified T : Any> anyNonSuccess(obj: T): Boolean {
-        return findDelegatingPropertyInstances(obj, Result::class).any { it.delegatingToInstance !is Result.Success }
+        return findDelegatingPropertyInstances(obj, Property::class).any {
+            val result = it.property.get(obj) as Result<*>
+            result !is Result.Success<*> || (result.value is List<*> && result.value.any { ele -> ele is Result<*> && ele !is Result.Success<*> })
+        }
+    }
+
+    inline fun <reified T : Any> getNonSuccess(obj: T): List<Result<*>> {
+        return findDelegatingPropertyInstances(obj, Property::class).filter {
+            val result = it.property.get(obj) as Result<*>
+            result !is Result.Success<*> || (result.value is List<*> && result.value.any { ele -> ele is Result<*> && ele !is Result.Success<*> })
+        }.map { it.property.get(obj) as Result<*> }
     }
 
 }

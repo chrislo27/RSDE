@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
+import io.github.chrislo27.rhre3.sfxdb.adt.Transformers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -29,7 +30,7 @@ object Tests {
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .registerModule(AfterburnerModule())
         .registerModule(KotlinModule())
-    val sfxFolder = File(System.getProperty("user.home")).resolve(".rhre3/sfx/master/games/")
+    val sfxFolder = File(System.getProperty("user.home")).resolve("Desktop/libGDX-projects/RHRE-database/games/")
 
     @BeforeAll
     @JvmStatic
@@ -39,14 +40,24 @@ object Tests {
 
     @Test
     fun parseOne() {
-        val animalAcrobatFolder = sfxFolder.resolve("rapWomen/")
+        val animalAcrobatFolder = sfxFolder.resolve("microRowMegamix/")
         assertEquals(true, animalAcrobatFolder.exists())
         val dataFile = animalAcrobatFolder.resolve("data.json")
         assertEquals(true, dataFile.exists())
 
         val rootNode = objectMapper.readTree(dataFile)
         val gameObject: GameObject = Parser.parseGameDefinition(rootNode)
-//        assertEquals(true, gameObject)
+        assertEquals(false, Transformers.anyNonSuccess(gameObject))
+    }
+
+    @Test
+    fun parseAll() {
+        sfxFolder.listFiles().filter { it.isDirectory && it.resolve("data.json").exists() }.forEach { folder ->
+            val dataFile = folder.resolve("data.json")
+            val rootNode = objectMapper.readTree(dataFile)
+            val gameObject: GameObject = Parser.parseGameDefinition(rootNode)
+            assertEquals(false, Transformers.anyNonSuccess(gameObject))
+        }
     }
 
 }

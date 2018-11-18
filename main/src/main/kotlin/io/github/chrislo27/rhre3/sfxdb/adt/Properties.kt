@@ -17,6 +17,13 @@ open class Property<T>(val transformer: JsonTransformer<T>, initialValue: Result
         return storedValue
     }
 
+    /**
+     * NOTE: used only for [CuePointerObject] when setting fields to be optional or not
+     */
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Result<T>) {
+        storedValue = value
+    }
+
     fun setJson(value: JsonNode) {
         storedValue = try {
             transformer(value)
@@ -25,13 +32,6 @@ open class Property<T>(val transformer: JsonTransformer<T>, initialValue: Result
         } catch (e: Exception) {
             throw e
         }
-    }
-
-    /**
-     * NOTE: used only for [CuePointerObject] when setting fields to be optional or not
-     */
-    fun setStoredValue(result: Result<T>) {
-        storedValue = result
     }
 
 }
