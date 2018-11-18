@@ -9,9 +9,9 @@ import io.github.chrislo27.rhre3.sfxdb.util.findDelegatingPropertyInstances
 
 object Parser {
 
-    fun parseGameDefinition(root: JsonNode): GameObject {
+    fun parseGameDefinition(root: JsonNode, printProperties: Boolean = false): GameObject {
         val gameObj = GameObject()
-        buildStruct(gameObj, root, true)
+        buildStruct(gameObj, root, printProperties)
         return gameObj
     }
 

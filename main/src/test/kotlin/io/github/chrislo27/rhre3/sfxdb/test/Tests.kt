@@ -14,6 +14,7 @@ import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
 import io.github.chrislo27.rhre3.sfxdb.adt.Transformers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import java.io.File
 
@@ -31,6 +32,7 @@ object Tests {
         .registerModule(AfterburnerModule())
         .registerModule(KotlinModule())
     val sfxFolder = File(System.getProperty("user.home")).resolve("Desktop/libGDX-projects/RHRE-database/games/")
+    val printProperties = false
 
     @BeforeAll
     @JvmStatic
@@ -46,16 +48,16 @@ object Tests {
         assertEquals(true, dataFile.exists())
 
         val rootNode = objectMapper.readTree(dataFile)
-        val gameObject: GameObject = Parser.parseGameDefinition(rootNode)
+        val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
         assertEquals(false, Transformers.anyNonSuccess(gameObject))
     }
 
-    @Test
+    @RepeatedTest(10)
     fun parseAll() {
         sfxFolder.listFiles().filter { it.isDirectory && it.resolve("data.json").exists() }.forEach { folder ->
             val dataFile = folder.resolve("data.json")
             val rootNode = objectMapper.readTree(dataFile)
-            val gameObject: GameObject = Parser.parseGameDefinition(rootNode)
+            val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
             assertEquals(false, Transformers.anyNonSuccess(gameObject))
         }
     }
