@@ -37,11 +37,8 @@ open class Property<T>(val transformer: JsonTransformer<T>, initialValue: Result
 }
 
 sealed class Result<T> {
-    open class Unset<T> : Result<T>() {
+    class Unset<T> : Result<T>() {
         override fun toString(): String = "Unset"
-    }
-    class NotImplemented<T> : Unset<T>() {
-        override fun toString(): String = "NotImplemented"
     }
     class Success<T>(val value: T) : Result<T>() {
         override fun toString(): String = "Success($value)"
