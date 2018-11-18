@@ -100,6 +100,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     id = "detected-custom-title"
                     this.bindLocalized("welcome.detectedCustom")
                 }
+                recentProjectsView.disableProperty().value = true
                 leftBox.children += recentProjectsView
 
                 val gameIdLabel = Label("").apply {
@@ -118,7 +119,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
 
                 // Start loading DB
                 GlobalScope.launch {
-                    app.gameRegistry.loadSFXFolder(RSDE.rhreSfxRoot.resolve("games/")) { gameObject, loaded, total ->
+                    app.gameRegistry.loadSFXFolder { gameObject, loaded, total ->
                         if (loaded == total) {
                             // Done
                             Platform.runLater {
@@ -126,6 +127,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                                 centreBox.children -= progressLabel
                                 centreBox.children -= progressBar
                                 addStartButtons()
+                                recentProjectsView.disableProperty().value = false
                             }
                         } else {
                             Platform.runLater {
