@@ -2,7 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui
 
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
+import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
 import io.github.chrislo27.rhre3.sfxdb.gui.util.addDebugAccelerators
 import io.github.chrislo27.rhre3.sfxdb.gui.util.setMinimumBoundsToSized
@@ -20,11 +22,15 @@ class RSDE : Application() {
     companion object {
         const val TITLE = "RHRE SFX Database Editor"
         val VERSION = Version(1, 0, 0, "DEVELOPMENT")
-        val MIN_RHRE_VERSION = Version(3, 16, 0)
+        val MIN_RHRE_VERSION = Version(3, 15, 0)
         val rootFolder: File = File(System.getProperty("user.home")).resolve(".rsde/").apply { mkdirs() }
+        val rhreRoot: File = File(System.getProperty("user.home")).resolve(".rhre3/")
+        const val SFX_DB_BRANCH = "master"
+        const val GITHUB = "https://github.com/chrislo27/RSDE"
+        const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"
+        val rhreSfxRoot: File = rhreRoot.resolve("sfx/$SFX_DB_BRANCH/")
 
         val LOGGER: Logger = LogManager.getContext(RSDE::class.java.classLoader, false).getLogger("RSDE")
-
         val startTimeMillis: Long = System.currentTimeMillis()
 
         @JvmStatic
@@ -35,9 +41,33 @@ class RSDE : Application() {
     }
 
     private lateinit var primaryStage: Stage
+    var databasePresent: DatabaseStatus = DatabaseStatus.DOES_NOT_EXIST
+        private set
+    lateinit var gameRegistry: GameRegistry
+        private set
 
     override fun init() {
         DiscordHelper.init(enabled = false)
+
+        val currentJson = rhreSfxRoot.resolve("current.json")
+        if (rhreSfxRoot.exists() && currentJson.exists())
+            databasePresent = DatabaseStatus.EXISTS
+
+        try {
+            val root = JsonHandler.OBJECT_MAPPER.readTree(currentJson)
+            val verNum = root["v"].asInt(0)
+            val editor: String = root["editor"].asText()
+            val editorVersion = Version.fromString(editor)
+
+            if (editorVersion.minor > MIN_RHRE_VERSION.minor) {
+                databasePresent = DatabaseStatus.INCOMPATIBLE
+            } else {
+                gameRegistry = GameRegistry(verNum)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            databasePresent = DatabaseStatus.ERROR
+        }
     }
 
     override fun start(primaryStage: Stage) {

@@ -1,18 +1,20 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
+import io.github.chrislo27.rhre3.sfxdb.adt.Result
+import io.github.chrislo27.rhre3.sfxdb.gui.DatabaseStatus
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import javafx.geometry.Orientation
+import javafx.application.Platform
 import javafx.geometry.Pos
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.ListView
-import javafx.scene.control.Separator
+import javafx.scene.control.*
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.text.TextAlignment
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class WelcomePane(val app: RSDE) : BorderPane() {
 
@@ -50,41 +52,100 @@ class WelcomePane(val app: RSDE) : BorderPane() {
             prefHeight = SPACING * 3
         }
 
-        val prefButtonWidth = 350.0
-        centreBox.children += Button().apply {
-            this.bindLocalized("welcome.createNewEngine")
-            this.prefWidth = prefButtonWidth
-            this.disableProperty().value = true
-        }
-        centreBox.children += Button().apply {
-            this.bindLocalized("welcome.editEngine")
-            this.prefWidth = prefButtonWidth
-            this.disableProperty().value = true
-        }
-        centreBox.children += Separator(Orientation.HORIZONTAL).apply {
-            this.maxWidth = prefButtonWidth
-            requestFocus()
-        }
-        centreBox.children += Button().apply {
-            this.bindLocalized("welcome.createNewRemix")
-            this.prefWidth = prefButtonWidth
-            this.disableProperty().value = true
-        }
-        centreBox.children += Button().apply {
-            this.bindLocalized("welcome.editRemix")
-            this.prefWidth = prefButtonWidth
-            this.disableProperty().value = true
-        }
+        when (app.databasePresent) {
+            DatabaseStatus.DOES_NOT_EXIST -> {
+                centreBox.children += Label().apply {
+                    this.bindLocalized("welcome.noDatabase")
+                    this.textAlignment = TextAlignment.CENTER
+                }
+                centreBox.children += Hyperlink(RSDE.RHRE_GITHUB).apply {
+                    setOnAction {
+                        app.hostServices.showDocument(RSDE.RHRE_GITHUB)
+                    }
+                }
+            }
+            DatabaseStatus.INCOMPATIBLE -> {
+                centreBox.children += Label().apply {
+                    this.bindLocalized("welcome.databaseTooNew")
+                    this.textAlignment = TextAlignment.CENTER
+                }
+                centreBox.children += Hyperlink(RSDE.RHRE_GITHUB).apply {
+                    setOnAction {
+                        app.hostServices.showDocument(RSDE.RHRE_GITHUB)
+                    }
+                }
+            }
+            DatabaseStatus.EXISTS -> {
+                val prefButtonWidth = 350.0
 
-        // Recent projects
-        leftBox.children += Label().apply {
-            id = "recently-opened-title"
-            this.bindLocalized("welcome.recentlyOpened")
-        }
-        leftBox.children += recentProjectsView
+                fun addStartButtons() {
+                    centreBox.children += Button().apply {
+                        this.bindLocalized("welcome.startNewGame")
+                        this.prefWidth = prefButtonWidth
+                    }
+                    centreBox.children += Button().apply {
+                        this.bindLocalized("welcome.makeChanges")
+                        this.prefWidth = prefButtonWidth
+                    }
+//                    centreBox.children += Separator(Orientation.HORIZONTAL).apply {
+//                        this.maxWidth = prefButtonWidth
+//                        requestFocus()
+//                    }
 
-        // FIXME temp
-        recentProjectsView.items.addAll(*(1..32).map { "Project $it" }.toTypedArray())
+                    recentProjectsView.items.addAll(*"eduardo diego josé francisco de paula juan nepomuceno maría de los remedios cipriano de la santísima trinidad ruiz y picasso".split(" ").toTypedArray())
+                }
+
+                // Recent projects
+                leftBox.children += Label().apply {
+                    id = "detected-custom-title"
+                    this.bindLocalized("welcome.detectedCustom")
+                }
+                leftBox.children += recentProjectsView
+
+                val gameIdLabel = Label("").apply {
+                    this.textAlignment = TextAlignment.CENTER
+                }
+                val progressLabel = Label("").apply {
+                    this.textAlignment = TextAlignment.CENTER
+                }
+                val progressBar = ProgressBar().apply {
+                    prefWidth = prefButtonWidth
+                }
+
+                centreBox.children += gameIdLabel
+                centreBox.children += progressLabel
+                centreBox.children += progressBar
+
+                // Start loading DB
+                GlobalScope.launch {
+                    app.gameRegistry.loadSFXFolder(RSDE.rhreSfxRoot.resolve("games/")) { gameObject, loaded, total ->
+                        if (loaded == total) {
+                            // Done
+                            Platform.runLater {
+                                centreBox.children -= gameIdLabel
+                                centreBox.children -= progressLabel
+                                centreBox.children -= progressBar
+                                addStartButtons()
+                            }
+                        } else {
+                            Platform.runLater {
+                                val gameObjId = gameObject.id
+                                val id = if (gameObjId is Result.Success) gameObjId.value else "???"
+                                gameIdLabel.text = id
+                                progressLabel.text = "$loaded / $total"
+                                progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
+                            }
+                        }
+                    }
+                }
+            }
+            DatabaseStatus.ERROR -> {
+                centreBox.children += Label().apply {
+                    this.bindLocalized("welcome.error")
+                    this.textAlignment = TextAlignment.CENTER
+                }
+            }
+        }
     }
 
 }
