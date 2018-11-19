@@ -1,7 +1,10 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.registry
 
 import io.github.chrislo27.rhre3.sfxdb.Parser
+import io.github.chrislo27.rhre3.sfxdb.adt.DatamodelObject
 import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
+import io.github.chrislo27.rhre3.sfxdb.adt.Result
+import io.github.chrislo27.rhre3.sfxdb.adt.orNull
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import java.io.File
@@ -12,6 +15,11 @@ class GameRegistry(val version: Int) {
     @Volatile var isLoaded: Boolean = false
         private set
 
+    lateinit var gameMap: Map<String, GameObject>
+        private set
+    lateinit var datamodelMap: Map<String, DatamodelObject>
+        private set
+
     fun loadSFXFolder(progressCallback: (gameObject: GameObject?, loaded: Int, total: Int) -> Unit) {
         isLoaded = false
         try {
@@ -20,11 +28,25 @@ class GameRegistry(val version: Int) {
             val predicate = { file: File -> file.isDirectory && file.resolve("data.json").exists() }
             val folders = rootFolder.listFiles(predicate) /*+ customFolder.listFiles(predicate)*/
             val size = folders.size
+            val map = mutableMapOf<String, GameObject>()
             folders.forEachIndexed { index, folder ->
                 val jsonRoot = JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json"))
                 val gameObject: GameObject = Parser.parseGameDefinition(jsonRoot)
+                val gameID = (gameObject.id as? Result.Success)?.value
+                if (gameID != null) {
+                    map[gameID] = gameObject
+                }
                 progressCallback(gameObject, index + 1, size)
             }
+            gameMap = map
+            val allDatamodels = map.values.asSequence().mapNotNull { it.objects.orNull() }.flatMap { it.asSequence() }.mapNotNull { it.orNull() }.filter { it.id is Result.Success }
+            val dmMap = mutableMapOf<String, DatamodelObject>()
+            allDatamodels.forEach { datamodel ->
+                dmMap[(datamodel.id as Result.Success).value] = datamodel
+                val deprecatedIDs = datamodel.deprecatedIDs.orNull()
+                deprecatedIDs?.forEach { dmMap[it] = datamodel }
+            }
+            datamodelMap = dmMap
         } catch (e: Exception) {
             e.printStackTrace()
             progressCallback(null, -1, -1)
