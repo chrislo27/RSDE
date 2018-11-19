@@ -117,25 +117,39 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                 centreBox.children += progressLabel
                 centreBox.children += progressBar
 
+                fun removeLoadingElements() {
+                    centreBox.children -= gameIdLabel
+                    centreBox.children -= progressLabel
+                    centreBox.children -= progressBar
+                }
+
                 // Start loading DB
                 GlobalScope.launch {
                     app.gameRegistry.loadSFXFolder { gameObject, loaded, total ->
-                        if (loaded == total) {
-                            // Done
+                        if (gameObject == null) {
                             Platform.runLater {
-                                centreBox.children -= gameIdLabel
-                                centreBox.children -= progressLabel
-                                centreBox.children -= progressBar
-                                addStartButtons()
-                                recentProjectsView.disableProperty().value = false
+                                removeLoadingElements()
+                                centreBox.children += Label().apply {
+                                    this.bindLocalized("welcome.error")
+                                    this.textAlignment = TextAlignment.CENTER
+                                }
                             }
                         } else {
-                            Platform.runLater {
-                                val gameObjId = gameObject.id
-                                val id = if (gameObjId is Result.Success) gameObjId.value else "???"
-                                gameIdLabel.text = id
-                                progressLabel.text = "$loaded / $total"
-                                progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
+                            if (loaded == total) {
+                                // Done
+                                Platform.runLater {
+                                    removeLoadingElements()
+                                    addStartButtons()
+                                    recentProjectsView.disableProperty().value = false
+                                }
+                            } else {
+                                Platform.runLater {
+                                    val gameObjId = gameObject.id
+                                    val id = if (gameObjId is Result.Success) gameObjId.value else "???"
+                                    gameIdLabel.text = id
+                                    progressLabel.text = "$loaded / $total"
+                                    progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
+                                }
                             }
                         }
                     }
