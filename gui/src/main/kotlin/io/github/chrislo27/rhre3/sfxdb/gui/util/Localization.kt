@@ -49,6 +49,7 @@ object Localization {
     fun refreshLangs() {
         RSDE.LOGGER.info("Loading langs from file")
         val langsList = loadLangsFromFile()
+        ResourceBundle.clearCache()
         langs = langsList.associateWith { nl ->
             Bundle(nl, ResourceBundle.getBundle("localization/default", nl.locale, UTF8ResourceBundleControl()))
         }
