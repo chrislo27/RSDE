@@ -76,21 +76,15 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                 }
             }
             DatabaseStatus.EXISTS -> {
-                val prefButtonWidth = 350.0
-
                 fun addStartButtons() {
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.startNewGame")
-                        this.prefWidth = prefButtonWidth
+                        styleClass += "buttonWidth"
                     }
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.makeChanges")
-                        this.prefWidth = prefButtonWidth
+                        styleClass += "buttonWidth"
                     }
-//                    centreBox.children += Separator(Orientation.HORIZONTAL).apply {
-//                        this.maxWidth = prefButtonWidth
-//                        requestFocus()
-//                    }
 
                     recentProjectsView.items.addAll(*"eduardo diego josé francisco de paula juan nepomuceno maría de los remedios cipriano de la santísima trinidad ruiz y picasso".split(" ").toTypedArray())
                 }
@@ -111,7 +105,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     this.textAlignment = TextAlignment.CENTER
                 }
                 val progressBar = ProgressBar().apply {
-                    prefWidth = prefButtonWidth
+                    id = "progressBar"
                 }
 
                 centreBox.children += gameIdLabel

@@ -18,5 +18,13 @@
     /*-fx-padding: 0 0 0 16;*/
 }
 
+.buttonWidth {
+    -fx-pref-width: 25em
+}
+
+#progress-bar {
+    -fx-pref-width: 25em
+}
+
 #open-last {
 }
