@@ -70,10 +70,12 @@ object UiLocalization {
     }
 }
 
-fun Labeled.bindLocalized(key: String) = textProperty().bind(UiLocalization[key])
-fun Labeled.bindLocalized(key: String, vararg initialParams: Any?) = textProperty().bind(
-    UiLocalization.get(
-        key,
-        *initialParams
-    )
-)
+fun <T : Labeled> T.bindLocalized(key: String): T {
+    textProperty().bind(UiLocalization[key])
+    return this
+}
+
+fun <T : Labeled> T.bindLocalized(key: String, vararg initialParams: Any?): T {
+    textProperty().bind(UiLocalization.get(key, *initialParams))
+    return this
+}
