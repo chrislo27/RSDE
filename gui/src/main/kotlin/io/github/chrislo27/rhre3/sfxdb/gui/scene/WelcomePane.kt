@@ -80,10 +80,12 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.startNewGame")
                         styleClass += "buttonWidth"
+                        tooltip = Tooltip().bindLocalized("welcome.startNewGame.tooltip")
                     }
                     centreBox.children += Button().apply {
-                        this.bindLocalized("welcome.makeChanges")
+                        this.bindLocalized("welcome.editExisting")
                         styleClass += "buttonWidth"
+                        tooltip = Tooltip().bindLocalized("welcome.editExisting.tooltip")
                     }
 
                     recentProjectsView.items.addAll(*"eduardo diego josé francisco de paula juan nepomuceno maría de los remedios cipriano de la santísima trinidad ruiz y picasso".split(" ").toTypedArray())
