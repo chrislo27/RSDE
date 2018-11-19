@@ -48,4 +48,6 @@ sealed class Result<T> {
     }
 }
 
+fun <T> Result<T>.orNull(): T? = (this as? Result.Success)?.value
+
 class JsonNodeTypeException(val node: JsonNode, val expectedTypes: List<JsonNodeType>, val gotType: JsonNodeType) : RuntimeException()
