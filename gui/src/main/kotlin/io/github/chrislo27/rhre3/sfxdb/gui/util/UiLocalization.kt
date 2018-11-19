@@ -13,6 +13,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.Labeled
+import javafx.scene.control.Tooltip
 import java.util.*
 
 /**
@@ -79,3 +80,6 @@ fun <T : Labeled> T.bindLocalized(key: String, vararg initialParams: Any?): T {
     textProperty().bind(UiLocalization.get(key, *initialParams))
     return this
 }
+
+fun Tooltip.bindLocalized(key: String): Tooltip = this.apply { textProperty().bind(UiLocalization[key]) }
+fun Tooltip.bindLocalized(key: String, vararg initialParams: Any?): Tooltip = this.apply { textProperty().bind(UiLocalization.get(key, *initialParams)) }

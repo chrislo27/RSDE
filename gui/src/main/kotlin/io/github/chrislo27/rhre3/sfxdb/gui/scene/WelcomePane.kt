@@ -99,6 +99,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                 leftBox.children += Label().apply {
                     id = "detected-custom-title"
                     this.bindLocalized("welcome.detectedCustom")
+                    tooltip = Tooltip().bindLocalized("welcome.detectedCustom.tooltip")
                 }
                 recentProjectsView.disableProperty().value = true
                 leftBox.children += recentProjectsView
