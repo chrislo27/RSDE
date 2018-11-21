@@ -125,40 +125,46 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     centreBox.children -= progressBar
                 }
 
-                // Start loading DB
-                GlobalScope.launch {
-                    app.gameRegistry.loadSFXFolder { gameResult, loaded, total ->
-                        if (gameResult.isFailure) {
-                            Platform.runLater {
-                                removeLoadingElements()
-                                centreBox.children += Label().apply {
-                                    this.bindLocalized("welcome.error")
-                                    this.textAlignment = TextAlignment.CENTER
-                                }
-                                ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"])
-                                    .showAndWait()
-                                    .ifPresent { exitProcess(0) }
-                            }
-                        } else {
-                            val gameObject = gameResult.getOrNull()!!
-                            if (loaded == total) {
-                                // Done
+                if (!app.gameRegistry.isLoaded) {
+                    // Start loading DB
+                    GlobalScope.launch {
+                        app.gameRegistry.loadSFXFolder { gameResult, loaded, total ->
+                            if (gameResult.isFailure) {
                                 Platform.runLater {
                                     removeLoadingElements()
-                                    addStartButtons()
-                                    recentProjectsView.disableProperty().value = false
+                                    centreBox.children += Label().apply {
+                                        this.bindLocalized("welcome.error")
+                                        this.textAlignment = TextAlignment.CENTER
+                                    }
+                                    ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"])
+                                        .showAndWait()
+                                        .ifPresent { exitProcess(0) }
                                 }
                             } else {
-                                Platform.runLater {
-                                    val gameObjId = gameObject.id
-                                    val id = if (gameObjId is Result.Success) gameObjId.value else "???"
-                                    gameIdLabel.text = id
-                                    progressLabel.text = "$loaded / $total"
-                                    progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
+                                val gameObject = gameResult.getOrNull()!!
+                                if (loaded == total) {
+                                    // Done
+                                    Platform.runLater {
+                                        removeLoadingElements()
+                                        addStartButtons()
+                                        recentProjectsView.disableProperty().value = false
+                                    }
+                                } else {
+                                    Platform.runLater {
+                                        val gameObjId = gameObject.id
+                                        val id = if (gameObjId is Result.Success) gameObjId.value else "???"
+                                        gameIdLabel.text = id
+                                        progressLabel.text = "$loaded / $total"
+                                        progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
+                                    }
                                 }
                             }
                         }
                     }
+                } else {
+                    removeLoadingElements()
+                    addStartButtons()
+                    recentProjectsView.disableProperty().value = false
                 }
             }
             DatabaseStatus.ERROR -> {
