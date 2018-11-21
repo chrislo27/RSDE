@@ -40,7 +40,8 @@ class RSDE : Application() {
         }
     }
 
-    private lateinit var primaryStage: Stage
+    lateinit var primaryStage: Stage
+        private set
     var databasePresent: DatabaseStatus = DatabaseStatus.DOES_NOT_EXIST
         private set
     lateinit var gameRegistry: GameRegistry
@@ -78,7 +79,6 @@ class RSDE : Application() {
         val welcomeScene = Scene(WelcomePane(this)).apply {
             addDebugAccelerators()
             stylesheets += "style/main.css"
-            stylesheets += "style/welcomePane.css"
         }
         primaryStage.scene = welcomeScene
         primaryStage.setMinimumBoundsToSized()

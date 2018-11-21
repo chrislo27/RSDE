@@ -41,6 +41,8 @@ class WelcomePane(val app: RSDE) : BorderPane() {
     val recentProjectsView: ListView<String> = ListView()
 
     init {
+        stylesheets += "style/welcomePane.css"
+
         center = centreBox
         left = leftBox
 
