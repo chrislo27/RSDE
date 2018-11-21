@@ -20,7 +20,7 @@ class GameRegistry(val version: Int) {
     lateinit var datamodelMap: Map<String, DatamodelObject>
         private set
 
-    fun loadSFXFolder(progressCallback: (gameObject: GameObject?, loaded: Int, total: Int) -> Unit) {
+    fun loadSFXFolder(progressCallback: (gameObject: kotlin.Result<GameObject>, loaded: Int, total: Int) -> Unit) {
         isLoaded = false
         try {
             val rootFolder = RSDE.rhreSfxRoot.resolve("games/")
@@ -36,7 +36,7 @@ class GameRegistry(val version: Int) {
                 if (gameID != null) {
                     map[gameID] = gameObject
                 }
-                progressCallback(gameObject, index + 1, size)
+                progressCallback(kotlin.Result.success(gameObject), index + 1, size)
             }
             gameMap = map
             val allDatamodels = map.values.asSequence().mapNotNull { it.objects.orNull() }.flatMap { it.asSequence() }.mapNotNull { it.orNull() }.filter { it.id is Result.Success }
@@ -47,11 +47,12 @@ class GameRegistry(val version: Int) {
                 deprecatedIDs?.forEach { dmMap[it] = datamodel }
             }
             datamodelMap = dmMap
+
+            isLoaded = true
         } catch (e: Exception) {
             e.printStackTrace()
-            progressCallback(null, -1, -1)
+            progressCallback(kotlin.Result.failure(e), -1, -1)
         }
-        isLoaded = true
     }
 
 }

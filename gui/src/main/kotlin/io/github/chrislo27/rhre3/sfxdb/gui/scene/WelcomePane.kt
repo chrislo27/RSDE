@@ -3,6 +3,8 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 import io.github.chrislo27.rhre3.sfxdb.adt.Result
 import io.github.chrislo27.rhre3.sfxdb.gui.DatabaseStatus
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.geometry.Pos
@@ -88,7 +90,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                         tooltip = Tooltip().bindLocalized("welcome.editExisting.tooltip")
                     }
 
-                    recentProjectsView.items.addAll(*"eduardo diego josé francisco de paula juan nepomuceno maría de los remedios cipriano de la santísima trinidad ruiz y picasso".split(" ").toTypedArray())
+                    recentProjectsView.items.addAll("Detecting custom databased", "SFX is an incubating feature.")
                 }
 
                 // Recent projects
@@ -107,7 +109,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     this.textAlignment = TextAlignment.CENTER
                 }
                 val progressBar = ProgressBar().apply {
-                    id = "progressBar"
+                    id = "progress-bar"
                 }
 
                 centreBox.children += gameIdLabel
@@ -122,16 +124,18 @@ class WelcomePane(val app: RSDE) : BorderPane() {
 
                 // Start loading DB
                 GlobalScope.launch {
-                    app.gameRegistry.loadSFXFolder { gameObject, loaded, total ->
-                        if (gameObject == null) {
+                    app.gameRegistry.loadSFXFolder { gameResult, loaded, total ->
+                        if (gameResult.isFailure) {
                             Platform.runLater {
                                 removeLoadingElements()
                                 centreBox.children += Label().apply {
                                     this.bindLocalized("welcome.error")
                                     this.textAlignment = TextAlignment.CENTER
                                 }
+                                ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"]).showAndWait()
                             }
                         } else {
+                            val gameObject = gameResult.getOrNull()!!
                             if (loaded == total) {
                                 // Done
                                 Platform.runLater {
