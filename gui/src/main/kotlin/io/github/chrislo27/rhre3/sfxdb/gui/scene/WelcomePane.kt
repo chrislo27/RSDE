@@ -21,17 +21,15 @@ import kotlin.system.exitProcess
 
 class WelcomePane(val app: RSDE) : BorderPane() {
 
-    companion object {
-        private const val SPACING = 4.0
-    }
-
-    val centreBox: VBox = VBox(SPACING).apply {
+    val centreBox: VBox = VBox().apply {
         this.alignment = Pos.CENTER
         this.id = "centre-vbox"
+        this.styleClass += "spacing"
     }
-    val leftBox: VBox = VBox(SPACING).apply {
+    val leftBox: VBox = VBox().apply {
         this.alignment = Pos.TOP_LEFT
         this.id = "left-vbox"
+        this.styleClass += "spacing"
     }
 
     val logo = ImageView("icon/256.png")
@@ -54,7 +52,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
 
         // Spacing between version text and buttons
         centreBox.children += Pane().apply {
-            prefHeight = SPACING * 3
+            id = "centre-pane"
         }
 
         when (app.databasePresent) {

@@ -26,5 +26,10 @@
     -fx-pref-width: 25em
 }
 
-#open-last {
+.spacing {
+    -fx-spacing: 0.35em
+}
+
+#centre-pane {
+    -fx-pref-height: 1em
 }
