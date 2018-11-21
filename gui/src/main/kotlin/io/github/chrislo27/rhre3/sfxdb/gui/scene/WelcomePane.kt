@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.TextAlignment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 class WelcomePane(val app: RSDE) : BorderPane() {
 
@@ -132,7 +133,9 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                                     this.bindLocalized("welcome.error")
                                     this.textAlignment = TextAlignment.CENTER
                                 }
-                                ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"]).showAndWait()
+                                ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"])
+                                    .showAndWait()
+                                    .ifPresent { exitProcess(0) }
                             }
                         } else {
                             val gameObject = gameResult.getOrNull()!!
