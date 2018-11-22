@@ -1,9 +1,9 @@
 package io.github.chrislo27.rhre3.sfxdb
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
-import io.github.chrislo27.rhre3.sfxdb.adt.Property
-import io.github.chrislo27.rhre3.sfxdb.adt.Struct
+import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
+import io.github.chrislo27.rhre3.sfxdb.validation.Property
+import io.github.chrislo27.rhre3.sfxdb.validation.Struct
 import io.github.chrislo27.rhre3.sfxdb.util.findDelegatingPropertyInstances
 
 

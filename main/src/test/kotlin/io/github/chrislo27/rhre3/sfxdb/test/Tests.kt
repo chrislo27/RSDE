@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.github.chrislo27.rhre3.sfxdb.Parser
-import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
-import io.github.chrislo27.rhre3.sfxdb.adt.Transformers
+import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
+import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.RepeatedTest

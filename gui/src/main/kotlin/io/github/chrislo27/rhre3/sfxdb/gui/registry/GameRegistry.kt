@@ -1,10 +1,10 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.registry
 
 import io.github.chrislo27.rhre3.sfxdb.Parser
-import io.github.chrislo27.rhre3.sfxdb.adt.DatamodelObject
-import io.github.chrislo27.rhre3.sfxdb.adt.GameObject
-import io.github.chrislo27.rhre3.sfxdb.adt.Result
-import io.github.chrislo27.rhre3.sfxdb.adt.orNull
+import io.github.chrislo27.rhre3.sfxdb.validation.DatamodelObject
+import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
+import io.github.chrislo27.rhre3.sfxdb.validation.Result
+import io.github.chrislo27.rhre3.sfxdb.validation.orNull
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import java.io.File

@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhre3.sfxdb.adt
+package io.github.chrislo27.rhre3.sfxdb.validation
 
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SubtitleTypes

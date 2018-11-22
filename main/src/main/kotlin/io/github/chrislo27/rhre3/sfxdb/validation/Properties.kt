@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhre3.sfxdb.adt
+package io.github.chrislo27.rhre3.sfxdb.validation
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeType
