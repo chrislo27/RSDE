@@ -1,0 +1,7 @@
+#bottom-hbox {
+    -fx-padding: 2em 3em 2em 3em;
+}
+
+.border-pane-child {
+    -fx-background-insets: 1.5em
+}

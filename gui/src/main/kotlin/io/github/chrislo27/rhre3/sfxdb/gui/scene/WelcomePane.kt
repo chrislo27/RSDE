@@ -7,6 +7,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
+import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.image.ImageView
@@ -89,6 +90,10 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                         this.bindLocalized("welcome.editExisting")
                         styleClass += "buttonWidth"
                         tooltip = Tooltip().bindLocalized("welcome.editExisting.tooltip")
+
+                        onAction = EventHandler {
+                            app.primaryStage.scene.root = EditExistingPane(app)
+                        }
                     }
 
                     recentProjectsView.items.addAll("Detecting custom databased", "SFX is an incubating feature.")
