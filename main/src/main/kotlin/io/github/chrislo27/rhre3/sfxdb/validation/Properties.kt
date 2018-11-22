@@ -48,6 +48,9 @@ sealed class Result<T> {
     }
 }
 
+class BadResultException(val result: Result<*>, message: String = "Result was non-Success") : RuntimeException(message)
+
 fun <T> Result<T>.orNull(): T? = (this as? Result.Success)?.value
+fun <T> Result<T>.orException(): T = this.orNull() ?: throw BadResultException(this)
 
 class JsonNodeTypeException(val node: JsonNode, val expectedTypes: List<JsonNodeType>, val gotType: JsonNodeType) : RuntimeException()
