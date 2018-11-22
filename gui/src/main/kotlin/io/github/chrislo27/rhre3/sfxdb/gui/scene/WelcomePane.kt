@@ -128,6 +128,12 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                     centreBox.children -= progressBar
                 }
 
+                fun finishLoading() {
+                    removeLoadingElements()
+                    addStartButtons()
+                    recentProjectsView.disableProperty().value = false
+                }
+
                 if (!app.gameRegistry.isLoaded) {
                     // Start loading DB
                     GlobalScope.launch {
@@ -148,9 +154,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                                 if (loaded == total) {
                                     // Done
                                     Platform.runLater {
-                                        removeLoadingElements()
-                                        addStartButtons()
-                                        recentProjectsView.disableProperty().value = false
+                                        finishLoading()
                                     }
                                 } else {
                                     Platform.runLater {
@@ -165,9 +169,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                         }
                     }
                 } else {
-                    removeLoadingElements()
-                    addStartButtons()
-                    recentProjectsView.disableProperty().value = false
+                    finishLoading()
                 }
             }
             DatabaseStatus.ERROR -> {
