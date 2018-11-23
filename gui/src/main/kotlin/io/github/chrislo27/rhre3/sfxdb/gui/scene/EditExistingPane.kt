@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox
 class EditExistingPane(val app: RSDE) : BorderPane() {
 
     init {
-        stylesheets += "style/welcomePane.css"
+        stylesheets += "style/editExisting.css"
         val bottom = HBox().apply {
             this@EditExistingPane.bottom = this
             id = "bottom-hbox"
