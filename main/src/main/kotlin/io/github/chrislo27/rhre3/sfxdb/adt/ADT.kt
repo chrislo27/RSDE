@@ -24,7 +24,7 @@ class CuePointer(
     @JsonInclude(JsonInclude.Include.NON_EMPTY) val metadata: Map<String, Any?>? = null
 )
 
-abstract class Datamodel(val id: String, val name: String, val deprecatedIDs: List<String>)
+abstract class Datamodel(val type: String, val id: String, val name: String, val deprecatedIDs: List<String>)
 
 class Cue(
     id: String, name: String, deprecatedIDs: List<String>,
@@ -37,40 +37,40 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_EMPTY) val responseIDs: List<String>? = null,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) val baseBpm: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) val loops: Boolean = false
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("cue", id, name, deprecatedIDs)
 
 class Pattern(
     id: String, name: String, deprecatedIDs: List<String>,
     val cues: List<CuePointer>,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) val stretchable: Boolean = false
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("pattern", id, name, deprecatedIDs)
 
 class Equidistant(
     id: String, name: String, deprecatedIDs: List<String>,
     val cues: List<CuePointer>,
     val distance: Float = 0f,
     val stretchable: Boolean = false
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("equidistant", id, name, deprecatedIDs)
 
 class KeepTheBeat(
     id: String, name: String, deprecatedIDs: List<String>,
     val cues: List<CuePointer>,
     val defaultDuration: Float = 0f
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("keepTheBeat", id, name, deprecatedIDs)
 
 class RandomCue(
     id: String, name: String, deprecatedIDs: List<String>,
     val cues: List<CuePointer>,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) val responseIDs: List<String>? = null
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("randomCue", id, name, deprecatedIDs)
 
 class SubtitleEntity(
     id: String, name: String, deprecatedIDs: List<String>,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) val subtitleType: String? = null
-) : Datamodel(id, name, deprecatedIDs)
+) : Datamodel("subtitle", id, name, deprecatedIDs)
 
-class EndRemixEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel(id, name, deprecatedIDs)
+class EndRemixEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel("endEntity", id, name, deprecatedIDs)
 
-class ShakeEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel(id, name, deprecatedIDs)
+class ShakeEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel("shakeEntity", id, name, deprecatedIDs)
 
-class TextureEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel(id, name, deprecatedIDs)
+class TextureEntity(id: String, name: String, deprecatedIDs: List<String>) : Datamodel("textureEntity", id, name, deprecatedIDs)
