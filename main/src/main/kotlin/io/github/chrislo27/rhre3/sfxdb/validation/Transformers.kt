@@ -119,7 +119,7 @@ object Transformers {
         val st = node.textValue() ?: error("Escaped node type check!")
         val type: SubtitleTypes? = SubtitleTypes.VALUES.find { it.type == st }
         if (type == null)
-            Result.Failure(node, st, "No subtitle type found with that name. Supported: ${Series.VALUES.map(Series::jsonName)}")
+            Result.Failure(node, st, "No subtitle type found with that name. Supported: ${SubtitleTypes.VALUES.map(SubtitleTypes::type)}")
         else
             Result.Success(type)
     }
