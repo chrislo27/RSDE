@@ -1,6 +1,5 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
-import io.github.chrislo27.rhre3.sfxdb.validation.Result
 import io.github.chrislo27.rhre3.sfxdb.gui.DatabaseStatus
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
@@ -159,8 +158,7 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                                 } else {
                                     Platform.runLater {
                                         val gameObjId = gameObject.id
-                                        val id = if (gameObjId is Result.Success) gameObjId.value else "???"
-                                        gameIdLabel.text = id
+                                        gameIdLabel.text = gameObjId
                                         progressLabel.text = "$loaded / $total"
                                         progressBar.progress = loaded.toDouble() / total.coerceAtLeast(1)
                                     }
