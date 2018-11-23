@@ -1,24 +1,49 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
+import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.Button
+import javafx.scene.control.*
+import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.util.Callback
 
 
 class EditExistingPane(val app: RSDE) : BorderPane() {
+
+    val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name })
 
     init {
         stylesheets += "style/editExisting.css"
         val bottom = HBox().apply {
             this@EditExistingPane.bottom = this
             id = "bottom-hbox"
-            BorderPane.setMargin(this, Insets(1.0.em))
+            BorderPane.setMargin(this, Insets(0.1.em))
+        }
+        val top = HBox().apply {
+            this@EditExistingPane.top = this
+            id = "top-hbox"
+            BorderPane.setMargin(this, Insets(0.1.em))
+        }
+        val centre = VBox().apply {
+            this@EditExistingPane.center = this
+            id = "centre-vbox"
+            BorderPane.setMargin(this, Insets(0.0, 2.0.em, 0.0, 2.0.em))
+            alignment = Pos.CENTER
+        }
+
+        top.children += Label().apply {
+            id = "title"
+            bindLocalized("welcome.editExisting")
         }
 
         val backButton = Button().apply {
@@ -28,8 +53,41 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             }
             alignment = Pos.CENTER_LEFT
         }
-
         bottom.children += backButton
+
+        centre.children += Label().apply {
+            bindLocalized("editExisting.selectBaseLabel")
+            styleClass += "search-related"
+        }
+        val listView = ListView(games).apply {
+            styleClass += "search-related"
+            id = "search-list"
+            cellFactory = Callback { GameCell() }
+
+        }
+        val searchBar = TextField().apply {
+            this.promptText = Localization["editExisting.search"]
+            styleClass += "search-related"
+            textProperty().addListener { observable, oldValue, newValue ->
+                val query = newValue.toLowerCase()
+                listView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
+            }
+        }
+        centre.children += searchBar
+        centre.children += listView
+    }
+
+    inner class GameCell : ListCell<Game>() {
+        override fun updateItem(item: Game?, empty: Boolean) {
+            super.updateItem(item, empty)
+            if (empty || item == null) {
+                graphic = null
+                text = null
+            } else {
+                text = item.name
+                graphic = ImageView(app.gameRegistry.gameIconMap[item] ?: app.gameRegistry.missingIconImage)
+            }
+        }
     }
 
 }

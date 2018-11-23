@@ -1,7 +1,23 @@
 #bottom-hbox {
-    -fx-padding: 2em 3em 2em 3em;
+    -fx-padding: 1em 1em 1em 1em;
 }
 
 .border-pane-child {
-    -fx-background-insets: 1.5em
+    -fx-background-insets: 1.5em;
+}
+
+.search-related {
+    -fx-max-width: 25em;
+    -fx-padding: 0.25em;
+}
+
+#search-list {
+    -fx-pref-height: 40em;
+    -fx-padding: 0.5em;
+}
+
+#title {
+    -fx-text-alignment: left;
+    -fx-font: bold 2em "Roboto";
+    -fx-padding: 0.5em 2em 0.5em 2em;
 }
