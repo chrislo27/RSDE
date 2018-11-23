@@ -31,12 +31,20 @@ object Tests {
         .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
         .registerModule(AfterburnerModule())
         .registerModule(KotlinModule())
-    val sfxFolder = File(System.getProperty("user.home")).resolve("Desktop/libGDX-projects/RHRE-database/games/")
+    val sfxFolder1 = File(System.getProperty("user.home")).resolve("Desktop/libGDX-projects/RHRE-database/games/")
+    val sfxFolder2 = File(System.getProperty("user.home")).resolve("Desktop/RHRE/RHRE-database/games/")
+    lateinit var sfxFolder: File
+        private set
     val printProperties = false
 
     @BeforeAll
     @JvmStatic
     fun checkExists() {
+        sfxFolder = when {
+            sfxFolder1.exists() -> sfxFolder1
+            sfxFolder2.exists() -> sfxFolder2
+            else -> File(System.getProperty("user.home")).resolve(".rhre3/sfx/master/games/")
+        }
         assertEquals(true, sfxFolder.exists())
     }
 
@@ -50,6 +58,7 @@ object Tests {
         val rootNode = objectMapper.readTree(dataFile)
         val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
         assertEquals(false, Transformers.anyNonSuccess(gameObject))
+        gameObject.produceImmutableADT()
     }
 
     @RepeatedTest(10)
@@ -59,6 +68,7 @@ object Tests {
             val rootNode = objectMapper.readTree(dataFile)
             val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
             assertEquals(false, Transformers.anyNonSuccess(gameObject))
+            gameObject.produceImmutableADT()
         }
     }
 

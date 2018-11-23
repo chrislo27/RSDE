@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.validation
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeType
 import io.github.chrislo27.rhre3.sfxdb.*
 import io.github.chrislo27.rhre3.sfxdb.util.findDelegatingPropertyInstances
@@ -121,6 +122,11 @@ object Transformers {
             Result.Failure(node, st, "No subtitle type found with that name. Supported: ${Series.VALUES.map(Series::jsonName)}")
         else
             Result.Success(type)
+    }
+    @Suppress("UNCHECKED_CAST")
+    val cuePointerMetadataTransformer: JsonTransformer<Map<String, Any?>?> = { node ->
+        node.checkNodeType(JsonNodeType.OBJECT)
+        Result.Success(ObjectMapper().convertValue(node, Map::class.java) as Map<String, Any?>)
     }
 
     val datamodelTransformer: JsonTransformer<DatamodelObject> = transformer@{ node ->
