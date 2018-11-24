@@ -14,6 +14,10 @@
     -fx-pref-width: 25em;
 }
 
+#id-selector-box {
+    -fx-pref-width: 11em;
+}
+
 #search-list {
     -fx-pref-height: 40em;
     -fx-padding: 0.5em;
@@ -23,4 +27,10 @@
     -fx-text-alignment: left;
     -fx-font: bold 2em "Roboto";
     -fx-padding: 0.5em 2em 0.5em 2em;
+}
+
+.arrow-label {
+    -fx-text-alignment: center;
+    -fx-font: bold 2em "Roboto";
+    -fx-padding: 0.5em;
 }

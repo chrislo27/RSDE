@@ -5,6 +5,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
@@ -84,7 +85,35 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
         gameSelBox.children += searchBar
         gameSelBox.children += listView
 
+        val idSelBox = VBox().apply {
+            id = "id-selector-box"
+            BorderPane.setMargin(this, Insets(0.0, 2.0.em, 0.0, 2.0.em))
+            alignment = Pos.CENTER
+            maxWidth = Double.MAX_VALUE
+        }
+        idSelBox.children += Label().apply {
+            bindLocalized("editExisting.chooseGameID")
+            styleClass += "search-related"
+            maxWidth = Double.MAX_VALUE
+            wrapTextProperty().value = true
+            tooltip = Tooltip().bindLocalized("editExisting.chooseGameID.tooltip")
+        }
+        val gameIDField = TextField().apply {
+            styleClass += "search-related"
+            maxWidth = Double.MAX_VALUE
+            listView.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
+                Platform.runLater {
+                    this.text = newValue?.id ?: ""
+                }
+            }
+        }
+        idSelBox.children += gameIDField
+
         centre.children += gameSelBox
+        centre.children += Label("➡").apply {
+            styleClass += "arrow-label"
+        }
+        centre.children += idSelBox
     }
 
     inner class GameCell : ListCell<Game>() {

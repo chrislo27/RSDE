@@ -15,6 +15,7 @@ import javafx.stage.Stage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import kotlin.system.exitProcess
 
 
 class RSDE : Application() {
@@ -85,5 +86,10 @@ class RSDE : Application() {
         primaryStage.show()
 
         DiscordHelper.updatePresence(PresenceState.WelcomeScreen)
+    }
+
+    override fun stop() {
+        super.stop()
+        exitProcess(0)
     }
 }
