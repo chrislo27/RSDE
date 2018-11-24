@@ -19,7 +19,7 @@ object Transformers {
             throw JsonNodeTypeException(this, types.toList(), this.nodeType)
     }
 
-    val GAME_ID_REGEX: Regex = "(?:[A-Za-z0-9_/\\-])+".toRegex()
+    val GAME_ID_REGEX: Regex = "(?:[A-Za-z0-9_\\-])+".toRegex()
     val ID_REGEX: Regex = "(?:[A-Za-z0-9_/\\-*])+".toRegex()
 
     val stringTransformer: JsonTransformer<String> = {
