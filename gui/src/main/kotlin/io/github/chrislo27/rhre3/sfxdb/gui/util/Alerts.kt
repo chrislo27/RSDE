@@ -1,10 +1,12 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.util
 
+import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import javafx.scene.control.Alert
 import javafx.scene.control.Label
 import javafx.scene.control.TextArea
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
+import javafx.stage.Stage
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -20,6 +22,7 @@ class ExceptionAlert(val exception: Throwable,
         this.title = windowTitle
         this.contentText = contentText
         this.headerText = headerText
+        (dialogPane.scene.window as? Stage?)?.icons?.addAll(RSDE.windowIcons)
 
         val exceptionText = StringWriter().let {
             exception.printStackTrace(PrintWriter(it))
@@ -27,7 +30,7 @@ class ExceptionAlert(val exception: Throwable,
         }
         val textArea = TextArea(exceptionText).apply {
             isEditable = false
-            isWrapText = true
+            isWrapText = false
             maxWidth = Double.MAX_VALUE
             maxHeight = Double.MAX_VALUE
             GridPane.setVgrow(this, Priority.ALWAYS)
