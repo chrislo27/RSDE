@@ -34,9 +34,9 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             id = "top-hbox"
             BorderPane.setMargin(this, Insets(0.1.em))
         }
-        val centre = VBox().apply {
+        val centre = HBox().apply {
             this@EditExistingPane.center = this
-            id = "centre-vbox"
+            id = "centre-hbox"
             BorderPane.setMargin(this, Insets(0.0, 2.0.em, 0.0, 2.0.em))
             alignment = Pos.CENTER
         }
@@ -55,26 +55,36 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
         }
         bottom.children += backButton
 
-        centre.children += Label().apply {
+        val gameSelBox = VBox().apply {
+            id = "game-selector-box"
+            BorderPane.setMargin(this, Insets(0.0, 2.0.em, 0.0, 2.0.em))
+            alignment = Pos.CENTER
+            maxWidth = Double.MAX_VALUE
+        }
+        gameSelBox.children += Label().apply {
             bindLocalized("editExisting.selectBaseLabel")
             styleClass += "search-related"
+            maxWidth = Double.MAX_VALUE
         }
         val listView = ListView(games).apply {
             styleClass += "search-related"
             id = "search-list"
+            maxWidth = Double.MAX_VALUE
             cellFactory = Callback { GameCell() }
-
         }
         val searchBar = TextField().apply {
             this.promptText = Localization["editExisting.search"]
             styleClass += "search-related"
+            maxWidth = Double.MAX_VALUE
             textProperty().addListener { observable, oldValue, newValue ->
                 val query = newValue.toLowerCase()
                 listView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
             }
         }
-        centre.children += searchBar
-        centre.children += listView
+        gameSelBox.children += searchBar
+        gameSelBox.children += listView
+
+        centre.children += gameSelBox
     }
 
     inner class GameCell : ListCell<Game>() {

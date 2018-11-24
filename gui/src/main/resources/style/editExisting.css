@@ -7,8 +7,11 @@
 }
 
 .search-related {
-    -fx-max-width: 25em;
     -fx-padding: 0.25em;
+}
+
+#game-selector-box {
+    -fx-pref-width: 25em;
 }
 
 #search-list {
