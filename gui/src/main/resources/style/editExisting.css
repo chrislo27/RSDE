@@ -1,4 +1,4 @@
-#bottom-hbox {
+#bottom-box {
     -fx-padding: 1em 1em 1em 1em;
 }
 
@@ -33,4 +33,8 @@
     -fx-text-alignment: center;
     -fx-font: bold 2em "Roboto";
     -fx-padding: 0.5em;
+}
+
+#error-label {
+    -fx-text-fill: red;
 }

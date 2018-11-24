@@ -26,6 +26,7 @@ class RSDE : Application() {
         val MIN_RHRE_VERSION = Version(3, 15, 0)
         val rootFolder: File = File(System.getProperty("user.home")).resolve(".rsde/").apply { mkdirs() }
         val rhreRoot: File = File(System.getProperty("user.home")).resolve(".rhre3/")
+        val customSFXFolder: File = rhreRoot.resolve("customSounds/")
         const val SFX_DB_BRANCH = "prototype"
         const val GITHUB = "https://github.com/chrislo27/RSDE"
         const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"

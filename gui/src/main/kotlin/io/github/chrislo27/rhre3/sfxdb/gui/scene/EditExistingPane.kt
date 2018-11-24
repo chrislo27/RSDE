@@ -5,8 +5,10 @@ import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.application.Platform
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.geometry.Insets
@@ -22,12 +24,24 @@ import javafx.util.Callback
 class EditExistingPane(val app: RSDE) : BorderPane() {
 
     val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name })
+    val gameListView: ListView<Game>
+    val continueButton: Button
+    val gameIDField: TextField
+    val errorLabel: Label
 
     init {
         stylesheets += "style/editExisting.css"
-        val bottom = HBox().apply {
+        val bottom = BorderPane().apply {
             this@EditExistingPane.bottom = this
-            id = "bottom-hbox"
+            id = "bottom-box"
+//            BorderPane.setMargin(this, Insets(0.1.em))
+        }
+        val bottomLeft = HBox().apply {
+            bottom.left = this
+            BorderPane.setMargin(this, Insets(0.1.em))
+        }
+        val bottomRight = HBox().apply {
+            bottom.right = this
             BorderPane.setMargin(this, Insets(0.1.em))
         }
         val top = HBox().apply {
@@ -54,7 +68,16 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             }
             alignment = Pos.CENTER_LEFT
         }
-        bottom.children += backButton
+        bottomLeft.children += backButton
+        continueButton = Button().apply {
+            bindLocalized("opts.continue")
+            onAction = EventHandler {
+//                app.primaryStage.scene.root = WelcomePane(app)
+            }
+            alignment = Pos.CENTER_RIGHT
+            isDisable = true
+        }
+        bottomRight.children += continueButton
 
         val gameSelBox = VBox().apply {
             id = "game-selector-box"
@@ -67,7 +90,7 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             styleClass += "search-related"
             maxWidth = Double.MAX_VALUE
         }
-        val listView = ListView(games).apply {
+        gameListView = ListView(games).apply {
             styleClass += "search-related"
             id = "search-list"
             maxWidth = Double.MAX_VALUE
@@ -79,11 +102,11 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             maxWidth = Double.MAX_VALUE
             textProperty().addListener { observable, oldValue, newValue ->
                 val query = newValue.toLowerCase()
-                listView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
+                gameListView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
             }
         }
         gameSelBox.children += searchBar
-        gameSelBox.children += listView
+        gameSelBox.children += gameListView
 
         val idSelBox = VBox().apply {
             id = "id-selector-box"
@@ -98,22 +121,57 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             wrapTextProperty().value = true
             tooltip = Tooltip().bindLocalized("editExisting.chooseGameID.tooltip")
         }
-        val gameIDField = TextField().apply {
+        gameIDField = TextField().apply {
             styleClass += "search-related"
             maxWidth = Double.MAX_VALUE
-            listView.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
+            gameListView.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
                 Platform.runLater {
                     this.text = newValue?.id ?: ""
                 }
             }
+            isDisable = true
         }
         idSelBox.children += gameIDField
+        errorLabel = Label().apply {
+            styleClass += "searchRelated"
+            maxWidth = Double.MAX_VALUE
+            wrapTextProperty().value = true
+            id = "error-label"
+        }
+        idSelBox.children += errorLabel
 
         centre.children += gameSelBox
         centre.children += Label("➡").apply {
             styleClass += "arrow-label"
         }
         centre.children += idSelBox
+    }
+
+    init {
+        gameListView.selectionModel.selectedItems.addListener(ListChangeListener {
+            it.next()
+            if (it.list.isEmpty()) {
+                gameIDField.text = ""
+            }
+            gameIDField.isDisable = it.list.isEmpty()
+        })
+        gameIDField.textProperty().addListener { observable, oldValue, newValue ->
+            var failed = true
+            if (newValue.isBlank()) {
+                errorLabel.text = ""
+            } else if (gameListView.selectionModel.selectedItems.isEmpty()) {
+                errorLabel.text = Localization["editExisting.warning.pickBaseFirst"]
+            } else if (!Transformers.GAME_ID_REGEX.matches(newValue.trim())) {
+                errorLabel.text = Localization["editExisting.warning.illegalID"]
+            } else if (RSDE.customSFXFolder.resolve(newValue.trim()).exists()) {
+                errorLabel.text = Localization["editExisting.warning.folderExists"]
+            } else {
+                failed = false
+                errorLabel.text = ""
+            }
+
+            continueButton.isDisable = failed && gameListView.selectionModel.selectedItems.isNotEmpty()
+        }
     }
 
     inner class GameCell : ListCell<Game>() {
