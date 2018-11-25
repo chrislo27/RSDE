@@ -3,6 +3,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.validation.BadResultException
 import io.github.chrislo27.rhre3.sfxdb.validation.Result
@@ -22,7 +25,7 @@ import javafx.scene.layout.VBox
 import javafx.util.Callback
 
 
-class EditExistingPane(val app: RSDE) : BorderPane() {
+class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name })
     val gameListView: ListView<Game>
@@ -145,6 +148,10 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
         centre.children += idSelBox
     }
 
+    override fun getPresenceState(): DefaultRichPresence {
+        return PresenceState.PreparingNewDef.toRichPresenceObj()
+    }
+
     init {
         gameListView.selectionModel.selectedItems.addListener(ListChangeListener {
             it.next()
@@ -206,6 +213,8 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             }
         }
     }
+
+
 
     enum class GameIDResult {
         SUCCESS, BLANK, ILLEGAL, FOLDER_EXISTS;

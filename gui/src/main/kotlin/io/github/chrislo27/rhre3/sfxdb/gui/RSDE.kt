@@ -1,5 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui
 
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
@@ -80,11 +82,18 @@ class RSDE : Application() {
         primaryStage.title = "$TITLE $VERSION"
         primaryStage.icons.addAll(windowIcons)
 
-        val welcomeScene = Scene(WelcomePane(this)).apply {
+        val scene = Scene(WelcomePane(this)).apply {
             addDebugAccelerators()
             stylesheets += "style/main.css"
         }
-        primaryStage.scene = welcomeScene
+        scene.rootProperty().addListener { _, _, newValue ->
+            if (newValue is ChangesPresenceState) {
+                DiscordHelper.updatePresence(newValue.getPresenceState())
+            } else {
+                DiscordHelper.updatePresence(DefaultRichPresence())
+            }
+        }
+        primaryStage.scene = scene
         primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
 

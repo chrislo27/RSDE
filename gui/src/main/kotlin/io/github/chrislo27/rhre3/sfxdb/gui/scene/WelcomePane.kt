@@ -2,6 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
 import io.github.chrislo27.rhre3.sfxdb.gui.DatabaseStatus
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
+import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
@@ -19,7 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
-class WelcomePane(val app: RSDE) : BorderPane() {
+class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val centreBox: VBox = VBox().apply {
         this.alignment = Pos.CENTER
@@ -177,6 +180,10 @@ class WelcomePane(val app: RSDE) : BorderPane() {
                 }
             }
         }
+    }
+
+    override fun getPresenceState(): DefaultRichPresence {
+        return PresenceState.WelcomeScreen.toRichPresenceObj()
     }
 
 }

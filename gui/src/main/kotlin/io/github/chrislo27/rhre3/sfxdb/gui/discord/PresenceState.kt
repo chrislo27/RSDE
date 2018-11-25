@@ -10,10 +10,15 @@ sealed class PresenceState(open val state: String = "", open val smallIcon: Stri
     open fun modifyRichPresence(richPresence: DefaultRichPresence) {
     }
 
+    fun toRichPresenceObj(): DefaultRichPresence = DefaultRichPresence(this)
+
     // ---------------- IMPLEMENTATIONS BELOW ----------------
 
     object WelcomeScreen
         : PresenceState("On Welcome Screen")
+
+    object PreparingNewDef
+        : PresenceState("Preparing a New Game Definition")
 
     sealed class Elapsable(state: String, val duration: Float, smallIcon: String = "", smallIconText: String = state)
         : PresenceState(state, smallIcon, smallIconText) {
