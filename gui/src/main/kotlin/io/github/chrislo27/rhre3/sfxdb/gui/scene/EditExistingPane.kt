@@ -196,6 +196,7 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
                     Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile)).produceImmutableADT()
                 } catch (e: BadResultException) {
                     ExceptionAlert(e, "The copied data.json file is invalid").showAndWait()
+                    return@setOnAction
                 }
 
                 // TODO Open in editor
