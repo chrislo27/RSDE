@@ -47,11 +47,13 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) val baseBpm: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) val loops: Boolean = false
 ) : Datamodel("cue", id, name, deprecatedIDs)
+
 class Pattern(
         id: String, name: String, deprecatedIDs: List<String>,
         val cues: List<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) val stretchable: Boolean = false
 ) : Datamodel("pattern", id, name, deprecatedIDs)
+
 class Equidistant(
         id: String, name: String, deprecatedIDs: List<String>,
         val cues: List<CuePointer>,
