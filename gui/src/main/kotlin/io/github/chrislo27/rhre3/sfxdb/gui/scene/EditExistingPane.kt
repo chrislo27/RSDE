@@ -197,6 +197,8 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
                 } catch (e: BadResultException) {
                     ExceptionAlert(e, "The copied data.json file is invalid").showAndWait()
                 }
+
+                // TODO Open in editor
             } catch (e: Exception) {
                 e.printStackTrace()
                 ExceptionAlert(e).showAndWait()
