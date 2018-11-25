@@ -173,10 +173,10 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             continueButton.isDisable = failed && gameListView.selectionModel.selectedItems.isNotEmpty()
         }
         continueButton.setOnAction { _ ->
+            continueButton.isDisable = true
+
             val selectedGame: Game = gameListView.selectionModel.selectedItems.firstOrNull() ?: return@setOnAction
             val selectedGameID: String = gameIDField.text.takeUnless { it.isBlank() || GameIDResult.processGameID(it) != GameIDResult.SUCCESS }?.trim() ?: return@setOnAction
-
-            continueButton.isDisable = true
 
             // Copy folder over
             try {
