@@ -22,7 +22,7 @@ class GameRegistry(val version: Int) {
         private set
     lateinit var depsDatamodelMap: Map<String, Datamodel>
         private set
-    lateinit var gameIconMap: Map<Game, Image>
+    lateinit var gameMetaMap: Map<Game, GameMetadata>
 
     fun loadSFXFolder(progressCallback: (gameObject: kotlin.Result<Game>, loaded: Int, total: Int) -> Unit) {
         isLoaded = false
@@ -33,18 +33,18 @@ class GameRegistry(val version: Int) {
             val folders = rootFolder.listFiles(predicate) /*+ customFolder.listFiles(predicate)*/
             val size = folders.size
             val map = mutableMapOf<String, Game>()
-            val iconMap = mutableMapOf<Game, Image>()
+            val metaMap = mutableMapOf<Game, GameMetadata>()
             folders.forEachIndexed { index, folder ->
                 val jsonRoot = JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json"))
                 RSDE.LOGGER.info("Loading game ${folder.name}")
                 val game: Game = Parser.parseGameDefinition(jsonRoot).produceImmutableADT()
                 val gameID = game.id
                 map[gameID] = game
-                iconMap[game] = if (folder.resolve("icon.png").exists()) Image("file:" + folder.resolve("icon.png").path, true) else missingIconImage
+                metaMap[game] = GameMetadata(game, if (folder.resolve("icon.png").exists()) Image("file:" + folder.resolve("icon.png").path, true) else missingIconImage, folder)
                 progressCallback(kotlin.Result.success(game), index + 1, size)
             }
             gameMap = map
-            gameIconMap = iconMap
+            gameMetaMap = metaMap
             val allDatamodels = map.values.flatMap { it.objects }
             val dmMap = mutableMapOf<String, Datamodel>()
             val depsDmMap = mutableMapOf<String, Datamodel>()

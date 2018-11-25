@@ -10,7 +10,7 @@ interface Struct {
 }
 
 class GameObject : Struct {
-    val id: Result<String> by Property(Transformers.gameIdTransformer)
+    var id: Result<String> by Property(Transformers.gameIdTransformer)
     val name: Result<String> by Property(Transformers.nonEmptyStringTransformer)
     val series: Result<Series> by Property(Transformers.seriesTransformer, Series.OTHER)
     val objects: Result<List<Result<DatamodelObject>>> by Property(Transformers.transformerToList(Transformers.datamodelTransformer))
@@ -24,9 +24,9 @@ class GameObject : Struct {
 
     override fun produceImmutableADT(): Game {
         return Game(
-            id.orException(), name.orException(), series.orException(),
-            objects.orException().map { it.orException().produceImmutableADT() },
-            group.orException(), groupDefault.orException(), priority.orException(), searchHints.orException(), noDisplay.orException()
+                id.orException(), name.orException(), series.orException(),
+                group.orException(), groupDefault.orException(), priority.orException(), searchHints.orException(), noDisplay.orException(),
+                objects.orException().map { it.orException().produceImmutableADT() }
         )
     }
 }
@@ -51,8 +51,8 @@ class CuePointerObject : Struct {
 
     override fun produceImmutableADT(): CuePointer {
         return CuePointer(
-            id.orException(), beat.orElse(Float.MIN_VALUE), duration.orException(), semitone.orException(),
-            volume.orException(), track.orException(), metadata.orNull()
+                id.orException(), beat.orElse(Float.MIN_VALUE), duration.orException(), semitone.orException(),
+                volume.orException(), track.orException(), metadata.orNull()
         )
     }
 }
@@ -72,9 +72,9 @@ class CueObject : DatamodelObject() {
 
     override fun produceImmutableADT(): Cue {
         return Cue(
-            id.orException(), name.orException(), deprecatedIDs.orException(), duration.orException(),
-            stretchable.orException(), repitchable.orException(), fileExtension.orException(), introSound.orException(),
-            endingSound.orException(), responseIDs.orException(), baseBpm.orException(), loops.orException()
+                id.orException(), name.orException(), deprecatedIDs.orException(), duration.orException(),
+                stretchable.orException(), repitchable.orException(), fileExtension.orException(), introSound.orException(),
+                endingSound.orException(), responseIDs.orException(), baseBpm.orException(), loops.orException()
         )
     }
 }
@@ -87,9 +87,9 @@ class PatternObject : DatamodelObject() {
 
     override fun produceImmutableADT(): Pattern {
         return Pattern(
-            id.orException(), name.orException(), deprecatedIDs.orException(),
-            cues.orException().map { it.orException().produceImmutableADT() },
-            stretchable.orException()
+                id.orException(), name.orException(), deprecatedIDs.orException(),
+                cues.orException().map { it.orException().produceImmutableADT() },
+                stretchable.orException()
         )
     }
 }
@@ -101,8 +101,8 @@ class EquidistantObject : DatamodelObject() {
 
     override fun produceImmutableADT(): Equidistant {
         return Equidistant(
-            id.orException(), name.orException(), deprecatedIDs.orException(),
-            cues.orException().map { it.orException().produceImmutableADT() }, distance.orException(), stretchable.orException()
+                id.orException(), name.orException(), deprecatedIDs.orException(),
+                cues.orException().map { it.orException().produceImmutableADT() }, distance.orException(), stretchable.orException()
         )
     }
 }
@@ -113,8 +113,8 @@ class KeepTheBeatObject : DatamodelObject() {
 
     override fun produceImmutableADT(): KeepTheBeat {
         return KeepTheBeat(
-            id.orException(), name.orException(), deprecatedIDs.orException(),
-            cues.orException().map { it.orException().produceImmutableADT() }, defaultDuration.orException()
+                id.orException(), name.orException(), deprecatedIDs.orException(),
+                cues.orException().map { it.orException().produceImmutableADT() }, defaultDuration.orException()
         )
     }
 }
@@ -127,8 +127,8 @@ class RandomCueObject : DatamodelObject() {
 
     override fun produceImmutableADT(): RandomCue {
         return RandomCue(
-            id.orException(), name.orException(), deprecatedIDs.orException(),
-            cues.orException().map { it.orException().produceImmutableADT() }, responseIDs.orException()
+                id.orException(), name.orException(), deprecatedIDs.orException(),
+                cues.orException().map { it.orException().produceImmutableADT() }, responseIDs.orException()
         )
     }
 }

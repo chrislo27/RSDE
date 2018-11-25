@@ -1,6 +1,10 @@
 package io.github.chrislo27.rhre3.sfxdb
 
-enum class Series(val jsonName: String) {
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class Series(@get:JsonValue val jsonName: String) {
+
     OTHER("other"),
     TENGOKU("tengoku"), DS("ds"), FEVER("fever"), MEGAMIX("megamix"),
     SWITCH("switch"),
@@ -8,5 +12,9 @@ enum class Series(val jsonName: String) {
 
     companion object {
         val VALUES = Series.values().toList()
+
+        @JvmStatic
+        @JsonCreator
+        fun getEnumFromJsonName(n: String): Series = VALUES.first { n.toLowerCase() == it.jsonName.toLowerCase() }
     }
 }

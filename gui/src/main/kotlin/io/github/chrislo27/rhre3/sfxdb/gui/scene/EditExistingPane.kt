@@ -1,10 +1,11 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
+import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
-import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import io.github.chrislo27.rhre3.sfxdb.gui.util.*
+import io.github.chrislo27.rhre3.sfxdb.validation.BadResultException
+import io.github.chrislo27.rhre3.sfxdb.validation.Result
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.application.Platform
 import javafx.collections.FXCollections
@@ -71,9 +72,6 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
         bottomLeft.children += backButton
         continueButton = Button().apply {
             bindLocalized("opts.continue")
-            onAction = EventHandler {
-//                app.primaryStage.scene.root = WelcomePane(app)
-            }
             alignment = Pos.CENTER_RIGHT
             isDisable = true
         }
@@ -100,7 +98,7 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             this.promptText = Localization["editExisting.search"]
             styleClass += "search-related"
             maxWidth = Double.MAX_VALUE
-            textProperty().addListener { observable, oldValue, newValue ->
+            textProperty().addListener { _, _, newValue ->
                 val query = newValue.toLowerCase()
                 gameListView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
             }
@@ -155,22 +153,67 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
             }
             gameIDField.isDisable = it.list.isEmpty()
         })
-        gameIDField.textProperty().addListener { observable, oldValue, newValue ->
+        gameIDField.textProperty().addListener { _, _, newValue ->
             var failed = true
-            if (newValue.isBlank()) {
-                errorLabel.text = ""
-            } else if (gameListView.selectionModel.selectedItems.isEmpty()) {
-                errorLabel.text = Localization["editExisting.warning.pickBaseFirst"]
-            } else if (!Transformers.GAME_ID_REGEX.matches(newValue.trim())) {
-                errorLabel.text = Localization["editExisting.warning.illegalID"]
-            } else if (RSDE.customSFXFolder.resolve(newValue.trim()).exists()) {
-                errorLabel.text = Localization["editExisting.warning.folderExists"]
-            } else {
-                failed = false
-                errorLabel.text = ""
+            val result = GameIDResult.processGameID(newValue)
+            when (result) {
+                GameIDResult.SUCCESS -> {
+                    if (gameListView.selectionModel.selectedItems.isEmpty()) {
+                        errorLabel.text = Localization["editExisting.warning.pickBaseFirst"]
+                    } else {
+                        failed = false
+                        errorLabel.text = ""
+                    }
+                }
+                GameIDResult.BLANK -> errorLabel.text = ""
+                GameIDResult.ILLEGAL -> errorLabel.text = Localization["editExisting.warning.illegalID"]
+                GameIDResult.FOLDER_EXISTS -> errorLabel.text = Localization["editExisting.warning.folderExists"]
             }
 
             continueButton.isDisable = failed && gameListView.selectionModel.selectedItems.isNotEmpty()
+        }
+        continueButton.setOnAction { _ ->
+            val selectedGame: Game = gameListView.selectionModel.selectedItems.firstOrNull() ?: return@setOnAction
+            val selectedGameID: String = gameIDField.text.takeUnless { it.isBlank() || GameIDResult.processGameID(it) != GameIDResult.SUCCESS }?.trim() ?: return@setOnAction
+
+            // Copy folder over
+            try {
+                val existingFolder = app.gameRegistry.gameMetaMap[selectedGame]?.folder ?: throw IllegalStateException("Game metadata doesn't exist for ${selectedGame.id}")
+                if (!existingFolder.exists()) throw IllegalStateException("Existing folder for game ${selectedGame.id} does not exist")
+                val folder = RSDE.customSFXFolder.resolve(selectedGameID)
+                if (!folder.mkdirs()) throw RuntimeException("Could not create folder")
+
+                existingFolder.copyRecursively(folder, true)
+                val dataJsonFile = folder.resolve("data.json")
+                val tree = Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile))
+                tree.id = Result.Success(selectedGameID)
+                val adt = tree.produceImmutableADT()
+                dataJsonFile.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(adt))
+                try {
+                    // Verify
+                    Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile)).produceImmutableADT()
+                } catch (e: BadResultException) {
+                    ExceptionAlert(e, "The copied data.json file is invalid").showAndWait()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ExceptionAlert(e).showAndWait()
+            }
+        }
+    }
+
+    enum class GameIDResult {
+        SUCCESS, BLANK, ILLEGAL, FOLDER_EXISTS;
+
+        companion object {
+            fun processGameID(id: String): GameIDResult {
+                return when {
+                    id.isBlank() -> BLANK
+                    !Transformers.GAME_ID_REGEX.matches(id.trim()) -> ILLEGAL
+                    RSDE.customSFXFolder.resolve(id.trim()).exists() -> FOLDER_EXISTS
+                    else -> SUCCESS
+                }
+            }
         }
     }
 
@@ -182,7 +225,7 @@ class EditExistingPane(val app: RSDE) : BorderPane() {
                 text = null
             } else {
                 text = item.name
-                graphic = ImageView(app.gameRegistry.gameIconMap[item] ?: app.gameRegistry.missingIconImage)
+                graphic = ImageView(app.gameRegistry.gameMetaMap[item]?.icon ?: app.gameRegistry.missingIconImage)
             }
         }
     }

@@ -86,7 +86,7 @@ object Transformers {
     val seriesTransformer: JsonTransformer<Series> = { node ->
         node.checkNodeType(JsonNodeType.STRING)
         val st = node.textValue() ?: error("Escaped node type check!")
-        val series: Series? = Series.VALUES.find { it.jsonName == st }
+        val series: Series? = Series.VALUES.find { it.jsonName.toLowerCase() == st.toLowerCase() }
         if (series == null)
             Result.Failure(node, st, "No series found with that name. Supported: ${Series.VALUES.map(Series::jsonName)}")
         else
@@ -114,7 +114,7 @@ object Transformers {
                 Result.Failure(node, value, "Volume is not in range: ${Constants.VOLUME_RANGE}")
         } else initial
     }
-    val subtitleTypesTransformer: JsonTransformer<SubtitleTypes> = {node ->
+    val subtitleTypesTransformer: JsonTransformer<SubtitleTypes> = { node ->
         node.checkNodeType(JsonNodeType.STRING)
         val st = node.textValue() ?: error("Escaped node type check!")
         val type: SubtitleTypes? = SubtitleTypes.VALUES.find { it.type == st }
@@ -130,13 +130,14 @@ object Transformers {
     }
 
     val datamodelTransformer: JsonTransformer<DatamodelObject> = transformer@{ node ->
-        val typeNode: JsonNode = node["type"] ?: return@transformer Result.Failure(node, null, "Missing type string field")
+        val typeNode: JsonNode = node["type"]
+                ?: return@transformer Result.Failure(node, null, "Missing type string field")
         typeNode.checkNodeType(JsonNodeType.STRING)
         val type = typeNode.textValue() ?: error("Escaped node type check!")
 
         val printProperties = false
         // The repetition of the run statements is required for reified types
-        val datamodel: Pair<DatamodelObject, List<Result<*>>> = when (type) {
+        val datamodel: Pair<DatamodelObject, List<Pair<String, Result<*>>>> = when (type) {
             "cue" -> CueObject().run {
                 Parser.buildStruct(this, node, printProperties)
                 this to getNonSuccess(this)
@@ -176,7 +177,7 @@ object Transformers {
             else -> return@transformer Result.Failure(node, type, "Type of datamodel is not valid or not implemented")
         }
         if (datamodel.second.isNotEmpty())
-            Result.Failure(node, datamodel, "Error in datamodel")
+            Result.Failure(node, datamodel, "Error in datamodel ${datamodel.first.id.orNull()}")
         else Result.Success(datamodel.first)
     }
 
@@ -196,7 +197,7 @@ object Transformers {
         val (cpo, success) = CuePointerObject().run {
             Parser.buildStruct(this, node, false)
             if (beatNotUsed && beat is Result.Unset) {
-                beat = Result.Success(0f)
+                beat = Result.Success(Float.MIN_VALUE)
             }
             if (durationNotUsed && duration is Result.Unset) {
                 duration = Result.Success(0f)
@@ -213,7 +214,7 @@ object Transformers {
         node.checkNodeType(JsonNodeType.ARRAY)
         val list = node.map(pointerTransformer)
         if (list.any { it !is Result.Success })
-            Result.Failure(node, list, "Non-Successes in list")
+            Result.Failure(node, list.filterNot { it is Result.Success }, "Non-Successes in list")
         else
             Result.Success(list)
     }
@@ -225,11 +226,11 @@ object Transformers {
         }
     }
 
-    inline fun <reified T : Any> getNonSuccess(obj: T): List<Result<*>> {
+    inline fun <reified T : Any> getNonSuccess(obj: T): List<Pair<String, Result<*>>> {
         return findDelegatingPropertyInstances(obj, Property::class).filter {
             val result = it.property.get(obj) as Result<*>
             result !is Result.Success<*> || (result.value is List<*> && result.value.any { ele -> ele is Result<*> && ele !is Result.Success<*> })
-        }.map { it.property.get(obj) as Result<*> }
+        }.map { it.property.name to it.property.get(obj) as Result<*> }
     }
 
 }

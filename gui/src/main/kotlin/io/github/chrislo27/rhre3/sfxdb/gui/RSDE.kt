@@ -35,6 +35,8 @@ class RSDE : Application() {
         val LOGGER: Logger = LogManager.getContext(RSDE::class.java.classLoader, false).getLogger("RSDE")
         val startTimeMillis: Long = System.currentTimeMillis()
 
+        val windowIcons: List<Image> by lazy { listOf(Image("icon/16.png"), Image("icon/24.png"), Image("icon/32.png")) }
+
         @JvmStatic
         fun main(args: Array<String>) {
             LOGGER.info("Launching $TITLE $VERSION...")
@@ -76,7 +78,7 @@ class RSDE : Application() {
     override fun start(primaryStage: Stage) {
         this.primaryStage = primaryStage
         primaryStage.title = "$TITLE $VERSION"
-        primaryStage.icons.addAll(Image("icon/16.png"), Image("icon/24.png"), Image("icon/32.png"))
+        primaryStage.icons.addAll(windowIcons)
 
         val welcomeScene = Scene(WelcomePane(this)).apply {
             addDebugAccelerators()
