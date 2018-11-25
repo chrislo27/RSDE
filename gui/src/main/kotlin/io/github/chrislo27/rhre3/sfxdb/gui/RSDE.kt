@@ -3,7 +3,6 @@ package io.github.chrislo27.rhre3.sfxdb.gui
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
-import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
@@ -54,7 +53,7 @@ class RSDE : Application() {
         private set
 
     override fun init() {
-        DiscordHelper.init(enabled = false)
+        DiscordHelper.init(enabled = true)
 
         val currentJson = rhreSfxRoot.resolve("current.json")
         if (rhreSfxRoot.exists() && currentJson.exists())
@@ -97,7 +96,7 @@ class RSDE : Application() {
         primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
 
-        DiscordHelper.updatePresence(PresenceState.WelcomeScreen)
+        DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
     }
 
     override fun stop() {
