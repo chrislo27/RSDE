@@ -109,6 +109,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
                         onAction = EventHandler {
                             // TODO go to editor
+                            app.primaryStage.scene.root = EditorPane(app)
                         }
                     }
                     centreBox.children += Button().apply {
