@@ -216,7 +216,6 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     }
 
 
-
     enum class GameIDResult {
         SUCCESS, BLANK, ILLEGAL, FOLDER_EXISTS;
 
