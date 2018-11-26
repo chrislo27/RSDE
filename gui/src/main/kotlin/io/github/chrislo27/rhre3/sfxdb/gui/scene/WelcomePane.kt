@@ -1,28 +1,44 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
+import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.gui.DatabaseStatus
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
+import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
+import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.application.Platform
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.geometry.Pos
 import javafx.scene.control.*
+import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextAlignment
+import javafx.util.Callback
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.system.exitProcess
 
 class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
+
+    data class CustomSFX(val folder: File, val valid: Boolean) {
+        val icon: Image by lazy { folder.resolve("icon.png").takeIf { it.exists() }?.let { Image("file:" + it.path) } ?: GameRegistry.missingIconImage }
+        var isEmpty: Boolean = false
+    }
+
+    val EMPTY_CUSTOM_SFX: CustomSFX by lazy { CustomSFX(File(""), true).apply { isEmpty = true } }
 
     val centreBox: VBox = VBox().apply {
         this.alignment = Pos.CENTER
@@ -39,7 +55,10 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val title = Label(RSDE.TITLE).apply { id = "title" }
     val version = Label(RSDE.VERSION.toString()).apply { id = "version-subtitle" }
 
-    val recentProjectsView: ListView<String> = ListView()
+    val customSfxList: ObservableList<CustomSFX> = FXCollections.observableArrayList()
+    val customSfxView: ListView<CustomSFX> = ListView(customSfxList).apply {
+        cellFactory = Callback { CustomSFXCell() }
+    }
 
     init {
         stylesheets += "style/welcomePane.css"
@@ -47,7 +66,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         center = centreBox
         left = leftBox
 
-        VBox.setVgrow(recentProjectsView, Priority.ALWAYS)
+        VBox.setVgrow(customSfxView, Priority.ALWAYS)
 
         centreBox.children += logo
         centreBox.children += title
@@ -87,6 +106,10 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         this.bindLocalized("welcome.startNewGame")
                         styleClass += "buttonWidth"
                         tooltip = Tooltip().bindLocalized("welcome.startNewGame.tooltip")
+
+                        onAction = EventHandler {
+                            // TODO go to editor
+                        }
                     }
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.editExisting")
@@ -97,8 +120,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                             app.primaryStage.scene.root = EditExistingPane(app)
                         }
                     }
-
-                    recentProjectsView.items.addAll("Detecting custom databased", "SFX is an incubating feature.")
+                    customSfxList += EMPTY_CUSTOM_SFX
                 }
 
                 // Recent projects
@@ -107,8 +129,8 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     this.bindLocalized("welcome.detectedCustom")
                     tooltip = Tooltip().bindLocalized("welcome.detectedCustom.tooltip")
                 }
-                recentProjectsView.disableProperty().value = true
-                leftBox.children += recentProjectsView
+                customSfxView.disableProperty().value = true
+                leftBox.children += customSfxView
 
                 val gameIdLabel = Label("").apply {
                     this.textAlignment = TextAlignment.CENTER
@@ -133,7 +155,28 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 fun finishLoading() {
                     removeLoadingElements()
                     addStartButtons()
-                    recentProjectsView.disableProperty().value = false
+
+                    // Add detected custom SFX
+                    GlobalScope.launch {
+                        RSDE.customSFXFolder.listFiles { file ->
+                            file.isDirectory && file.name.matches(Transformers.GAME_ID_REGEX) && file.resolve("data.json").exists()
+                        }.forEach { file ->
+                            val parsedSuccessfully = try {
+                                Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(file.resolve("data.json"))).produceImmutableADT()
+                                true
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                false
+                            }
+                            Platform.runLater {
+                                customSfxList.add(CustomSFX(file, parsedSuccessfully))
+                            }
+                        }
+                        Platform.runLater {
+                            customSfxList.remove(EMPTY_CUSTOM_SFX)
+                            customSfxView.disableProperty().value = false
+                        }
+                    }
                 }
 
                 if (!app.gameRegistry.isLoaded) {
@@ -184,6 +227,29 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     override fun getPresenceState(): DefaultRichPresence {
         return PresenceState.WelcomeScreen.toRichPresenceObj()
+    }
+
+    class CustomSFXCell : ListCell<CustomSFX>() {
+        override fun updateItem(item: CustomSFX?, empty: Boolean) {
+            super.updateItem(item, empty)
+            if (item == null || empty) {
+                text = ""
+                graphic = null
+            } else {
+                if (item.valid) {
+                    styleClass -= "bad-custom-sfx"
+                } else {
+                    styleClass += "bad-custom-sfx"
+                }
+                if (item.isEmpty) {
+                    graphic = ProgressIndicator()
+                    text = Localization["welcome.loadingCustoms"]
+                } else {
+                    text = item.folder.name
+                    graphic = ImageView(item.icon)
+                }
+            }
+        }
     }
 
 }

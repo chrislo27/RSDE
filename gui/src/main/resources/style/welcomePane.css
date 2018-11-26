@@ -33,3 +33,7 @@
 #centre-pane {
     -fx-pref-height: 1em
 }
+
+.bad-custom-sfx {
+    -fx-text-fill: red;
+}

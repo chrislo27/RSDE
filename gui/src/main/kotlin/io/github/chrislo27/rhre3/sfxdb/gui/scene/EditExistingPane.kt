@@ -6,6 +6,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.validation.BadResultException
 import io.github.chrislo27.rhre3.sfxdb.validation.Result
@@ -239,7 +240,7 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 text = null
             } else {
                 text = item.name
-                graphic = ImageView(app.gameRegistry.gameMetaMap[item]?.icon ?: app.gameRegistry.missingIconImage)
+                graphic = ImageView(app.gameRegistry.gameMetaMap[item]?.icon ?: GameRegistry.missingIconImage)
             }
         }
     }

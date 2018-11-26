@@ -11,10 +11,12 @@ import java.io.File
 
 class GameRegistry(val version: Int) {
 
+    companion object {
+        val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", true) }
+    }
+
     @Volatile var isLoaded: Boolean = false
         private set
-
-    val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", true) }
 
     lateinit var gameMap: Map<String, Game>
         private set
