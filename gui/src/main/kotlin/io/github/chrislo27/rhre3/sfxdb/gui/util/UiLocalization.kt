@@ -52,9 +52,10 @@ object UiLocalization {
 
         init {
             parameters.addListener(ListChangeListener { evt ->
-                evt.next()
-                evt.removed.forEach { (it as? ObservableValue<*>)?.removeListener(paramsObservable) }
-                evt.addedSubList.forEach { (it as? ObservableValue<*>)?.addListener(paramsObservable) }
+                while (evt.next()) {
+                    evt.removed.forEach { (it as? ObservableValue<*>)?.removeListener(paramsObservable) }
+                    evt.addedSubList.forEach { (it as? ObservableValue<*>)?.addListener(paramsObservable) }
+                }
                 fireValueChangedEvent()
             })
         }
