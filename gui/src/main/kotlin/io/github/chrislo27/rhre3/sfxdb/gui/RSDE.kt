@@ -9,10 +9,18 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
 import io.github.chrislo27.rhre3.sfxdb.gui.util.addDebugAccelerators
 import io.github.chrislo27.rhre3.sfxdb.gui.util.setMinimumBoundsToSized
+import javafx.animation.Interpolator
+import javafx.animation.RotateTransition
 import javafx.application.Application
 import javafx.scene.Scene
+import javafx.scene.effect.Bloom
+import javafx.scene.effect.Glow
 import javafx.scene.image.Image
+import javafx.scene.layout.StackPane
+import javafx.scene.shape.Circle
+import javafx.scene.shape.Line
 import javafx.stage.Stage
+import javafx.util.Duration
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -81,7 +89,8 @@ class RSDE : Application() {
         primaryStage.title = "$TITLE $VERSION"
         primaryStage.icons.addAll(windowIcons)
 
-        val scene = Scene(WelcomePane(this)).apply {
+        val stackPane = StackPane(WelcomePane(this))
+        val scene = Scene(stackPane).apply {
             addDebugAccelerators()
             stylesheets += "style/main.css"
         }
@@ -95,6 +104,35 @@ class RSDE : Application() {
         primaryStage.scene = scene
         primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
+
+        val region = StackPane().apply {
+            children += Circle(scene.width / 2, scene.height / 2, Math.max(scene.width, scene.height)).apply {
+                this.style = "-fx-fill: rgba(0, 0, 0, 0.8)"
+            }
+            effect = Bloom(0.0).apply {
+                input = Glow(0.8)
+            }
+        }
+        stackPane.children += region
+
+        val lineCount = 30
+        (0 until lineCount).forEach { i ->
+            val x = scene.width / 2
+            val y = scene.height / 2
+            val smallerAxis = Math.min(scene.width, scene.height)
+            val line = Line(x, y, x + Math.cos(i.toFloat() / lineCount * 2 * Math.PI) * smallerAxis * 2, y + Math.sin(i.toFloat() / lineCount * 2 * Math.PI) * smallerAxis * 2)
+            line.strokeWidth = 5.0
+            line.style = "-fx-stroke: radial-gradient(center 50% 50%, radius 75%, repeat, red, orange, yellow, green, blue, indigo, darkviolet);"
+
+            region.children += line
+        }
+
+        val rt = RotateTransition(Duration.millis(5000.0), region).apply {
+            cycleCount = -1
+            byAngle = 360.0
+            this.interpolator = Interpolator.LINEAR
+        }
+        rt.play()
 
         DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
     }
