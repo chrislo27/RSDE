@@ -4,6 +4,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
+import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
@@ -102,5 +103,13 @@ class RSDE : Application() {
     override fun stop() {
         super.stop()
         exitProcess(0)
+    }
+
+    fun switchToEditorPane(apply: EditorPane.() -> Unit) {
+        val stage = primaryStage
+        stage.scene.root = EditorPane(this).apply {
+            apply()
+        }
+//        stage.sizeToScene()
     }
 }

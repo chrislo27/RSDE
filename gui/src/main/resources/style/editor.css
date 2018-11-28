@@ -1,0 +1,10 @@
+.tab-pane {
+    -fx-tab-min-height: 1.5em;
+    -fx-tab-max-height: 1.5em;
+}
+
+#pick-first-label {
+    -fx-font: italic 16pt "Roboto";
+    -fx-text-fill: darkgray;
+}
+

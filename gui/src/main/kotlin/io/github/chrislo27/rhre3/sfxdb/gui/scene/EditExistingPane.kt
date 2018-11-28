@@ -6,6 +6,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.validation.BadResultException
@@ -207,7 +208,9 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     return@setOnAction
                 }
 
-                // TODO Open in editor
+                app.switchToEditorPane {
+                    addEditor(Editor(folder))
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 ExceptionAlert(e).showAndWait()

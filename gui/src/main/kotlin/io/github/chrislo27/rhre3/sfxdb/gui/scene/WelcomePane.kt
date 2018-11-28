@@ -6,6 +6,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
@@ -57,7 +58,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val customSfxList: ObservableList<CustomSFX> = FXCollections.observableArrayList()
     val customSfxView: ListView<CustomSFX> = ListView(customSfxList).apply {
-        cellFactory = Callback { CustomSFXCell() }
+        cellFactory = Callback { CustomSFXCell(app) }
     }
 
     init {
@@ -109,7 +110,8 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
                         onAction = EventHandler {
                             // TODO go to editor
-                            app.primaryStage.scene.root = EditorPane(app)
+                            app.switchToEditorPane {
+                            }
                         }
                     }
                     centreBox.children += Button().apply {
@@ -230,7 +232,18 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         return PresenceState.WelcomeScreen.toRichPresenceObj()
     }
 
-    class CustomSFXCell : ListCell<CustomSFX>() {
+    class CustomSFXCell(val app: RSDE) : ListCell<CustomSFX>() {
+        init {
+            setOnMouseClicked { mouseEvent ->
+                val item = this@CustomSFXCell.item ?: return@setOnMouseClicked
+                if (mouseEvent.clickCount == 2) {
+                    app.switchToEditorPane {
+                        addEditor(Editor(item.folder))
+                    }
+                }
+            }
+        }
+
         override fun updateItem(item: CustomSFX?, empty: Boolean) {
             super.updateItem(item, empty)
             if (item == null || empty) {

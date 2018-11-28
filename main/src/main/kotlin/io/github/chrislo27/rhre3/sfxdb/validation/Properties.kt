@@ -18,7 +18,8 @@ open class Property<T>(val transformer: JsonTransformer<T>, initialValue: Result
     }
 
     /**
-     * NOTE: used only for [CuePointerObject] when setting fields to be optional or not
+     * NOTE: used only for [CuePointerObject] when setting fields to be optional or not,
+     * and by the GUI part of RSDE
      */
     operator fun setValue(thisRef: Any?, property: KProperty<*>, value: Result<T>) {
         storedValue = value

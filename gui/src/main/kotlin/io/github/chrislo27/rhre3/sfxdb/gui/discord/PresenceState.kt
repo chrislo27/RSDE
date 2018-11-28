@@ -20,6 +20,9 @@ sealed class PresenceState(open val state: String = "", open val smallIcon: Stri
     object PreparingNewDef
         : PresenceState("Preparing a New Game Definition")
 
+    class InEditor(val current: String?)
+        : PresenceState("Editing ${current ?: "nothing"}")
+
     sealed class Elapsable(state: String, val duration: Float, smallIcon: String = "", smallIconText: String = state)
         : PresenceState(state, smallIcon, smallIconText) {
         override fun modifyRichPresence(richPresence: DefaultRichPresence) {
