@@ -5,6 +5,8 @@ import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.GridPane
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 
@@ -17,6 +19,10 @@ abstract class DatamodelPane(val editor: Editor) : BorderPane() {
 
     val centreVbox: VBox = VBox()
 
+    val gridPane: GridPane = GridPane().apply {
+        styleClass += "grid-pane"
+    }
+
     init {
         stylesheets += "style/datamodelPane.css"
 
@@ -25,6 +31,10 @@ abstract class DatamodelPane(val editor: Editor) : BorderPane() {
             this.hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
             this.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         }
+
+        gridPane.maxWidth = Double.MAX_VALUE
+        VBox.setVgrow(gridPane, Priority.ALWAYS)
+        centreVbox.children += gridPane
     }
 
 }
