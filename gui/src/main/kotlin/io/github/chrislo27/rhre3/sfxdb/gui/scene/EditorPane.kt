@@ -40,7 +40,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val structurePane: StructurePane
 
     init {
-        stylesheets += "style/editor.css"
+        stylesheets += "style/editorPane.css"
 
         toolbar = ToolBar()
         top = toolbar
