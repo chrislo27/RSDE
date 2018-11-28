@@ -21,6 +21,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
@@ -236,7 +237,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         init {
             setOnMouseClicked { mouseEvent ->
                 val item = this@CustomSFXCell.item ?: return@setOnMouseClicked
-                if (mouseEvent.clickCount == 2) {
+                if (mouseEvent.button == MouseButton.PRIMARY && mouseEvent.clickCount >= 2) {
                     app.switchToEditorPane {
                         addEditor(Editor(item.folder))
                     }

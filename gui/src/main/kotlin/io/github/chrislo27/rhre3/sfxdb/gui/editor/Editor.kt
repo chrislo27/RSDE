@@ -11,6 +11,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.Tab
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
 import java.io.File
@@ -30,8 +31,9 @@ class Editor(val folder: File) {
             this.fitWidth = 1.5.em
             this.fitHeight = 1.5.em
         }
+
     }
-    val pickFirstLabel = Label().bindLocalized("editor.selectAnItem").apply {
+    private val pickFirstLabel = Label().bindLocalized("editor.selectAnItem").apply {
         id = "pick-first-label"
         alignment = Pos.CENTER
         textAlignment = TextAlignment.CENTER
@@ -40,11 +42,22 @@ class Editor(val folder: File) {
         maxHeight = Double.MAX_VALUE
     }
 
-
     init {
 
         mainPane.alignment = Pos.CENTER
         mainPane.children += pickFirstLabel
+    }
+
+    fun switchToPane(pane: Pane?) {
+        if (mainPane.children.size > 1)
+            mainPane.children.remove(1, mainPane.children.size)
+
+        if (pane != null) {
+            mainPane.children += pane
+            pickFirstLabel.isVisible = false
+        } else {
+            pickFirstLabel.isVisible = true
+        }
     }
 
 }

@@ -8,3 +8,6 @@
     -fx-text-fill: darkgray;
 }
 
+.vbox {
+    -fx-padding: 1em;
+}
