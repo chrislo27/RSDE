@@ -1,6 +1,8 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Series
+import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
+import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.validation.orElse
@@ -21,7 +23,12 @@ class GamePane(editor: Editor) : DatamodelPane(editor) {
         this.isSelected = gameObject.groupDefault.orElse(false)
     }
     val prioritySpinner = Spinner<Int>(-128, 127, gameObject.priority.orElse(0))
-    val searchHintsField = TextArea(gameObject.searchHints.orNull()?.joinToString(separator = "\n") ?: "")
+    val searchHintsField = ChipPane(FXCollections.observableArrayList()).apply {
+        val list = gameObject.searchHints.orNull()
+        list?.forEach { hint ->
+            this.list += Chip(hint)
+        }
+    }
     val noDisplayCheckbox = CheckBox().apply {
         this.isSelected = gameObject.noDisplay.orElse(false)
     }
@@ -41,8 +48,8 @@ class GamePane(editor: Editor) : DatamodelPane(editor) {
         gridPane.add(groupDefaultCheckbox, 1, 4)
         gridPane.add(Label().bindLocalized("gameObject.priority"), 0, 5)
         gridPane.add(prioritySpinner, 1, 5)
-//        gridPane.add(Label().bindLocalized("gameObject.id"), 0, 6)
-//        gridPane.add(idField, 1, 6)
+        gridPane.add(Label().bindLocalized("gameObject.searchHints"), 0, 6)
+        gridPane.add(searchHintsField, 1, 6)
         gridPane.add(Label().bindLocalized("gameObject.noDisplay"), 0, 7)
         gridPane.add(noDisplayCheckbox, 1, 7)
 
