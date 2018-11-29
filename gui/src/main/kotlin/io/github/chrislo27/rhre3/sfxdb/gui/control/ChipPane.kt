@@ -11,7 +11,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.FlowPane
 
 
-open class ChipPane(val list: ObservableList<Chip>, canAdd: Boolean = true) : FlowPane(Orientation.HORIZONTAL, 1.0.em, 0.5.em) {
+open class ChipPane(val list: ObservableList<Chip>, canAdd: Boolean = true) : FlowPane(Orientation.HORIZONTAL, 0.5.em, 0.5.em) {
 
     constructor(canAdd: Boolean = true) : this(FXCollections.observableArrayList(), canAdd)
 
@@ -32,6 +32,7 @@ open class ChipPane(val list: ObservableList<Chip>, canAdd: Boolean = true) : Fl
                 }
             }
         }
+        prefWidth = 10.0.em
     }
     val canAddProperty = SimpleBooleanProperty(canAdd)
     var canAdd: Boolean

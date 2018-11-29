@@ -2,6 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.control
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
@@ -13,7 +14,8 @@ open class Chip(val label: Label, val graphic: Node? = null, closeable: Boolean 
 
     val closeButton: Button = Button("⛒").apply {
         isFocusTraversable = false
-        style = """-fx-shape: "M 100 100 a 50 50 0 1 0 0.00001 0";"""
+        HBox.setMargin(this, Insets(0.0))
+        style = """-fx-shape: "M 100 100 a 50 50 0 1 0 0.00001 0"; -fx-padding: 0;"""
     }
     val chipPaneProperty: SimpleObjectProperty<ChipPane?> = SimpleObjectProperty(null)
     val closeableProperty = SimpleBooleanProperty(closeable)
