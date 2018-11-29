@@ -13,7 +13,7 @@ open class Chip(val label: Label, val graphic: Node? = null, closeable: Boolean 
 
     val closeButton: Button = Button("⛒").apply {
         isFocusTraversable = false
-        style = """-fx-shape: "M 50 50 a 25 25 0 1 0 0.00001 0";"""
+        style = """-fx-shape: "M 100 100 a 50 50 0 1 0 0.00001 0";"""
     }
     val chipPaneProperty: SimpleObjectProperty<ChipPane?> = SimpleObjectProperty(null)
     val closeableProperty = SimpleBooleanProperty(closeable)
