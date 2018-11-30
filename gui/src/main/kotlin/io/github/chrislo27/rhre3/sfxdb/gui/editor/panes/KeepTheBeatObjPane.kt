@@ -5,6 +5,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
+import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import io.github.chrislo27.rhre3.sfxdb.validation.KeepTheBeatObject
 import io.github.chrislo27.rhre3.sfxdb.validation.orElse
 import io.github.chrislo27.rhre3.sfxdb.validation.orException
@@ -30,6 +31,12 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeatObject) : StructPane
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
 
         addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration"), defaultDurationField)
+    }
+
+    init {
+        // Validators
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB)
+        validation.registerValidator(nameField, Validators.NAME_BLANK)
     }
 
 }

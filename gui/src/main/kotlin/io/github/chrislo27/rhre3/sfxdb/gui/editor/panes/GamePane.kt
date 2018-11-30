@@ -49,10 +49,9 @@ class GamePane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObjec
 
     init {
         // Validators
-        validation.registerValidator(idField, Validators.OBJ_ID_BLANK)
-        validation.registerValidator(idField, Validators.CUE_ID_STAR_SUB)
-        validation.registerValidator(idField, Validators.OBJ_ID_REGEX)
-
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.GAME_ID)
+        validation.registerValidator(nameField, Validators.NAME_BLANK)
+        validation.registerValidator(noDisplayCheckbox, Validators.NO_DISPLAY)
     }
 
 }

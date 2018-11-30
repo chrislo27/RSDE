@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
 import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
 import io.github.chrislo27.rhre3.sfxdb.validation.Struct
 import javafx.scene.Node
@@ -10,7 +11,6 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
-import org.controlsfx.validation.ValidationSupport
 
 
 abstract class StructPane<T : Struct>(val editor: Editor, val struct: T) : BorderPane() {
@@ -26,7 +26,7 @@ abstract class StructPane<T : Struct>(val editor: Editor, val struct: T) : Borde
     }
 
     private var gridPaneRowIndex: Int = 0
-    protected val validation: ValidationSupport = ValidationSupport()
+    protected val validation = L10NValidationSupport()
 
     init {
         stylesheets += "style/datamodelPane.css"

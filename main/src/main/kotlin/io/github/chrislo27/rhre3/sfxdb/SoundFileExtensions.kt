@@ -6,5 +6,6 @@ enum class SoundFileExtensions(val fileExt: String) {
 
     companion object {
         val VALUES = SoundFileExtensions.values().toList()
+        val DEFAULT: SoundFileExtensions by lazy { OGG }
     }
 }
