@@ -16,6 +16,10 @@
     -fx-base: white;
 }
 
+.monospaced {
+    -fx-font-family: "Monospaced";
+}
+
 .button {
     -fx-font-size: 14pt;
 }

@@ -5,13 +5,15 @@ import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
+import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
+import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
 import io.github.chrislo27.rhre3.sfxdb.validation.orElse
 import io.github.chrislo27.rhre3.sfxdb.validation.orNull
 import javafx.collections.FXCollections
 import javafx.scene.control.*
 
 
-class GamePane(editor: Editor) : DatamodelPane(editor) {
+class GamePane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObject) {
 
     val idField = TextField(gameObject.id.orElse("??? MISSING ID ???"))
     val nameField = TextField(gameObject.name.orElse("MISSING NAME"))
@@ -23,12 +25,7 @@ class GamePane(editor: Editor) : DatamodelPane(editor) {
         this.isSelected = gameObject.groupDefault.orElse(false)
     }
     val prioritySpinner = Spinner<Int>(-128, 127, gameObject.priority.orElse(0))
-    val searchHintsField = ChipPane(FXCollections.observableArrayList()).apply {
-        val list = gameObject.searchHints.orNull()
-        list?.forEach { hint ->
-            this.list += Chip(hint)
-        }
-    }
+    val searchHintsField = ChipPane(FXCollections.observableArrayList(gameObject.searchHints.orElse(listOf()).map { Chip(it) }))
     val noDisplayCheckbox = CheckBox().apply {
         this.isSelected = gameObject.noDisplay.orElse(false)
     }
@@ -36,26 +33,26 @@ class GamePane(editor: Editor) : DatamodelPane(editor) {
     init {
         titleLabel.text = gameObject.id.orElse("??? GAME ID MISSING ???")
 
-        gridPane.add(Label().bindLocalized("gameObject.id"), 0, 0)
-        gridPane.add(idField, 1, 0)
-        gridPane.add(Label().bindLocalized("gameObject.name"), 0, 1)
-        gridPane.add(nameField, 1, 1)
-        gridPane.add(Label().bindLocalized("gameObject.series"), 0, 2)
-        gridPane.add(seriesComboBox, 1, 2)
-        gridPane.add(Label().bindLocalized("gameObject.group"), 0, 3)
-        gridPane.add(groupField, 1, 3)
-        gridPane.add(Label().bindLocalized("gameObject.groupDefault"), 0, 4)
-        gridPane.add(groupDefaultCheckbox, 1, 4)
-        gridPane.add(Label().bindLocalized("gameObject.priority"), 0, 5)
-        gridPane.add(prioritySpinner, 1, 5)
-        gridPane.add(Label().bindLocalized("gameObject.searchHints"), 0, 6)
-        gridPane.add(searchHintsField, 1, 6)
-        gridPane.add(Label().bindLocalized("gameObject.noDisplay"), 0, 7)
-        gridPane.add(noDisplayCheckbox, 1, 7)
+        addProperty(Label().bindLocalized("datamodel.id"), idField)
+        addProperty(Label().bindLocalized("datamodel.name"), nameField)
+        addProperty(Label().bindLocalized("gameObject.series"), seriesComboBox)
+        addProperty(Label().bindLocalized("gameObject.group"), groupField)
+        addProperty(Label().bindLocalized("gameObject.groupDefault"), groupDefaultCheckbox)
+        addProperty(Label().bindLocalized("gameObject.priority"), prioritySpinner)
+        addProperty(Label().bindLocalized("gameObject.searchHints"), searchHintsField)
+        addProperty(Label().bindLocalized("gameObject.noDisplay"), noDisplayCheckbox)
 
         centreVbox.children += Separator().apply {
             maxWidth = Double.MAX_VALUE
         }
+    }
+
+    init {
+        // Validators
+        validation.registerValidator(idField, Validators.OBJ_ID_BLANK)
+        validation.registerValidator(idField, Validators.CUE_ID_STAR_SUB)
+        validation.registerValidator(idField, Validators.OBJ_ID_REGEX)
+
     }
 
 }

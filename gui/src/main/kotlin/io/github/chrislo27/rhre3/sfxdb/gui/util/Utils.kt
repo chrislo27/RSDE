@@ -1,9 +1,12 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.util
 
 import javafx.scene.Scene
+import javafx.scene.control.Spinner
+import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.input.KeyCombination
 import javafx.scene.text.Font
 import javafx.stage.Stage
+import javafx.util.StringConverter
 
 
 fun Scene.addDebugAccelerators() {
@@ -17,3 +20,36 @@ fun Stage.setMinimumBoundsToSized() {
 }
 
 val Double.em: Double get() = Font.getDefault().size * this
+
+fun doubleSpinnerFactory(min: Double, max: Double, initial: Double, step: Double = 1.0): Spinner<Double> =
+    Spinner<Double>().apply {
+        valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(min, max, initial, step).apply {
+            this.converter = object : StringConverter<Double>() {
+                override fun toString(`object`: Double): String {
+                    return `object`.toString()
+                }
+
+                override fun fromString(string: String): Double {
+                    return string.toDoubleOrNull() ?: 0.0
+                }
+            }
+        }
+        isEditable = true
+    }
+
+fun intSpinnerFactory(min: Int, max: Int, initial: Int, step: Int = 1): Spinner<Int> =
+    Spinner<Int>().apply {
+        valueFactory = SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, initial, step).apply {
+            this.converter = object : StringConverter<Int>() {
+                override fun toString(`object`: Int): String {
+                    return `object`.toString()
+                }
+
+                override fun fromString(string: String): Int {
+                    return string.toIntOrNull() ?: 0
+                }
+            }
+        }
+        isEditable = true
+    }
+

@@ -1,7 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GamePane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
@@ -57,28 +56,14 @@ class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
         }
         val gameObj = currentEditor.gameObject
 
-        val paneFactory: (DataNode) -> Pane? = { node ->
-            when (val struct = node.struct) {
-                is GameObject -> GamePane(currentEditor)
-                is CueObject -> TODO()
-                is PatternObject -> TODO()
-                is KeepTheBeatObject -> TODO()
-                is EquidistantObject -> TODO()
-                is RandomCueObject -> TODO()
-                is CuePointerObject -> null
-                is SubtitleEntityObject, is ShakeEntityObject, is EndRemixEntityObject, is TextureEntityObject -> null
-                else -> throw IllegalStateException("${struct::class.java.name} is not supported for editing. Please tell the developer!")
-            }
-        }
-
         // Build tree
-        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id.orException(), Transformers.anyNonSuccess(gameObj), paneFactory))
+        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id.orException(), Transformers.anyNonSuccess(gameObj), currentEditor.paneFactory))
         gameObj.objects.orNull()?.forEach { obj ->
             if (obj is Result.Unset) return@forEach
             val datamodel = if (obj is Result.Failure) obj.passedIn as DatamodelObject else (obj as Result.Success).value
             val invalid = obj !is Result.Success
 
-            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id.orElse("? ID ?")} (${datamodel.name.orElse("???")})", invalid, paneFactory))
+            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id.orElse("? ID ?")} (${datamodel.name.orElse("???")})", invalid, currentEditor.paneFactory))
         }
 
         root.isExpanded = true

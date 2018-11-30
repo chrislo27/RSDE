@@ -1,11 +1,12 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.Parser
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.*
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
-import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
+import io.github.chrislo27.rhre3.sfxdb.validation.*
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.Tab
@@ -46,6 +47,22 @@ class Editor(val folder: File) {
 
         mainPane.alignment = Pos.CENTER
         mainPane.children += pickFirstLabel
+    }
+
+    val paneFactory: (StructurePane.DataNode) -> Pane? = { node ->
+        when (val struct = node.struct) {
+            is GameObject -> GamePane(this)
+            is CueObject -> CueObjPane(this, struct)
+            is PatternObject -> PatternObjPane(this, struct)
+            is KeepTheBeatObject -> KeepTheBeatObjPane(this, struct)
+            is EquidistantObject -> EquidistantObjPane(this, struct)
+            is RandomCueObject -> RandomCueObjPane(this, struct)
+            is CuePointerObject -> {
+                TODO()
+            }
+            is SubtitleEntityObject, is ShakeEntityObject, is EndRemixEntityObject, is TextureEntityObject -> null
+            else -> throw IllegalStateException("${struct::class.java.name} is not supported for editing. Please tell the developer!")
+        }
     }
 
     fun switchToPane(pane: Pane?) {
