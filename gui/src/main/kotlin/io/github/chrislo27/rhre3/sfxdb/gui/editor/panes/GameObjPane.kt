@@ -11,6 +11,9 @@ import io.github.chrislo27.rhre3.sfxdb.validation.orElse
 import io.github.chrislo27.rhre3.sfxdb.validation.orNull
 import javafx.collections.FXCollections
 import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.layout.GridPane
 
 
 class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObject) {
@@ -30,6 +33,14 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
         this.isSelected = gameObject.noDisplay.orElse(false)
     }
 
+    val objectsGrid: GridPane = GridPane().apply {
+        styleClass += "multipart-objects-pane"
+    }
+    val addButton: MenuButton = MenuButton("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true)))
+    val removeButton: Button = Button("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true)))
+    val moveUpButton: Button = Button("", ImageView(Image("/image/ui/up.png", 16.0, 16.0, true, true, true)))
+    val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
+
     init {
         titleLabel.text = gameObject.id.orElse("??? GAME ID MISSING ???")
 
@@ -44,6 +55,16 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
 
         centreVbox.children += Separator().apply {
             maxWidth = Double.MAX_VALUE
+        }
+
+        centreVbox.children += objectsGrid
+        objectsGrid.apply {
+            add(Label().bindLocalized("gameObject.objects"), 0, 0)
+            add(addButton, 0, 1)
+            add(removeButton, 1, 1)
+            add(moveUpButton, 2, 1)
+            add(moveDownButton, 3, 1)
+            add(ListView<String>(), 0, 2, 5, 1)
         }
     }
 

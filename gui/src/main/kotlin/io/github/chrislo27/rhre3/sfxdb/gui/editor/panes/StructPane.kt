@@ -29,7 +29,7 @@ abstract class StructPane<T : Struct>(val editor: Editor, val struct: T) : Borde
     protected val validation = L10NValidationSupport()
 
     init {
-        stylesheets += "style/datamodelPane.css"
+        stylesheets += "style/structPane.css"
 
         top = titleLabel
         center = ScrollPane(centreVbox).apply {
