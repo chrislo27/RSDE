@@ -209,7 +209,7 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
 
                 app.switchToEditorPane {
-                    addEditor(Editor(folder))
+                    addEditor(Editor(folder, this))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

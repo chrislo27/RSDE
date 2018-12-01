@@ -239,7 +239,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 val item = this@CustomSFXCell.item ?: return@setOnMouseClicked
                 if (mouseEvent.button == MouseButton.PRIMARY && mouseEvent.clickCount >= 2) {
                     app.switchToEditorPane {
-                        addEditor(Editor(item.folder))
+                        addEditor(Editor(item.folder, this))
                     }
                 }
             }

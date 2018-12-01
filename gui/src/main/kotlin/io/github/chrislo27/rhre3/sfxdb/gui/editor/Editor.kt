@@ -3,6 +3,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor
 import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.*
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
+import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
@@ -19,7 +20,7 @@ import java.io.File
 import java.util.*
 
 
-class Editor(val folder: File) {
+class Editor(val folder: File, val editorPane: EditorPane) {
 
     val paneMap: Map<Struct, Pane> = WeakHashMap()
     val gameObject: GameObject = GameObject().apply {
@@ -93,15 +94,8 @@ class Editor(val folder: File) {
     }
 
     fun switchToPane(pane: Pane?) {
-        if (mainPane.children.size > 1)
-            mainPane.children.remove(1, mainPane.children.size)
-
-        if (pane != null) {
-            mainPane.children += pane
-            pickFirstLabel.isVisible = false
-        } else {
-            pickFirstLabel.isVisible = true
-        }
+        mainPane.children.clear()
+        mainPane.children += pane ?: pickFirstLabel
     }
 
 }
