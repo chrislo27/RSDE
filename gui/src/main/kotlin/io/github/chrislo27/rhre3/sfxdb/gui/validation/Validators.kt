@@ -2,7 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.validation
 
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GamePane
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GameObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.beans.value.ObservableValue
@@ -66,9 +66,9 @@ object Validators {
     val NO_DISPLAY: Validator<Boolean> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.noDisplay"], u)
     }
-    fun nameSuffixFromSeries(gamePane: GamePane): Validator<String> = Validator { t, u ->
+    fun nameSuffixFromSeries(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
         // FIXME not very good at detecting when this is necessary. Lots of edge cases
-        val selectedSeries: Series? = gamePane.seriesComboBox.value
+        val selectedSeries: Series? = gameObjPane.seriesComboBox.value
         val suffix = "(${selectedSeries?.properName})"
         fromWarningIf(t, UiLocalization["validation.gameNameSuffixFromSeries", selectedSeries, suffix], if (selectedSeries == null || selectedSeries.properName.isEmpty()) false else (!u.endsWith(" $suffix")))
     }

@@ -13,7 +13,7 @@ import javafx.collections.FXCollections
 import javafx.scene.control.*
 
 
-class GamePane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObject) {
+class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObject) {
 
     val idField = TextField(gameObject.id.orElse("??? MISSING ID ???"))
     val nameField = TextField(gameObject.name.orElse("MISSING NAME"))

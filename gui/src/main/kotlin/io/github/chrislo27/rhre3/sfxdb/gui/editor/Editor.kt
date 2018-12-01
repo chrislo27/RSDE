@@ -65,7 +65,7 @@ class Editor(val folder: File) {
 
     private fun createPaneFromStruct(struct: Struct): Pane? {
         return when (struct) {
-            is GameObject -> GamePane(this)
+            is GameObject -> GameObjPane(this)
             is CueObject -> CueObjPane(this, struct)
             is PatternObject -> PatternObjPane(this, struct)
             is KeepTheBeatObject -> KeepTheBeatObjPane(this, struct)
