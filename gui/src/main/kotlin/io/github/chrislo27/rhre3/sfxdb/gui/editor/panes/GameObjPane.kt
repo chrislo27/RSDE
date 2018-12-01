@@ -84,12 +84,12 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
         }
 
         addButton.items.addAll(
-            MenuItem("CueObject"),
+            AddMenuItem("CueObject"),
             SeparatorMenuItem(),
-            MenuItem("PatternObject"),
-            MenuItem("EquidistantObject"),
-            MenuItem("KeepTheBeatObject"),
-            MenuItem("RandomCueObject")
+            AddMenuItem("PatternObject"),
+            AddMenuItem("EquidistantObject"),
+            AddMenuItem("KeepTheBeatObject"),
+            AddMenuItem("RandomCueObject")
         )
         removeButton.setOnAction {
             val current = objectsListView.selectionModel.selectedItem
@@ -138,7 +138,7 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
             moveUpButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex > 0
             moveDownButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex < objectsListView.items.size - 1
         }
-        objectsListView.setOnMouseClicked {evt ->
+        objectsListView.setOnMouseClicked { evt ->
             val item = objectsListView.selectionModel.selectedItem
             if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 2) {
                 val pane = try {
@@ -179,7 +179,11 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
     }
 
     inner class AddMenuItem(text: String) : MenuItem(text) {
+        init {
+            setOnAction {
 
+            }
+        }
     }
 
 }

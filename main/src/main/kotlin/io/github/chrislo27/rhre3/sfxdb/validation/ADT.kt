@@ -6,7 +6,7 @@ import io.github.chrislo27.rhre3.sfxdb.adt.*
 
 
 interface Struct {
-    fun produceImmutableADT(): Any
+    fun produceADT(): Any
 }
 
 class GameObject : Struct {
@@ -22,11 +22,11 @@ class GameObject : Struct {
     val searchHints: Result<List<String>> by Property(Transformers.stringArrayTransformer, listOf())
     val noDisplay: Result<Boolean> by Property(Transformers.booleanTransformer, false)
 
-    override fun produceImmutableADT(): Game {
+    override fun produceADT(): Game {
         return Game(
                 id.orException(), name.orException(), series.orException(),
                 group.orException(), groupDefault.orException(), priority.orException(), searchHints.orException(), noDisplay.orException(),
-                objects.orException().map { it.orException().produceImmutableADT() }
+                objects.orException().map { it.orException().produceADT() }
         )
     }
 }
@@ -36,7 +36,7 @@ abstract class DatamodelObject : Struct {
     val name: Result<String> by Property(Transformers.nonEmptyStringTransformer)
     val deprecatedIDs: Result<List<String>> by Property(Transformers.stringArrayTransformer, listOf())
 
-    abstract override fun produceImmutableADT(): Datamodel
+    abstract override fun produceADT(): Datamodel
 }
 
 class CuePointerObject : Struct {
@@ -49,7 +49,7 @@ class CuePointerObject : Struct {
     var volume: Result<Int> by Property(Transformers.volumeTransformer, 100)
     var metadata: Result<Map<String, Any?>?> by Property(Transformers.cuePointerMetadataTransformer, null as Map<String, Any?>?)
 
-    override fun produceImmutableADT(): CuePointer {
+    override fun produceADT(): CuePointer {
         return CuePointer(
                 id.orException(), beat.orElse(Float.MIN_VALUE), duration.orException(), semitone.orException(),
                 volume.orException(), track.orException(), metadata.orNull()
@@ -70,7 +70,7 @@ class CueObject : DatamodelObject() {
     var endingSound: Result<String> by Property(Transformers.idTransformer, "")
     var responseIDs: Result<List<String>> by Property(Transformers.responseIDsTransformer, listOf())
 
-    override fun produceImmutableADT(): Cue {
+    override fun produceADT(): Cue {
         return Cue(
                 id.orException(), name.orException(), deprecatedIDs.orException(), duration.orException(),
                 stretchable.orException(), repitchable.orException(), fileExtension.orException(), introSound.orException(),
@@ -85,10 +85,10 @@ class PatternObject : DatamodelObject() {
     // Optional after this line
     var stretchable: Result<Boolean> by Property(Transformers.booleanTransformer, false)
 
-    override fun produceImmutableADT(): Pattern {
+    override fun produceADT(): Pattern {
         return Pattern(
                 id.orException(), name.orException(), deprecatedIDs.orException(),
-                cues.orException().map { it.orException().produceImmutableADT() },
+                cues.orException().map { it.orException().produceADT() },
                 stretchable.orException()
         )
     }
@@ -99,10 +99,10 @@ class EquidistantObject : DatamodelObject() {
     var distance: Result<Float> by Property(Transformers.positiveFloatTransformer("Distance must be positive, non-zero", false))
     var stretchable: Result<Boolean> by Property(Transformers.booleanTransformer)
 
-    override fun produceImmutableADT(): Equidistant {
+    override fun produceADT(): Equidistant {
         return Equidistant(
                 id.orException(), name.orException(), deprecatedIDs.orException(),
-                cues.orException().map { it.orException().produceImmutableADT() }, distance.orException(), stretchable.orException()
+                cues.orException().map { it.orException().produceADT() }, distance.orException(), stretchable.orException()
         )
     }
 }
@@ -111,10 +111,10 @@ class KeepTheBeatObject : DatamodelObject() {
     var cues: Result<MutableList<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer()))
     var defaultDuration: Result<Float> by Property(Transformers.positiveFloatTransformer("Default duration must be positive, non-zero", false))
 
-    override fun produceImmutableADT(): KeepTheBeat {
+    override fun produceADT(): KeepTheBeat {
         return KeepTheBeat(
                 id.orException(), name.orException(), deprecatedIDs.orException(),
-                cues.orException().map { it.orException().produceImmutableADT() }, defaultDuration.orException()
+                cues.orException().map { it.orException().produceADT() }, defaultDuration.orException()
         )
     }
 }
@@ -125,28 +125,28 @@ class RandomCueObject : DatamodelObject() {
     // Optional after this line
     var responseIDs: Result<List<String>> by Property(Transformers.responseIDsTransformer, listOf())
 
-    override fun produceImmutableADT(): RandomCue {
+    override fun produceADT(): RandomCue {
         return RandomCue(
                 id.orException(), name.orException(), deprecatedIDs.orException(),
-                cues.orException().map { it.orException().produceImmutableADT() }, responseIDs.orException()
+                cues.orException().map { it.orException().produceADT() }, responseIDs.orException()
         )
     }
 }
 
 class EndRemixEntityObject : DatamodelObject() {
-    override fun produceImmutableADT(): EndRemixEntity {
+    override fun produceADT(): EndRemixEntity {
         return EndRemixEntity(id.orException(), name.orException(), deprecatedIDs.orException())
     }
 }
 
 class ShakeEntityObject : DatamodelObject() {
-    override fun produceImmutableADT(): ShakeEntity {
+    override fun produceADT(): ShakeEntity {
         return ShakeEntity(id.orException(), name.orException(), deprecatedIDs.orException())
     }
 }
 
 class TextureEntityObject : DatamodelObject() {
-    override fun produceImmutableADT(): TextureEntity {
+    override fun produceADT(): TextureEntity {
         return TextureEntity(id.orException(), name.orException(), deprecatedIDs.orException())
     }
 }
@@ -154,7 +154,7 @@ class TextureEntityObject : DatamodelObject() {
 class SubtitleEntityObject : DatamodelObject() {
     val subtitleType: Result<SubtitleTypes> by Property(Transformers.subtitleTypesTransformer)
 
-    override fun produceImmutableADT(): SubtitleEntity {
+    override fun produceADT(): SubtitleEntity {
         return SubtitleEntity(id.orException(), name.orException(), deprecatedIDs.orException(), subtitleType.orException().type)
     }
 }

@@ -58,7 +58,7 @@ object Tests {
         val rootNode = objectMapper.readTree(dataFile)
         val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
         assertEquals(false, Transformers.anyNonSuccess(gameObject))
-        gameObject.produceImmutableADT()
+        gameObject.produceADT()
     }
 
     @RepeatedTest(10)
@@ -68,7 +68,7 @@ object Tests {
             val rootNode = objectMapper.readTree(dataFile)
             val gameObject: GameObject = Parser.parseGameDefinition(rootNode, printProperties)
             assertEquals(false, Transformers.anyNonSuccess(gameObject))
-            gameObject.produceImmutableADT()
+            gameObject.produceADT()
         }
     }
 
