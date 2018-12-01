@@ -36,7 +36,7 @@ import kotlin.system.exitProcess
 class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     data class CustomSFX(val folder: File, val valid: Boolean) {
-        val icon: Image by lazy { folder.resolve("icon.png").takeIf { it.exists() }?.let { Image("file:" + it.path) } ?: GameRegistry.missingIconImage }
+        val icon: Image by lazy { folder.resolve("icon.png").takeIf { it.exists() }?.let { Image("file:" + it.path, 32.0, 32.0, false, true) } ?: GameRegistry.missingIconImage }
         var isEmpty: Boolean = false
     }
 

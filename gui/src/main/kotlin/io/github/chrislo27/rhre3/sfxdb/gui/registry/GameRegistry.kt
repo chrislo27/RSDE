@@ -12,7 +12,7 @@ import java.io.File
 class GameRegistry(val version: Int) {
 
     companion object {
-        val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", true) }
+        val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", 32.0, 32.0, false, true, true) }
     }
 
     @Volatile var isLoaded: Boolean = false
@@ -42,7 +42,7 @@ class GameRegistry(val version: Int) {
                 val game: Game = Parser.parseGameDefinition(jsonRoot).produceImmutableADT()
                 val gameID = game.id
                 map[gameID] = game
-                metaMap[game] = GameMetadata(game, if (folder.resolve("icon.png").exists()) Image("file:" + folder.resolve("icon.png").path, true) else missingIconImage, folder)
+                metaMap[game] = GameMetadata(game, if (folder.resolve("icon.png").exists()) Image("file:" + folder.resolve("icon.png").path, 32.0, 32.0, false, true, true) else missingIconImage, folder)
                 progressCallback(kotlin.Result.success(game), index + 1, size)
             }
             gameMap = map
