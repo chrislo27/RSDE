@@ -14,7 +14,6 @@ import javafx.collections.FXCollections
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
-import org.controlsfx.validation.Validator
 
 
 class CueObjPane(editor: Editor, cueObject: CueObject) : StructPane<CueObject>(editor, cueObject) {
@@ -56,7 +55,7 @@ class CueObjPane(editor: Editor, cueObject: CueObject) : StructPane<CueObject>(e
 
     init {
         // Validators
-        validation.registerValidator(idField, Validator.combine(Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB))
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB)
         validation.registerValidator(nameField, Validators.NAME_BLANK)
         validation.registerValidator(fileExtField, Validators.FILE_EXT_NOT_OGG)
     }
