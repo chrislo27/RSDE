@@ -10,7 +10,6 @@ import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeItem
 import javafx.scene.control.TreeView
 import javafx.scene.input.MouseButton
-import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.util.Callback
@@ -38,7 +37,7 @@ class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
             val item = node?.value
             if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= (if (node == treeView.root) 1 else 2)) {
                 val pane = try {
-                    item.paneFactory()
+                    item.editor.getPane(item.struct)
                 } catch (e: Throwable) {
                     e.printStackTrace()
                     ExceptionAlert(e).showAndWait()
@@ -57,13 +56,13 @@ class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
         val gameObj = currentEditor.gameObject
 
         // Build tree
-        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id.orException(), Transformers.anyNonSuccess(gameObj), currentEditor.paneFactory))
+        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id.orException(), Transformers.anyNonSuccess(gameObj)))
         gameObj.objects.orNull()?.forEach { obj ->
             if (obj is Result.Unset) return@forEach
             val datamodel = if (obj is Result.Failure) obj.passedIn as DatamodelObject else (obj as Result.Success).value
             val invalid = obj !is Result.Success
 
-            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id.orElse("? ID ?")} (${datamodel.name.orElse("???")})", invalid, currentEditor.paneFactory))
+            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id.orElse("? ID ?")} (${datamodel.name.orElse("???")})", invalid))
         }
 
         root.isExpanded = true
@@ -74,11 +73,8 @@ class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
     class DataNode(
         val structure: StructurePane,
         val editor: Editor,
-        val struct: Struct, val text: String, val invalid: Boolean,
-        val paneFactory: (DataNode) -> Pane?
-    ) {
-        fun paneFactory(): Pane? = paneFactory(this)
-    }
+        val struct: Struct, val text: String, val invalid: Boolean
+    )
 
     class DataNodeCell : TreeCell<DataNode>() {
         override fun updateItem(item: DataNode?, empty: Boolean) {

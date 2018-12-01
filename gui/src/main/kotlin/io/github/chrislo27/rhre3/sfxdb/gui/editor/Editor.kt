@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.scene.text.TextAlignment
 import java.io.File
+import java.util.*
 
 
 class Editor(val folder: File) {
@@ -23,15 +24,16 @@ class Editor(val folder: File) {
     val gameObject: GameObject = GameObject().apply {
         Parser.buildStruct(this, JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json")))
     }
-
+    val paneMap: Map<Struct, Pane> = WeakHashMap()
     val mainPane: StackPane = StackPane()
     val tab: Tab = Tab(folder.name, mainPane).apply tab@{
         val iconFile = folder.resolve("icon.png").takeIf { it.exists() }
-        graphic = ImageView(if (iconFile != null) Image("file:${iconFile.path}") else GameRegistry.missingIconImage).apply iv@{
-            this.isPreserveRatio = true
-            this.fitWidth = 1.5.em
-            this.fitHeight = 1.5.em
-        }
+        graphic =
+                ImageView(if (iconFile != null) Image("file:${iconFile.path}") else GameRegistry.missingIconImage).apply iv@{
+                    this.isPreserveRatio = true
+                    this.fitWidth = 1.5.em
+                    this.fitHeight = 1.5.em
+                }
 
     }
     private val pickFirstLabel = Label().bindLocalized("editor.selectAnItem").apply {
@@ -44,13 +46,25 @@ class Editor(val folder: File) {
     }
 
     init {
-
         mainPane.alignment = Pos.CENTER
         mainPane.children += pickFirstLabel
     }
 
-    val paneFactory: (StructurePane.DataNode) -> Pane? = { node ->
-        when (val struct = node.struct) {
+    fun getPane(struct: Struct): Pane? {
+        paneMap as MutableMap
+        val fromMap = paneMap[struct]
+        if (fromMap == null) {
+            val newPane = createPaneFromStruct(struct)
+            if (newPane != null) {
+                paneMap[struct] = newPane
+            }
+            return newPane
+        }
+        return fromMap
+    }
+
+    private fun createPaneFromStruct(struct: Struct): Pane? {
+        return when (struct) {
             is GameObject -> GamePane(this)
             is CueObject -> CueObjPane(this, struct)
             is PatternObject -> PatternObjPane(this, struct)
@@ -61,7 +75,7 @@ class Editor(val folder: File) {
                 TODO()
             }
             is SubtitleEntityObject, is ShakeEntityObject, is EndRemixEntityObject, is TextureEntityObject -> null
-            else -> throw IllegalStateException("${struct::class.java.name} is not supported for editing. Please tell the developer!")
+            else -> throw IllegalStateException("Struct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
         }
     }
 
