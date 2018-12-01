@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox
 import javafx.util.Callback
 
 
-class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
+class StructurePane(val editorPane: EditorPane) : VBox() {
 
     private val app: RSDE get() = editorPane.app
 
@@ -48,7 +48,7 @@ class StructurePane(val editorPane: EditorPane) : VBox(), EditorUpdateable {
         }
     }
 
-    override fun update(currentEditor: Editor?) {
+    fun update(currentEditor: Editor?) {
         if (currentEditor == null) {
             treeView.root = null
             return

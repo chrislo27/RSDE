@@ -72,6 +72,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     fun fireUpdate() {
         structurePane.update(currentEditor)
+        editors.forEach { it.update() }
     }
 
     override fun getPresenceState(): DefaultRichPresence {

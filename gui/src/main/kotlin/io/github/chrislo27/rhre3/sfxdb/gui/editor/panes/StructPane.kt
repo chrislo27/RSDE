@@ -48,4 +48,8 @@ abstract class StructPane<T : Struct>(val editor: Editor, val struct: T) : Borde
         return ++gridPaneRowIndex
     }
 
+    open fun update() {
+
+    }
+
 }

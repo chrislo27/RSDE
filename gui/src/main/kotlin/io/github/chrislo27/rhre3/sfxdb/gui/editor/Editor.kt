@@ -79,6 +79,10 @@ class Editor(val folder: File) {
         }
     }
 
+    fun update() {
+        paneMap.values.forEach { if (it is StructPane<*>) it.update() }
+    }
+
     fun switchToPane(pane: Pane?) {
         if (mainPane.children.size > 1)
             mainPane.children.remove(1, mainPane.children.size)

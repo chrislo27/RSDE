@@ -66,6 +66,8 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
             add(moveDownButton, 3, 1)
             add(ListView<String>(), 0, 2, 5, 1)
         }
+
+        addButton.items.addAll(MenuItem("CueObject"), SeparatorMenuItem(), MenuItem("PatternObject"), MenuItem("EquidistantObject"), MenuItem("KeepTheBeatObject"), MenuItem("RandomCueObject"))
     }
 
     init {
