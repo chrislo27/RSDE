@@ -20,12 +20,13 @@ class DefaultRichPresence(state: String = "",
     }
 
     init {
-        details = if (RSDE.VERSION.suffix.startsWith("DEV")) {
-            "Developing ${RSDE.VERSION.copy(suffix = "")}"
-        } else if (RSDE.VERSION.suffix.startsWith("RC") || RSDE.VERSION.suffix.startsWith("SNAPSHOT")) {
-            "Testing ${RSDE.VERSION}"
+        val version = RSDE.VERSION
+        details = if (version.suffix.startsWith("DEV") || version.suffix.endsWith("DEVELOPMENT") || version.suffix.endsWith("DEV")) {
+            "Developing ${version.copy(suffix = "")}"
+        } else if (version.suffix.matches("(?:.+)RC(?:.+)".toRegex()) || version.suffix.endsWith("SNAPSHOT")) {
+            "Testing $version"
         } else {
-            "Using ${RSDE.VERSION}"
+            "Using $version"
         }
         startTimestamp = RSDE.startTimeMillis / 1000L // Epoch seconds
         largeImageKey = DiscordHelper.DEFAULT_LARGE_IMAGE
