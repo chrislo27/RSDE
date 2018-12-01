@@ -1,13 +1,14 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.Parser
+import io.github.chrislo27.rhre3.sfxdb.adt.*
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.*
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
-import io.github.chrislo27.rhre3.sfxdb.validation.*
+import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.Tab
@@ -22,9 +23,10 @@ import java.util.*
 
 class Editor(val folder: File, val editorPane: EditorPane) {
 
-    val paneMap: Map<Struct, Pane> = WeakHashMap()
-    val gameObject: GameObject = GameObject().apply {
+    val paneMap: Map<JsonStruct, Pane> = WeakHashMap()
+    val gameObject: Game = GameObject().run {
         Parser.buildStruct(this, JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json")))
+        this.produceImperfectADT()
     }
     val mainPane: StackPane = StackPane()
     val tab: Tab = Tab(folder.name, mainPane).apply tab@{
@@ -60,7 +62,7 @@ class Editor(val folder: File, val editorPane: EditorPane) {
         }
     }
 
-    fun getPane(struct: Struct): Pane? {
+    fun getPane(struct: JsonStruct): Pane? {
         paneMap as MutableMap
         val fromMap = paneMap[struct]
         if (fromMap == null) {
@@ -73,19 +75,19 @@ class Editor(val folder: File, val editorPane: EditorPane) {
         return fromMap
     }
 
-    private fun createPaneFromStruct(struct: Struct): Pane? {
+    private fun createPaneFromStruct(struct: JsonStruct): Pane? {
         return when (struct) {
-            is GameObject -> GameObjPane(this)
-            is CueObject -> CueObjPane(this, struct)
-            is PatternObject -> PatternObjPane(this, struct)
-            is KeepTheBeatObject -> KeepTheBeatObjPane(this, struct)
-            is EquidistantObject -> EquidistantObjPane(this, struct)
-            is RandomCueObject -> RandomCueObjPane(this, struct)
-            is CuePointerObject -> {
+            is Game -> GameObjPane(this)
+            is Cue -> CueObjPane(this, struct)
+            is Pattern -> PatternObjPane(this, struct)
+            is KeepTheBeat -> KeepTheBeatObjPane(this, struct)
+            is Equidistant -> EquidistantObjPane(this, struct)
+            is RandomCue -> RandomCueObjPane(this, struct)
+            is CuePointer -> {
                 TODO()
             }
-            is SubtitleEntityObject, is ShakeEntityObject, is EndRemixEntityObject, is TextureEntityObject -> null
-            else -> throw IllegalStateException("Struct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
+            is SubtitleEntity, is ShakeEntity, is EndRemixEntity, is TextureEntity -> null
+            else -> throw IllegalStateException("JsonStruct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
         }
     }
 

@@ -166,7 +166,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                             file.isDirectory && file.name.matches(Transformers.GAME_ID_REGEX) && file.resolve("data.json").exists()
                         }.forEach { file ->
                             val parsedSuccessfully = try {
-                                Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(file.resolve("data.json"))).produceADT()
+                                Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(file.resolve("data.json"))).producePerfectADT()
                                 true
                             } catch (e: Exception) {
                                 e.printStackTrace()

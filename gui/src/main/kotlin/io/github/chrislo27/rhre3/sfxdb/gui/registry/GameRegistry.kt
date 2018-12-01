@@ -39,7 +39,7 @@ class GameRegistry(val version: Int) {
             folders.forEachIndexed { index, folder ->
                 val jsonRoot = JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json"))
                 RSDE.LOGGER.info("Loading game ${folder.name}")
-                val game: Game = Parser.parseGameDefinition(jsonRoot).produceADT()
+                val game: Game = Parser.parseGameDefinition(jsonRoot).producePerfectADT()
                 val gameID = game.id
                 map[gameID] = game
                 metaMap[game] = GameMetadata(game, if (folder.resolve("icon.png").exists()) Image("file:" + folder.resolve("icon.png").path, 32.0, 32.0, false, true, true) else missingIconImage, folder)

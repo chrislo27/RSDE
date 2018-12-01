@@ -49,14 +49,14 @@ object Transformers {
         else
             Result.Success(it.intValue())
     }
-    val stringArrayTransformer: JsonTransformer<List<String>> = transformer@{ node ->
+    val stringArrayTransformer: JsonTransformer<MutableList<String>> = transformer@{ node ->
         node.checkNodeType(JsonNodeType.ARRAY)
         val list = node.map {
             if (!it.isTextual)
                 return@transformer Result.Failure(it, it.toString(), "Expected array of only strings")
             it.asText()
         }
-        Result.Success(list)
+        Result.Success(list.toMutableList())
     }
 
     val gameIdTransformer: JsonTransformer<String> = { node ->
@@ -92,7 +92,7 @@ object Transformers {
         else
             Result.Success(series)
     }
-    val responseIDsTransformer: JsonTransformer<List<String>> = transformer@{ node ->
+    val responseIDsTransformer: JsonTransformer<MutableList<String>> = transformer@{ node ->
         val initial = stringArrayTransformer(node)
         if (initial is Result.Success) {
             val value = initial.value
@@ -124,9 +124,9 @@ object Transformers {
             Result.Success(type)
     }
     @Suppress("UNCHECKED_CAST")
-    val cuePointerMetadataTransformer: JsonTransformer<Map<String, Any?>?> = { node ->
+    val cuePointerMetadataTransformer: JsonTransformer<MutableMap<String, Any?>?> = { node ->
         node.checkNodeType(JsonNodeType.OBJECT)
-        Result.Success(ObjectMapper().convertValue(node, Map::class.java) as Map<String, Any?>)
+        Result.Success(ObjectMapper().convertValue(node, Map::class.java) as MutableMap<String, Any?>)
     }
 
     val datamodelTransformer: JsonTransformer<DatamodelObject> = transformer@{ node ->

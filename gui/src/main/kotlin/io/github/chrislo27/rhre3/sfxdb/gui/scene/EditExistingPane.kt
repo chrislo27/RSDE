@@ -198,11 +198,11 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 val dataJsonFile = folder.resolve("data.json")
                 val tree = Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile))
                 tree.id = Result.Success(selectedGameID)
-                val adt = tree.produceADT()
+                val adt = tree.producePerfectADT()
                 dataJsonFile.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(adt))
                 try {
                     // Verify
-                    Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile)).produceADT()
+                    Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile)).producePerfectADT()
                 } catch (e: BadResultException) {
                     ExceptionAlert(e, "The copied data.json file is invalid").showAndWait()
                     return@setOnAction

@@ -1,12 +1,14 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Series
+import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
+import io.github.chrislo27.rhre3.sfxdb.adt.Game
+import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
-import io.github.chrislo27.rhre3.sfxdb.validation.*
 import javafx.collections.FXCollections
 import javafx.scene.control.*
 import javafx.scene.image.Image
@@ -16,23 +18,23 @@ import javafx.scene.layout.GridPane
 import javafx.util.Callback
 
 
-class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameObject) {
+class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) {
 
-    val idField = TextField(gameObject.id.orElse("??? MISSING ID ???"))
-    val nameField = TextField(gameObject.name.orElse("MISSING NAME"))
+    val idField = TextField(struct.id)
+    val nameField = TextField(struct.name)
     val seriesComboBox =
         ComboBox<Series>(FXCollections.observableArrayList(Series.VALUES - listOf(Series.SWITCH))).apply {
-            this.selectionModel.select(gameObject.series.orNull())
+            this.selectionModel.select(struct.series)
         }
-    val groupField = TextField(gameObject.group.orElse(""))
+    val groupField = TextField(struct.group)
     val groupDefaultCheckbox = CheckBox().apply {
-        this.isSelected = gameObject.groupDefault.orElse(false)
+        this.isSelected = struct.groupDefault
     }
-    val prioritySpinner = Spinner<Int>(-128, 127, gameObject.priority.orElse(0))
+    val prioritySpinner = Spinner<Int>(-128, 127, struct.priority)
     val searchHintsField =
-        ChipPane(FXCollections.observableArrayList(gameObject.searchHints.orElse(listOf()).map { Chip(it) }))
+        ChipPane(FXCollections.observableArrayList((struct.searchHints ?: mutableListOf()).map { Chip(it) }))
     val noDisplayCheckbox = CheckBox().apply {
-        this.isSelected = gameObject.noDisplay.orElse(false)
+        this.isSelected = struct.noDisplay
     }
 
     val objectsGrid: GridPane = GridPane().apply {
@@ -42,15 +44,15 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
     val removeButton: Button = Button("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true)))
     val moveUpButton: Button = Button("", ImageView(Image("/image/ui/up.png", 16.0, 16.0, true, true, true)))
     val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
-    val objectsListView: ListView<Struct> = ListView<Struct>(FXCollections.observableArrayList()).apply {
+    val objectsListView: ListView<JsonStruct> = ListView<JsonStruct>(FXCollections.observableArrayList()).apply {
         this.cellFactory = Callback {
-            object : ListCell<Struct>() {
-                override fun updateItem(item: Struct?, empty: Boolean) {
+            object : ListCell<JsonStruct>() {
+                override fun updateItem(item: JsonStruct?, empty: Boolean) {
                     super.updateItem(item, empty)
                     text = if (item == null || empty) {
                         null
                     } else {
-                        (item as? DatamodelObject)?.id?.orElse(Localization["editor.missingID"])
+                        (item as? Datamodel)?.id.takeUnless { it.isNullOrEmpty() } ?: Localization["editor.missingID"]
                     }
                 }
             }
@@ -101,7 +103,7 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
                 }
                 val result = dialog.showAndWait()
                 if (result.orElse(null) == ButtonType.OK) {
-                    gameObject.objects.orNull()?.removeIf { obj -> obj is Result.Success && obj.value == current }
+                    gameObject.objects.remove(current)
                     editor.editorPane.fireUpdate()
                 }
             }
@@ -109,8 +111,8 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
         moveUpButton.setOnAction { _ ->
             val current = objectsListView.selectionModel.selectedItem
             if (current != null) {
-                val list = gameObject.objects.orException()
-                val index = list.indexOfFirst { it is Result.Success && it.value == current }
+                val list = gameObject.objects
+                val index = list.indexOf(current)
                 if (index != -1 && index - 1 >= 0) {
                     val removed = list.removeAt(index)
                     list.add(index - 1, removed)
@@ -122,8 +124,8 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
         moveDownButton.setOnAction { _ ->
             val current = objectsListView.selectionModel.selectedItem
             if (current != null) {
-                val list = gameObject.objects.orException()
-                val index = list.indexOfFirst { it is Result.Success && it.value == current }
+                val list = gameObject.objects
+                val index = list.indexOf(current)
                 if (index != -1 && index + 1 < list.size - 1) {
                     val removed = list.removeAt(index)
                     list.add(index + 1, removed)
@@ -170,11 +172,7 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
     private fun updateObjectsList() {
         objectsListView.items.apply {
             clear()
-            gameObject.objects.orNull()?.let { dObjRes ->
-                dObjRes.filterIsInstance<Result.Success<DatamodelObject>>().map { it.value }.forEach {
-                    this.add(it)
-                }
-            }
+            this.addAll(gameObject.objects)
         }
     }
 

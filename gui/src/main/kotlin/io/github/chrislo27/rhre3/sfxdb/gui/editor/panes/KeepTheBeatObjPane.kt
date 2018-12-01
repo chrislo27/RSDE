@@ -1,29 +1,27 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.adt.KeepTheBeat
 import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
-import io.github.chrislo27.rhre3.sfxdb.validation.KeepTheBeatObject
-import io.github.chrislo27.rhre3.sfxdb.validation.orElse
-import io.github.chrislo27.rhre3.sfxdb.validation.orException
 import javafx.collections.FXCollections
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 
 
-class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeatObject) : StructPane<KeepTheBeatObject>(editor, struct) {
+class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : StructPane<KeepTheBeat>(editor, struct) {
 
-    val idField = TextField(struct.id.orElse("??? MISSING ID ???"))
-    val nameField = TextField(struct.name.orElse("MISSING NAME"))
-    val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.orElse(listOf()).map { Chip(it) }))
+    val idField = TextField(struct.id)
+    val nameField = TextField(struct.name)
+    val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
 
-    val defaultDurationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.defaultDuration.orException().toDouble(), 0.5)
+    val defaultDurationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.defaultDuration.toDouble(), 0.5)
 
     init {
-        titleLabel.text = struct.id.orElse("??? ID MISSING ???")
+        titleLabel.text = struct.id
 
         addProperty(Label().bindLocalized("datamodel.type"), Label("keepTheBeat").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)

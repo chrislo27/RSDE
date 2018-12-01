@@ -1,10 +1,11 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
+import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import io.github.chrislo27.rhre3.sfxdb.validation.*
+import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.scene.control.Label
 import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeItem
@@ -56,13 +57,11 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         val gameObj = currentEditor.gameObject
 
         // Build tree
-        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id.orException(), Transformers.anyNonSuccess(gameObj)))
-        gameObj.objects.orNull()?.forEach { obj ->
-            if (obj is Result.Unset) return@forEach
-            val datamodel = if (obj is Result.Failure) obj.passedIn as DatamodelObject else (obj as Result.Success).value
-            val invalid = obj !is Result.Success
+        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id, Transformers.anyNonSuccess(gameObj)))
+        gameObj.objects.forEach { obj ->
+            val datamodel = obj
 
-            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id.orElse("? ID ?")} (${datamodel.name.orElse("???")})", invalid))
+            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id} (${datamodel.name})"))
         }
 
         root.isExpanded = true
@@ -73,7 +72,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
     class DataNode(
         val structure: StructurePane,
         val editor: Editor,
-        val struct: Struct, val text: String, val invalid: Boolean
+        val struct: JsonStruct, val text: String, val invalid: Boolean = false // FIXME
     )
 
     class DataNodeCell : TreeCell<DataNode>() {

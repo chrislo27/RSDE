@@ -1,9 +1,9 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.adt.Game
+import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
-import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
-import io.github.chrislo27.rhre3.sfxdb.validation.Struct
 import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
@@ -13,9 +13,9 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 
-abstract class StructPane<T : Struct>(val editor: Editor, val struct: T) : BorderPane() {
+abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : BorderPane() {
 
-    val gameObject: GameObject get() = editor.gameObject
+    val gameObject: Game get() = editor.gameObject
 
     val titleLabel: Label = Label().apply {
         id = "title"
