@@ -13,7 +13,7 @@ class GameObject : Struct {
     var id: Result<String> by Property(Transformers.gameIdTransformer)
     val name: Result<String> by Property(Transformers.nonEmptyStringTransformer)
     val series: Result<Series> by Property(Transformers.seriesTransformer, Series.OTHER)
-    val objects: Result<List<Result<DatamodelObject>>> by Property(Transformers.transformerToList(Transformers.datamodelTransformer))
+    val objects: Result<MutableList<Result<DatamodelObject>>> by Property(Transformers.transformerToList(Transformers.datamodelTransformer))
 
     // Optional after this line
     val group: Result<String> by Property(Transformers.stringTransformer, "")
@@ -80,7 +80,7 @@ class CueObject : DatamodelObject() {
 }
 
 class PatternObject : DatamodelObject() {
-    var cues: Result<List<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer()))
+    var cues: Result<MutableList<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer()))
 
     // Optional after this line
     var stretchable: Result<Boolean> by Property(Transformers.booleanTransformer, false)
@@ -95,7 +95,7 @@ class PatternObject : DatamodelObject() {
 }
 
 class EquidistantObject : DatamodelObject() {
-    var cues: Result<List<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer(beatNotUsed = true, durationNotUsed = true)))
+    var cues: Result<MutableList<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer(beatNotUsed = true, durationNotUsed = true)))
     var distance: Result<Float> by Property(Transformers.positiveFloatTransformer("Distance must be positive, non-zero", false))
     var stretchable: Result<Boolean> by Property(Transformers.booleanTransformer)
 
@@ -108,7 +108,7 @@ class EquidistantObject : DatamodelObject() {
 }
 
 class KeepTheBeatObject : DatamodelObject() {
-    var cues: Result<List<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer()))
+    var cues: Result<MutableList<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer()))
     var defaultDuration: Result<Float> by Property(Transformers.positiveFloatTransformer("Default duration must be positive, non-zero", false))
 
     override fun produceImmutableADT(): KeepTheBeat {
@@ -120,7 +120,7 @@ class KeepTheBeatObject : DatamodelObject() {
 }
 
 class RandomCueObject : DatamodelObject() {
-    var cues: Result<List<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer(beatNotUsed = true)))
+    var cues: Result<MutableList<Result<CuePointerObject>>> by Property(Transformers.transformerToList(Transformers.cuePointerTransformer(beatNotUsed = true)))
 
     // Optional after this line
     var responseIDs: Result<List<String>> by Property(Transformers.responseIDsTransformer, listOf())

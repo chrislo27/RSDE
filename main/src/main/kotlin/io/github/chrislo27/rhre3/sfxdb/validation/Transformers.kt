@@ -210,9 +210,9 @@ object Transformers {
             Result.Success(cpo)
     }
 
-    fun <T> transformerToList(pointerTransformer: JsonTransformer<T>): JsonTransformer<List<Result<T>>> = { node ->
+    fun <T> transformerToList(pointerTransformer: JsonTransformer<T>): JsonTransformer<MutableList<Result<T>>> = { node ->
         node.checkNodeType(JsonNodeType.ARRAY)
-        val list = node.map(pointerTransformer)
+        val list = node.map(pointerTransformer).toMutableList()
         if (list.any { it !is Result.Success })
             Result.Failure(node, list.filterNot { it is Result.Success }, "Non-Successes in list")
         else
