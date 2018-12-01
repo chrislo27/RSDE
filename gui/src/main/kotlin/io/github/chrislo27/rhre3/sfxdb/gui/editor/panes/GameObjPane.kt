@@ -4,16 +4,14 @@ import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
-import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
-import io.github.chrislo27.rhre3.sfxdb.gui.util.addWindowIcons
-import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
+import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import io.github.chrislo27.rhre3.sfxdb.validation.*
 import javafx.collections.FXCollections
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.GridPane
 import javafx.util.Callback
 
@@ -139,6 +137,19 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
             removeButton.isDisable = newValue == null
             moveUpButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex > 0
             moveDownButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex < objectsListView.items.size - 1
+        }
+        objectsListView.setOnMouseClicked {evt ->
+            val item = objectsListView.selectionModel.selectedItem
+            if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 2) {
+                val pane = try {
+                    editor.getPane(item)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                    ExceptionAlert(e).showAndWait()
+                    return@setOnMouseClicked
+                }
+                editor.switchToPane(pane)
+            }
         }
 
         updateObjectsList()
