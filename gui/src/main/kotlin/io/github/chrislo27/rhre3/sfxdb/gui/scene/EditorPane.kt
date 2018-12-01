@@ -7,10 +7,13 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.StructurePane
+import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.geometry.Side
+import javafx.scene.control.Menu
+import javafx.scene.control.MenuBar
+import javafx.scene.control.MenuItem
 import javafx.scene.control.TabPane
-import javafx.scene.control.ToolBar
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
@@ -18,16 +21,16 @@ import javafx.scene.layout.VBox
 
 class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
-    val toolbar: ToolBar
+    val toolbar: MenuBar
     val centreTabPane: TabPane = TabPane().apply {
         this.side = Side.TOP
     }
-    val leftTabPane: TabPane = TabPane().apply {
-        this.side = Side.LEFT
-    }
-    val rightTabPane: TabPane = TabPane().apply {
-        this.side = Side.RIGHT
-    }
+    //    val leftTabPane: TabPane = TabPane().apply {
+//        this.side = Side.LEFT
+//    }
+//    val rightTabPane: TabPane = TabPane().apply {
+//        this.side = Side.RIGHT
+//    }
     val bottomPane: Pane = VBox()
 
     val editors: List<Editor> = mutableListOf()
@@ -42,20 +45,22 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     init {
         stylesheets += "style/editorPane.css"
 
-        toolbar = ToolBar()
+        toolbar = MenuBar()
         top = toolbar
         center = centreTabPane
-        left = leftTabPane
+//        left = leftTabPane
 //        right = rightTabPane
         bottom = bottomPane
 
         structurePane = StructurePane(this)
         left = structurePane
-//        leftTabPane.tabs += Tab().apply {
-//            textProperty().bind(UiLocalization["editor.structure"])
-//            content = structurePane
-//            isClosable = false
-//        }
+
+        toolbar.menus += Menu().bindLocalized("editor.toolbar.file").apply {
+            items += MenuItem().bindLocalized("editor.toolbar.file.new")
+            items += MenuItem().bindLocalized("editor.toolbar.file.open")
+            items += MenuItem().bindLocalized("editor.toolbar.file.save")
+            items += MenuItem().bindLocalized("editor.toolbar.file.export")
+        }
 
         centreTabPane.selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
             if (oldValue != newValue) {

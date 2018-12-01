@@ -13,6 +13,8 @@ import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.Labeled
+import javafx.scene.control.Menu
+import javafx.scene.control.MenuItem
 import javafx.scene.control.Tooltip
 import java.util.*
 
@@ -84,3 +86,7 @@ fun <T : Labeled> T.bindLocalized(key: String, vararg initialParams: Any?): T {
 
 fun Tooltip.bindLocalized(key: String): Tooltip = this.apply { textProperty().bind(UiLocalization[key]) }
 fun Tooltip.bindLocalized(key: String, vararg initialParams: Any?): Tooltip = this.apply { textProperty().bind(UiLocalization.get(key, *initialParams)) }
+fun Menu.bindLocalized(key: String): Menu = this.apply { textProperty().bind(UiLocalization[key]) }
+fun Menu.bindLocalized(key: String, vararg initialParams: Any?): Menu = this.apply { textProperty().bind(UiLocalization.get(key, *initialParams)) }
+fun MenuItem.bindLocalized(key: String): MenuItem = this.apply { textProperty().bind(UiLocalization[key]) }
+fun MenuItem.bindLocalized(key: String, vararg initialParams: Any?): MenuItem = this.apply { textProperty().bind(UiLocalization.get(key, *initialParams)) }

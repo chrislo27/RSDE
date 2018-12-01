@@ -21,10 +21,10 @@ import java.util.*
 
 class Editor(val folder: File) {
 
+    val paneMap: Map<Struct, Pane> = WeakHashMap()
     val gameObject: GameObject = GameObject().apply {
         Parser.buildStruct(this, JsonHandler.OBJECT_MAPPER.readTree(folder.resolve("data.json")))
     }
-    val paneMap: Map<Struct, Pane> = WeakHashMap()
     val mainPane: StackPane = StackPane()
     val tab: Tab = Tab(folder.name, mainPane).apply tab@{
         val iconFile = folder.resolve("icon.png").takeIf { it.exists() }
@@ -47,7 +47,16 @@ class Editor(val folder: File) {
 
     init {
         mainPane.alignment = Pos.CENTER
-        mainPane.children += pickFirstLabel
+
+        val gamePane = (getPane(gameObject) as? GameObjPane)
+
+        if (gamePane == null) {
+            mainPane.children += pickFirstLabel
+        } else {
+            mainPane.children += gamePane
+            tab.textProperty().unbind()
+            tab.textProperty().bind(gamePane.idField.textProperty())
+        }
     }
 
     fun getPane(struct: Struct): Pane? {

@@ -42,7 +42,7 @@ class GameObjPane(editor: Editor) : StructPane<GameObject>(editor, editor.gameOb
     val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
 
     init {
-        titleLabel.text = gameObject.id.orElse("??? GAME ID MISSING ???")
+        titleLabel.textProperty().bind(idField.textProperty())
 
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
