@@ -11,3 +11,13 @@
 .vbox {
     -fx-padding: 1em;
 }
+
+.menu-button {
+    -fx-font: normal 12pt "Roboto";
+    -fx-padding: 0.1em 0.25em 0.1em 0.25em;
+}
+
+.status-bar {
+    -fx-padding: 0.2em;
+    -fx-pref-height: 1.5em;
+}
