@@ -19,7 +19,9 @@ import javafx.util.Callback
 
 class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) {
 
-    val idField = TextField(struct.id)
+    val idField = TextField(struct.id).apply {
+        isEditable = false
+    }
     val nameField = TextField(struct.name)
     val seriesComboBox =
         ComboBox<Series>(FXCollections.observableArrayList(Series.VALUES - listOf(Series.SWITCH))).apply {
