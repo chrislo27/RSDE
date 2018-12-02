@@ -53,12 +53,14 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loops: Boolean = false
 ) : Datamodel("cue", id, name, deprecatedIDs)
 
+@JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "stretchable", "cues")
 class Pattern(
         id: String, name: String, deprecatedIDs: MutableList<String>,
         cues: MutableList<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) var stretchable: Boolean = false
 ) : MultipartDatamodel("pattern", id, name, deprecatedIDs, cues)
 
+@JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "distance", "stretchable", "cues")
 class Equidistant(
         id: String, name: String, deprecatedIDs: MutableList<String>,
         cues: MutableList<CuePointer>,
@@ -66,12 +68,14 @@ class Equidistant(
         var stretchable: Boolean = false
 ) : MultipartDatamodel("equidistant", id, name, deprecatedIDs, cues)
 
+@JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "defaultDuration", "cues")
 class KeepTheBeat(
         id: String, name: String, deprecatedIDs: MutableList<String>,
         cues: MutableList<CuePointer>,
         var defaultDuration: Float = 0f
 ) : MultipartDatamodel("keepTheBeat", id, name, deprecatedIDs, cues)
 
+@JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "responseIDs", "cues")
 class RandomCue(
         id: String, name: String, deprecatedIDs: MutableList<String>,
         cues: MutableList<CuePointer>,
