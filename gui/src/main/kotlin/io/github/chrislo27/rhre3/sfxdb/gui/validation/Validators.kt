@@ -65,11 +65,11 @@ object Validators {
 
     // CuePointer
     val EXTERNAL_CUE_POINTER: Validator<String> = Validator { t, u ->
-        fromWarningIf(t, UiLocalization["validation.cuePointerExtDependency"], !u.startsWith("*") && u.isNotEmpty())
+        fromWarningIf(t, UiLocalization["validation.cuePointerExtDependency"], u != null && !u.startsWith("*") && u.isNotEmpty())
     }
 
     fun cuePointerPointsNowhere(gameObj: Game): Validator<String> = Validator { t, u ->
-        fromErrorIf(t, UiLocalization["validation.invalidCuePointer"], u.startsWith("*") && u.isNotEmpty() && u !in gameObj.objects.map { it.id })
+        fromErrorIf(t, UiLocalization["validation.invalidCuePointer"], u != null && u.startsWith("*") && u.isNotEmpty() && u !in gameObj.objects.map { it.id })
     }
 
     // Response IDs
