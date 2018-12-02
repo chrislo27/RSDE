@@ -10,6 +10,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.application.Platform
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.*
@@ -68,9 +69,24 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
 }
 
 abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructPane<T>(editor, struct) {
-    open val idField: TextField = TextField(struct.id)
-    open val nameField: TextField = TextField(struct.name)
-    open val deprecatedIDsField: ChipPane = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+    val idField: TextField = TextField(struct.id)
+    val nameField: TextField = TextField(struct.name)
+    val deprecatedIDsField: ChipPane = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+
+    init {
+        titleLabel.textProperty().bind(idField.textProperty())
+
+        // Bind to struct fields
+        idField.textProperty().addListener { _, _, newValue -> struct.id = newValue }
+        nameField.textProperty().addListener { _, _, newValue -> struct.name = newValue }
+        deprecatedIDsField.list.addListener(ListChangeListener { evt ->
+            val list = mutableListOf<String>()
+            while (evt.next()) {
+                list.addAll(evt.list.map { chip -> chip.label.text })
+            }
+            struct.deprecatedIDs = list
+        })
+    }
 }
 
 abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struct: T) : DatamodelPane<T>(editor, struct) {
@@ -83,9 +99,10 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
     }
 
     @Suppress("LeakingThis")
-    open class CuesPane<T : MultipartDatamodel>(val parentPane: MultipartStructPane<T>,
-                                                val paneFactory: (CuePointer, CuesPane<T>) -> CuePointerPane<T>?)
-        : GridPane() {
+    open class CuesPane<T : MultipartDatamodel>(
+        val parentPane: MultipartStructPane<T>,
+        val paneFactory: (CuePointer, CuesPane<T>) -> CuePointerPane<T>?
+    ) : GridPane() {
         val paneMap: Map<CuePointer, CuePointerPane<T>> = WeakHashMap()
 
         val addButton: Button = Button("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true)))
@@ -105,6 +122,13 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                     }
                 }
             }
+            items.addListener(ListChangeListener { evt ->
+                val list = mutableListOf<CuePointer>()
+                while (evt.next()) {
+                    list.addAll(evt.list)
+                }
+                parentPane.struct.cues = list.distinct().toMutableList()
+            })
         }
         private val selectLabel = Label().bindLocalized("multipart.selectAPointer").apply {
             id = "pick-cue-pointer-label"
@@ -248,6 +272,28 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
 
         init {
             styleClass += "grid-pane"
+        }
+
+        init {
+            // Bind to struct
+            idField.textProperty().addListener { _, _, newValue ->
+                cuePointer.id = newValue
+            }
+            beatField.valueProperty().addListener { _, _, newValue ->
+                cuePointer.beat = newValue.toFloat()
+            }
+            durationField.valueProperty().addListener { _, _, newValue ->
+                cuePointer.duration = newValue.toFloat()
+            }
+            semitoneField.valueProperty().addListener { _, _, newValue ->
+                cuePointer.semitone = newValue
+            }
+            trackField.valueProperty().addListener { _, _, newValue ->
+                cuePointer.track = newValue
+            }
+            volumeField.valueProperty().addListener { _, _, newValue ->
+                cuePointer.volume = newValue
+            }
         }
 
         init {

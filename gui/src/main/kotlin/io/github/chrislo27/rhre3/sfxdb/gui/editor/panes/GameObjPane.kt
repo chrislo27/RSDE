@@ -8,6 +8,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -42,7 +43,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
     val moveUpButton: Button = Button("", ImageView(Image("/image/ui/up.png", 16.0, 16.0, true, true, true)))
     val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
     val objectsListView: ListView<JsonStruct> = ListView<JsonStruct>(FXCollections.observableArrayList()).apply {
-        this.cellFactory = Callback {
+        this.cellFactory = Callback { _ ->
             object : ListCell<JsonStruct>() {
                 override fun updateItem(item: JsonStruct?, empty: Boolean) {
                     super.updateItem(item, empty)
@@ -152,6 +153,31 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
         }
 
         updateObjectsList()
+    }
+
+    init {
+        // Bind to struct
+        idField.textProperty().addListener { _, _, newValue -> struct.id = newValue }
+        nameField.textProperty().addListener { _, _, newValue -> struct.name = newValue }
+        seriesComboBox.selectionModel.selectedItemProperty().addListener { _, _, newValue -> struct.series = newValue }
+        groupField.textProperty().addListener { _, _, newValue -> struct.group = newValue?.takeUnless { it.isBlank() } }
+        groupDefaultCheckbox.selectedProperty().addListener { _, _, newValue -> struct.groupDefault = newValue }
+        prioritySpinner.valueProperty().addListener { _, _, newValue -> struct.priority = newValue }
+        searchHintsField.list.addListener(ListChangeListener { evt ->
+            val list = mutableListOf<String>()
+            while (evt.next()) {
+                list.addAll(evt.list.map { chip -> chip.label.text })
+            }
+            struct.searchHints = list.distinct().toMutableList().takeUnless { it.isEmpty() }
+        })
+        noDisplayCheckbox.selectedProperty().addListener { _, _, newValue -> struct.noDisplay = newValue }
+        objectsListView.items.addListener(ListChangeListener { evt ->
+            val list = mutableListOf<Datamodel>()
+            while (evt.next()) {
+                list.addAll(evt.list.filterIsInstance<Datamodel>())
+            }
+            struct.objects = list.distinct().toMutableList()
+        })
     }
 
     init {

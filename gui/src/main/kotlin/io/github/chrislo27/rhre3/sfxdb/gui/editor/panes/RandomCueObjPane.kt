@@ -8,6 +8,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.scene.control.Label
 import javafx.scene.control.Tooltip
 
@@ -18,8 +19,6 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
     override val cuesPane: CuesPane<RandomCue> = CuesPane(this) { pointer, pane -> RandomCueCuePointerPane(pointer, pane) }
 
     init {
-        titleLabel.text = struct.id
-
         addProperty(Label().bindLocalized("datamodel.type"), Label("randomCue").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
@@ -28,6 +27,17 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
         addProperty(Label().bindLocalized("datamodel.responseIDs"), responseIDsField)
 
         centreVbox.children += cuesPane
+    }
+
+    init {
+        // Bind to struct
+        responseIDsField.list.addListener(ListChangeListener { evt ->
+            val list = mutableListOf<String>()
+            while (evt.next()) {
+                list.addAll(evt.list.map { chip -> chip.label.text })
+            }
+            struct.responseIDs = list.distinct().takeUnless { it.isEmpty() }
+        })
     }
 
     init {

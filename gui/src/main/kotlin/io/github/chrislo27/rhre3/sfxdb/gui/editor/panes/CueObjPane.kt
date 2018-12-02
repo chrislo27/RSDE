@@ -10,6 +10,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections
+import javafx.collections.ListChangeListener
 import javafx.scene.control.*
 import javafx.util.StringConverter
 
@@ -42,8 +43,6 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
     val responseIDsField = ChipPane(FXCollections.observableArrayList((struct.responseIDs ?: mutableListOf()).map { Chip(it) }))
 
     init {
-        titleLabel.text = struct.id
-
         addProperty(Label().bindLocalized("datamodel.type"), Label("cue").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
@@ -60,6 +59,25 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("cueObject.endingSound"), endingSoundField)
         addProperty(Label().bindLocalized("cueObject.fileExtension"), fileExtField)
         addProperty(Label().bindLocalized("datamodel.responseIDs"), responseIDsField)
+    }
+
+    init {
+        // Bind to struct
+        durationField.valueProperty().addListener { _, _, newValue -> struct.duration = newValue.toFloat() }
+        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
+        repitchableField.selectedProperty().addListener { _, _, newValue -> struct.repitchable = newValue }
+        loopsField.selectedProperty().addListener { _, _, newValue -> struct.loops = newValue }
+        baseBpmField.valueProperty().addListener { _, _, newValue -> struct.baseBpm = newValue.toFloat() }
+        introSoundField.textProperty().addListener { _, _, newValue -> struct.introSound = newValue?.takeUnless { it.isBlank() } }
+        endingSoundField.textProperty().addListener { _, _, newValue -> struct.endingSound = newValue?.takeUnless { it.isBlank() } }
+        fileExtField.textProperty().addListener { _, _, newValue -> struct.fileExtension = newValue?.takeUnless { it == SoundFileExtensions.DEFAULT.fileExt } ?: "" }
+        responseIDsField.list.addListener(ListChangeListener { evt ->
+            val list = mutableListOf<String>()
+            while (evt.next()) {
+                list.addAll(evt.list.map { chip -> chip.label.text })
+            }
+            struct.responseIDs = list.takeUnless { it.isEmpty() }
+        })
     }
 
     init {

@@ -16,8 +16,6 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
     override val cuesPane: CuesPane<KeepTheBeat> = CuesPane(this) { pointer, pane -> KeepTheBeatCuePointerPane(pointer, pane) }
 
     init {
-        titleLabel.text = struct.id
-
         addProperty(Label().bindLocalized("datamodel.type"), Label("keepTheBeat").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
@@ -26,6 +24,11 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
         addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration"), defaultDurationField)
 
         centreVbox.children += cuesPane
+    }
+
+    init {
+        // Bind to struct
+        defaultDurationField.valueProperty().addListener { _, _, newValue -> struct.defaultDuration = newValue.toFloat() }
     }
 
     init {

@@ -17,8 +17,6 @@ class EquidistantObjPane(editor: Editor, struct: Equidistant) : MultipartStructP
     override val cuesPane: CuesPane<Equidistant> = CuesPane(this) { pointer, pane -> EquidistantCuePointerPane(pointer, pane) }
 
     init {
-        titleLabel.text = struct.id
-
         addProperty(Label().bindLocalized("datamodel.type"), Label("equidistant").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
@@ -28,6 +26,12 @@ class EquidistantObjPane(editor: Editor, struct: Equidistant) : MultipartStructP
         addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
 
         centreVbox.children += cuesPane
+    }
+
+    init {
+        // Bind to struct
+        distanceField.valueProperty().addListener { _, _, newValue -> struct.distance = newValue.toFloat() }
+        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
     }
 
     init {

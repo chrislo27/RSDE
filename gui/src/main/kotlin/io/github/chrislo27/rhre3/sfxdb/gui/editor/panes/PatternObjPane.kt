@@ -16,8 +16,6 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
     override val cuesPane: CuesPane<Pattern> = CuesPane(this) { pointer, pane -> PatternCuePointerPane(pointer, pane) }
 
     init {
-        titleLabel.text = struct.id
-
         addProperty(Label().bindLocalized("datamodel.type"), Label("pattern").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
@@ -26,6 +24,11 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
         addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
 
         centreVbox.children += cuesPane
+    }
+
+    init {
+        // Bind to struct
+        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
     }
 
     init {
