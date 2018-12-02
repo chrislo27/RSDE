@@ -44,6 +44,7 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB)
         validation.registerValidator(nameField, Validators.NAME_BLANK)
+//        validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject)) // TODO
     }
 
     class RandomCueCuePointerPane(cuePointer: CuePointer, parent: CuesPane<RandomCue>) : CuePointerPane<RandomCue>(parent, cuePointer) {

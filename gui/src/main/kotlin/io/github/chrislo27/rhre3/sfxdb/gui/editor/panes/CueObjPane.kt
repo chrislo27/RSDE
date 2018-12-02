@@ -85,6 +85,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB)
         validation.registerValidator(nameField, Validators.NAME_BLANK)
         validation.registerValidator(fileExtField, Validators.FILE_EXT_NOT_OGG)
+//        validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject)) // TODO
     }
 
 }

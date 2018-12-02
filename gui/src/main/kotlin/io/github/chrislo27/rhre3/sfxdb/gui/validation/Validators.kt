@@ -67,14 +67,32 @@ object Validators {
     val EXTERNAL_CUE_POINTER: Validator<String> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.cuePointerExtDependency"], !u.startsWith("*"))
     }
+
     fun cuePointerPointsNowhere(gameObj: Game): Validator<String> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.invalidCuePointer"], u !in gameObj.objects.map { it.id })
+    }
+
+    // Response IDs
+    val EXTERNAL_RESPONSE_IDS: Validator<List<String>> = Validator { t, u ->
+        val external = u.filter { !it.startsWith("*") }
+        fromWarningIf(t, UiLocalization["validation.responseIDsExtDependency", external], external.isNotEmpty())
+    }
+
+    fun responseIDsPointsNowhere(game: Game): Validator<List<String>> = Validator { t, u ->
+        ValidationResult().apply {
+            val allIDs = game.objects.map { it.id }
+            val invalidIDs: List<String> = u.filter { it !in allIDs }
+            if (invalidIDs.isNotEmpty()) {
+                add(L10NValidationMessage(t, UiLocalization["validation.invalidResponseIDs", invalidIDs], Severity.ERROR))
+            }
+        }
     }
 
     // GameObject
     val NO_DISPLAY: Validator<Boolean> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.noDisplay"], u)
     }
+
     fun nameSuffixFromSeries(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
         // FIXME not very good at detecting when this is necessary. Lots of edge cases
         val selectedSeries: Series? = gameObjPane.seriesComboBox.value
@@ -84,7 +102,7 @@ object Validators {
 
     // CueObject
     val FILE_EXT_NOT_OGG: Validator<String> = Validator { t, u ->
-        fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt && u.isNotEmpty())
+        fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], !u.isNullOrEmpty() && u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt)
     }
 
 }

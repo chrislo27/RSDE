@@ -171,13 +171,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             struct.searchHints = list.distinct().toMutableList().takeUnless { it.isEmpty() }
         })
         noDisplayCheckbox.selectedProperty().addListener { _, _, newValue -> struct.noDisplay = newValue }
-        objectsListView.items.addListener(ListChangeListener { evt ->
-            val list = mutableListOf<Datamodel>()
-            while (evt.next()) {
-                list.addAll(evt.list.filterIsInstance<Datamodel>())
-            }
-            struct.objects = list.distinct().toMutableList()
-        })
+
+        idField.textProperty().addListener { _, _, _ ->
+            editor.editorPane.fireUpdate()
+        }
+        nameField.textProperty().addListener { _, _, _ ->
+            editor.editorPane.fireUpdate()
+        }
     }
 
     init {

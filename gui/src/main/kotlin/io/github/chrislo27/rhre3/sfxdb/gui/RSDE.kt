@@ -97,6 +97,7 @@ class RSDE : Application() {
 
         DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
         Thread.currentThread().setUncaughtExceptionHandler { t, e ->
+            e.printStackTrace()
             Platform.runLater {
                 ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred").showAndWait()
             }
