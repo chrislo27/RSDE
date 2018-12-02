@@ -37,7 +37,7 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
     }
 
     private var gridPaneRowIndex: Int = 0
-    protected val validation = L10NValidationSupport()
+    val validation = L10NValidationSupport()
 
     init {
         stylesheets += "style/structPane.css"

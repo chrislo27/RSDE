@@ -7,6 +7,8 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.StructurePane
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.StructPane
+import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
@@ -73,7 +75,13 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+W")
             }
-            items += MenuItem().bindLocalized("editor.toolbar.file.save")
+            items += MenuItem().bindLocalized("editor.toolbar.file.save").apply {
+                setOnAction {
+                    val editor = currentEditor ?: return@setOnAction
+                    statusBar.text = Localization[if (attemptSave(editor)) "editor.status.save.successful" else "editor.status.save.cannot"]
+                }
+                accelerator = KeyCombination.keyCombination("Shortcut+S")
+            }
             items += MenuItem().bindLocalized("editor.toolbar.file.export").apply {
                 setOnAction { _ ->
                     val editor = currentEditor ?: return@setOnAction
@@ -139,6 +147,19 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         editors -= editor
         centreTabPane.tabs -= editor.tab
         fireUpdate()
+    }
+
+    fun attemptSave(editor: Editor): Boolean {
+        // Check validation for all
+        val allPanes = (listOf(editor.gameObject) + editor.gameObject.objects).mapNotNull { editor.paneMap[it] }.filterIsInstance<StructPane<*>>()
+        if (allPanes.any { it.validation.isInvalid }) {
+            return false
+        }
+
+        val datajson = editor.folder.resolve("data.json")
+        datajson.copyTo(editor.folder.resolve("OLD-data.json"), true)
+        datajson.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(editor.gameObject))
+        return true
     }
 
 }
