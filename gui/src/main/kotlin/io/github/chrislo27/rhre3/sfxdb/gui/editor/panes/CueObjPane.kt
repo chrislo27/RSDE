@@ -5,26 +5,35 @@ import io.github.chrislo27.rhre3.sfxdb.adt.Cue
 import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections
-import javafx.scene.control.CheckBox
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.*
+import javafx.util.StringConverter
 
 
-class CueObjPane(editor: Editor, struct: Cue) : StructPane<Cue>(editor, struct) {
-
-    override val idField = TextField(struct.id)
-    override val nameField = TextField(struct.name)
-    val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struct) {
     
     val durationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.duration.toDouble(), 0.5)
     val stretchableField = CheckBox().apply { this.isSelected = struct.stretchable}
     val repitchableField = CheckBox().apply { this.isSelected = struct.repitchable }
     val loopsField = CheckBox().apply { this.isSelected = struct.loops}
-    val baseBpmField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.baseBpm.toDouble(), 1.0)
+    val baseBpmField = Spinner<Double>().apply {
+        valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Float.MAX_VALUE.toDouble(), struct.baseBpm.toDouble(), 1.0).apply {
+            this.converter = object : StringConverter<Double>() {
+                override fun toString(`object`: Double): String {
+                    return if (`object` == 0.0) Localization["cueObject.baseBpm.none"] else `object`.toString()
+                }
+
+                override fun fromString(string: String): Double {
+                    return string.toDoubleOrNull() ?: 0.0
+                }
+            }
+        }
+        isEditable = true
+    }
     val introSoundField = TextField(struct.introSound)
     val endingSoundField = TextField(struct.endingSound)
     val fileExtField = TextField(struct.endingSound).apply {
@@ -44,7 +53,9 @@ class CueObjPane(editor: Editor, struct: Cue) : StructPane<Cue>(editor, struct) 
         addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
         addProperty(Label().bindLocalized("cueObject.repitchable"), repitchableField)
         addProperty(Label().bindLocalized("cueObject.loops"), loopsField)
-        addProperty(Label().bindLocalized("cueObject.baseBpm"), baseBpmField)
+        addProperty(Label().bindLocalized("cueObject.baseBpm").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.baseBpm.tooltip")
+        }, baseBpmField)
         addProperty(Label().bindLocalized("cueObject.introSound"), introSoundField)
         addProperty(Label().bindLocalized("cueObject.endingSound"), endingSoundField)
         addProperty(Label().bindLocalized("cueObject.fileExtension"), fileExtField)

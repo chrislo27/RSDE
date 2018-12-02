@@ -2,6 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.validation
 
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
+import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GameObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
@@ -60,6 +61,14 @@ object Validators {
     }
     val NAME_BLANK: Validator<String> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.nameBlank"], u.isNullOrBlank())
+    }
+
+    // CuePointer
+    val EXTERNAL_CUE_POINTER: Validator<String> = Validator { t, u ->
+        fromWarningIf(t, UiLocalization["validation.cuePointerExtDependency"], !u.startsWith("*"))
+    }
+    fun cuePointerPointsNowhere(gameObj: Game): Validator<String> = Validator { t, u ->
+        fromErrorIf(t, UiLocalization["validation.invalidCuePointer"], u !in gameObj.objects.map { it.id })
     }
 
     // GameObject

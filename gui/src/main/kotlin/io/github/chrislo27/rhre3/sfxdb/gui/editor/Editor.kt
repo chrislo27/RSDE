@@ -83,9 +83,7 @@ class Editor(val folder: File, val editorPane: EditorPane) {
             is KeepTheBeat -> KeepTheBeatObjPane(this, struct)
             is Equidistant -> EquidistantObjPane(this, struct)
             is RandomCue -> RandomCueObjPane(this, struct)
-            is CuePointer -> {
-                TODO()
-            }
+            is CuePointer -> null
             is SubtitleEntity, is ShakeEntity, is EndRemixEntity, is TextureEntity -> null
             else -> throw IllegalStateException("JsonStruct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
         }

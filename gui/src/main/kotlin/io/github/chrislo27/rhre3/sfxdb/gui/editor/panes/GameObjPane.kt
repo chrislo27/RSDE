@@ -18,8 +18,8 @@ import javafx.util.Callback
 
 class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) {
 
-    override val idField = TextField(struct.id)
-    override val nameField = TextField(struct.name)
+    val idField = TextField(struct.id)
+    val nameField = TextField(struct.name)
     val seriesComboBox =
         ComboBox<Series>(FXCollections.observableArrayList(Series.VALUES - listOf(Series.SWITCH))).apply {
             this.selectionModel.select(struct.series)

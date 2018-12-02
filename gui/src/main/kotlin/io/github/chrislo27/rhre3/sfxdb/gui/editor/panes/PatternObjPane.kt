@@ -1,24 +1,19 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.adt.CuePointer
 import io.github.chrislo27.rhre3.sfxdb.adt.Pattern
-import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
-import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
-import javafx.collections.FXCollections
 import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.Tooltip
 
 
-class PatternObjPane(editor: Editor, struct: Pattern) : StructPane<Pattern>(editor, struct) {
-
-    override val idField = TextField(struct.id)
-    override val nameField = TextField(struct.name)
-    val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Pattern>(editor, struct) {
 
     val stretchableField = CheckBox().apply { this.isSelected = struct.stretchable }
+    override val cuesPane: CuesPane<Pattern> = CuesPane(this) { pointer, pane -> PatternCuePointerPane(pointer, pane) }
 
     init {
         titleLabel.text = struct.id
@@ -29,12 +24,27 @@ class PatternObjPane(editor: Editor, struct: Pattern) : StructPane<Pattern>(edit
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
 
         addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
+
+        centreVbox.children += cuesPane
     }
 
     init {
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB)
         validation.registerValidator(nameField, Validators.NAME_BLANK)
+    }
+
+    class PatternCuePointerPane(cuePointer: CuePointer, parent: CuesPane<Pattern>) : CuePointerPane<Pattern>(parent, cuePointer) {
+        init {
+            addProperty(Label().bindLocalized("cuePointer.id"), idField)
+            addProperty(Label().bindLocalized("cuePointer.beat"), beatField)
+            addProperty(Label().bindLocalized("cuePointer.duration").apply {
+                tooltip = Tooltip().bindLocalized("cuePointer.duration.tooltip")
+            }, durationField)
+            addProperty(Label().bindLocalized("cuePointer.semitone"), semitoneField)
+            addProperty(Label().bindLocalized("cuePointer.track"), trackField)
+            addProperty(Label().bindLocalized("cuePointer.volume"), volumeField)
+        }
     }
 
 }

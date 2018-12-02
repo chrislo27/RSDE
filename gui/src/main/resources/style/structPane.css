@@ -15,3 +15,8 @@
     -fx-vgap: 0.25em;
     -fx-padding: 0.25em 1em 0.25em 1em;
 }
+
+#pick-cue-pointer-label {
+    -fx-font: italic 12pt "Roboto";
+    -fx-text-fill: darkgray;
+}

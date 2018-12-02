@@ -1,24 +1,19 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.adt.CuePointer
 import io.github.chrislo27.rhre3.sfxdb.adt.KeepTheBeat
-import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
-import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
-import javafx.collections.FXCollections
 import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.Tooltip
 
 
-class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : StructPane<KeepTheBeat>(editor, struct) {
-
-    override val idField = TextField(struct.id)
-    override val nameField = TextField(struct.name)
-    val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructPane<KeepTheBeat>(editor, struct) {
 
     val defaultDurationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.defaultDuration.toDouble(), 0.5)
+    override val cuesPane: CuesPane<KeepTheBeat> = CuesPane(this) { pointer, pane -> KeepTheBeatCuePointerPane(pointer, pane) }
 
     init {
         titleLabel.text = struct.id
@@ -29,6 +24,8 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : StructPane<KeepT
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
 
         addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration"), defaultDurationField)
+
+        centreVbox.children += cuesPane
     }
 
     init {
@@ -37,4 +34,16 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : StructPane<KeepT
         validation.registerValidator(nameField, Validators.NAME_BLANK)
     }
 
+    class KeepTheBeatCuePointerPane(cuePointer: CuePointer, parent: CuesPane<KeepTheBeat>) : CuePointerPane<KeepTheBeat>(parent, cuePointer) {
+        init {
+            addProperty(Label().bindLocalized("cuePointer.id"), idField)
+            addProperty(Label().bindLocalized("cuePointer.beat"), beatField)
+            addProperty(Label().bindLocalized("cuePointer.duration").apply {
+                tooltip = Tooltip().bindLocalized("cuePointer.duration.tooltip")
+            }, durationField)
+            addProperty(Label().bindLocalized("cuePointer.semitone"), semitoneField)
+            addProperty(Label().bindLocalized("cuePointer.track"), trackField)
+            addProperty(Label().bindLocalized("cuePointer.volume"), volumeField)
+        }
+    }
 }

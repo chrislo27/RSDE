@@ -37,6 +37,9 @@ abstract class Datamodel(@JsonInclude(JsonInclude.Include.ALWAYS) var type: Stri
                          @JsonInclude(JsonInclude.Include.ALWAYS) var name: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var deprecatedIDs: MutableList<String>) : JsonStruct
 
+abstract class MultipartDatamodel(type: String, id: String, name: String, deprecatedIDs: MutableList<String>,
+                                  var cues: MutableList<CuePointer>) : Datamodel(type, id, name, deprecatedIDs)
+
 class Cue(
     id: String, name: String, deprecatedIDs: MutableList<String>,
     var duration: Float,
@@ -52,28 +55,28 @@ class Cue(
 
 class Pattern(
         id: String, name: String, deprecatedIDs: MutableList<String>,
-        var cues: MutableList<CuePointer>,
+        cues: MutableList<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) var stretchable: Boolean = false
-) : Datamodel("pattern", id, name, deprecatedIDs)
+) : MultipartDatamodel("pattern", id, name, deprecatedIDs, cues)
 
 class Equidistant(
         id: String, name: String, deprecatedIDs: MutableList<String>,
-        var cues: MutableList<CuePointer>,
+        cues: MutableList<CuePointer>,
         var distance: Float = 0f,
         var stretchable: Boolean = false
-) : Datamodel("equidistant", id, name, deprecatedIDs)
+) : MultipartDatamodel("equidistant", id, name, deprecatedIDs, cues)
 
 class KeepTheBeat(
         id: String, name: String, deprecatedIDs: MutableList<String>,
-        var cues: MutableList<CuePointer>,
+        cues: MutableList<CuePointer>,
         var defaultDuration: Float = 0f
-) : Datamodel("keepTheBeat", id, name, deprecatedIDs)
+) : MultipartDatamodel("keepTheBeat", id, name, deprecatedIDs, cues)
 
 class RandomCue(
         id: String, name: String, deprecatedIDs: MutableList<String>,
-        var cues: MutableList<CuePointer>,
+        cues: MutableList<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: List<String>? = null
-) : Datamodel("randomCue", id, name, deprecatedIDs)
+) : MultipartDatamodel("randomCue", id, name, deprecatedIDs, cues)
 
 class SubtitleEntity(
         id: String, name: String, deprecatedIDs: MutableList<String>,
