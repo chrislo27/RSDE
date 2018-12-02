@@ -8,6 +8,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
@@ -96,7 +97,9 @@ class RSDE : Application() {
 
         DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
         Thread.currentThread().setUncaughtExceptionHandler { t, e ->
-            ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred")
+            Platform.runLater {
+                ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred").showAndWait()
+            }
         }
     }
 
