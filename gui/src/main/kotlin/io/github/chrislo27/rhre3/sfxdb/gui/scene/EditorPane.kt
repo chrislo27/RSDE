@@ -7,6 +7,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.StructurePane
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.geometry.Side
@@ -14,9 +15,16 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuBar
 import javafx.scene.control.MenuItem
 import javafx.scene.control.TabPane
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
+import javafx.stage.FileChooser
+import org.controlsfx.control.StatusBar
+import java.io.File
+import java.nio.file.Files
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 
 class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
@@ -41,6 +49,9 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         }
 
     val structurePane: StructurePane
+    val statusBar: StatusBar = StatusBar().apply {
+        this.text = ""
+    }
 
     init {
         stylesheets += "style/editorPane.css"
@@ -60,9 +71,36 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 setOnAction {
                     app.primaryStage.scene.root = WelcomePane(app)
                 }
+                accelerator = KeyCombination.keyCombination("Shortcut+W")
             }
             items += MenuItem().bindLocalized("editor.toolbar.file.save")
-            items += MenuItem().bindLocalized("editor.toolbar.file.export")
+            items += MenuItem().bindLocalized("editor.toolbar.file.export").apply {
+                setOnAction { _ ->
+                    val editor = currentEditor ?: return@setOnAction
+                    val fileChooser = FileChooser().apply {
+                        this.initialFileName = editor.folder.name + ".zip"
+                        this.title = Localization["editor.export.title", editor.folder.name]
+                        this.selectedExtensionFilter = FileChooser.ExtensionFilter(Localization["editor.export.filetype"], ".zip")
+                        this.extensionFilters += this.selectedExtensionFilter
+                    }
+                    val file: File = fileChooser.showSaveDialog(app.primaryStage) ?: return@setOnAction
+                    val zipFilePath = file.toPath()
+                    val zos = ZipOutputStream(Files.newOutputStream(zipFilePath))
+                    zos.use {
+                        val sourceDirPath = editor.folder.toPath()
+                        Files.walk(sourceDirPath).filter { !Files.isDirectory(it) }.forEach { path ->
+                            val zipEntry = ZipEntry(sourceDirPath.relativize(path).toString())
+                            zos.putNextEntry(zipEntry)
+                            zos.write(Files.readAllBytes(path))
+                            zos.closeEntry()
+
+                            statusBar.text = Localization["editor.status.export.successful"]
+                        }
+                    }
+
+                }
+                accelerator = KeyCombination.keyCombination("Shortcut+E")
+            }
         }
 
         centreTabPane.selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
@@ -72,6 +110,8 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 fireUpdate()
             }
         }
+
+        bottomPane.children += statusBar
 
         Platform.runLater {
             fireUpdate()
