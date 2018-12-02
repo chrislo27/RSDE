@@ -75,7 +75,7 @@ object Validators {
 
     // CueObject
     val FILE_EXT_NOT_OGG: Validator<String> = Validator { t, u ->
-        fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt)
+        fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt && u.isNotEmpty())
     }
 
 }

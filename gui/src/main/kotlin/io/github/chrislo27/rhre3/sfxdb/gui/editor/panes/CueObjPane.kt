@@ -16,8 +16,8 @@ import javafx.scene.control.TextField
 
 class CueObjPane(editor: Editor, struct: Cue) : StructPane<Cue>(editor, struct) {
 
-    val idField = TextField(struct.id)
-    val nameField = TextField(struct.name)
+    override val idField = TextField(struct.id)
+    override val nameField = TextField(struct.name)
     val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
     
     val durationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.duration.toDouble(), 0.5)

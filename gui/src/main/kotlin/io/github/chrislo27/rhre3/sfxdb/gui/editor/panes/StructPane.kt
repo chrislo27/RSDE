@@ -8,6 +8,7 @@ import javafx.application.Platform
 import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
+import javafx.scene.control.TextField
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
@@ -25,6 +26,8 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
     val gridPane: GridPane = GridPane().apply {
         styleClass += "grid-pane"
     }
+    abstract val idField: TextField
+    abstract val nameField: TextField
 
     private var gridPaneRowIndex: Int = 0
     protected val validation = L10NValidationSupport()

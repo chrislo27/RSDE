@@ -18,8 +18,8 @@ import javafx.util.Callback
 
 class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) {
 
-    val idField = TextField(struct.id)
-    val nameField = TextField(struct.name)
+    override val idField = TextField(struct.id)
+    override val nameField = TextField(struct.name)
     val seriesComboBox =
         ComboBox<Series>(FXCollections.observableArrayList(Series.VALUES - listOf(Series.SWITCH))).apply {
             this.selectionModel.select(struct.series)
@@ -29,8 +29,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
         this.isSelected = struct.groupDefault
     }
     val prioritySpinner = Spinner<Int>(-128, 127, struct.priority)
-    val searchHintsField =
-        ChipPane(FXCollections.observableArrayList((struct.searchHints ?: mutableListOf()).map { Chip(it) }))
+    val searchHintsField = ChipPane(FXCollections.observableArrayList((struct.searchHints ?: mutableListOf()).map { Chip(it) }))
     val noDisplayCheckbox = CheckBox().apply {
         this.isSelected = struct.noDisplay
     }

@@ -14,8 +14,8 @@ import javafx.scene.control.TextField
 
 class PatternObjPane(editor: Editor, struct: Pattern) : StructPane<Pattern>(editor, struct) {
 
-    val idField = TextField(struct.id)
-    val nameField = TextField(struct.name)
+    override val idField = TextField(struct.id)
+    override val nameField = TextField(struct.name)
     val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
 
     val stretchableField = CheckBox().apply { this.isSelected = struct.stretchable }

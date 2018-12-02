@@ -15,8 +15,8 @@ import javafx.scene.control.TextField
 
 class EquidistantObjPane(editor: Editor, struct: Equidistant) : StructPane<Equidistant>(editor, struct) {
 
-    val idField = TextField(struct.id)
-    val nameField = TextField(struct.name)
+    override val idField = TextField(struct.id)
+    override val nameField = TextField(struct.name)
     val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
 
     val distanceField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.distance.toDouble(), 0.5)

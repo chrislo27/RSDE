@@ -13,8 +13,8 @@ import javafx.scene.control.TextField
 
 class RandomCueObjPane(editor: Editor, struct: RandomCue) : StructPane<RandomCue>(editor, struct) {
 
-    val idField = TextField(struct.id)
-    val nameField = TextField(struct.name)
+    override val idField = TextField(struct.id)
+    override val nameField = TextField(struct.name)
     val deprecatedIDsField = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
 
     val responseIDsField = ChipPane(FXCollections.observableArrayList((struct.responseIDs ?: listOf()).map { Chip(it) }))
