@@ -4,6 +4,7 @@ import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
+import javafx.application.Platform
 import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.ScrollPane
@@ -40,6 +41,10 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
         gridPane.maxWidth = Double.MAX_VALUE
         VBox.setVgrow(gridPane, Priority.ALWAYS)
         centreVbox.children += gridPane
+
+        Platform.runLater {
+            validation.initInitialDecoration()
+        }
     }
 
     protected fun addProperty(label: Node, control: Node): Int {

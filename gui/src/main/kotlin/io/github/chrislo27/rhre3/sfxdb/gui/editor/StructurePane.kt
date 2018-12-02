@@ -4,6 +4,7 @@ import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.scene.control.Label
@@ -61,7 +62,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         gameObj.objects.forEach { obj ->
             val datamodel = obj
 
-            root.children += TreeItem(DataNode(this, currentEditor, datamodel, "${datamodel.id} (${datamodel.name})"))
+            root.children += TreeItem(DataNode(this, currentEditor, datamodel, if (datamodel.id.isBlank()) "${datamodel.type} ${Localization["editor.missingID"]}" else "${datamodel.id} (${datamodel.name})"))
         }
 
         root.isExpanded = true

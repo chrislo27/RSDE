@@ -1,9 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Series
-import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
-import io.github.chrislo27.rhre3.sfxdb.adt.Game
-import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
+import io.github.chrislo27.rhre3.sfxdb.adt.*
 import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
@@ -86,12 +84,12 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
         }
 
         addButton.items.addAll(
-            AddMenuItem("CueObject"),
+            AddMenuItem("CueObject") { Cue("", "", mutableListOf(), 0f) },
             SeparatorMenuItem(),
-            AddMenuItem("PatternObject"),
-            AddMenuItem("EquidistantObject"),
-            AddMenuItem("KeepTheBeatObject"),
-            AddMenuItem("RandomCueObject")
+            AddMenuItem("PatternObject") { Pattern("", "", mutableListOf(), mutableListOf()) },
+            AddMenuItem("EquidistantObject") { Equidistant("", "", mutableListOf(), mutableListOf()) },
+            AddMenuItem("KeepTheBeatObject") { KeepTheBeat("", "", mutableListOf(), mutableListOf()) },
+            AddMenuItem("RandomCueObject") { RandomCue("", "", mutableListOf(), mutableListOf()) }
         )
         removeButton.setOnAction {
             val current = objectsListView.selectionModel.selectedItem
@@ -176,10 +174,20 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
         }
     }
 
-    inner class AddMenuItem(text: String) : MenuItem(text) {
+    inner class AddMenuItem(text: String, factory: () -> Datamodel) : MenuItem(text) {
         init {
             setOnAction {
-
+                val datamodel: Datamodel = factory()
+                gameObject.objects.add(datamodel)
+                val pane = try {
+                    editor.getPane(datamodel)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                    ExceptionAlert(e).showAndWait()
+                    return@setOnAction
+                }
+                editor.switchToPane(pane)
+                editor.editorPane.fireUpdate()
             }
         }
     }
