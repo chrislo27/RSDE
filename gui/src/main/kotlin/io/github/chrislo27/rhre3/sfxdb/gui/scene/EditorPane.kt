@@ -56,8 +56,11 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         left = structurePane
 
         toolbar.menus += Menu().bindLocalized("editor.toolbar.file").apply {
-            items += MenuItem().bindLocalized("editor.toolbar.file.new")
-            items += MenuItem().bindLocalized("editor.toolbar.file.open")
+            items += MenuItem().bindLocalized("editor.toolbar.file.welcomeScreen").apply {
+                setOnAction {
+                    app.primaryStage.scene.root = WelcomePane(app)
+                }
+            }
             items += MenuItem().bindLocalized("editor.toolbar.file.save")
             items += MenuItem().bindLocalized("editor.toolbar.file.export")
         }

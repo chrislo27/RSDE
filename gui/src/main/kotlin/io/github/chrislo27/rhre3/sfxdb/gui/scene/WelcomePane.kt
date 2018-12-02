@@ -110,10 +110,9 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         tooltip = Tooltip().bindLocalized("welcome.startNewGame.tooltip")
 
                         onAction = EventHandler {
-                            // TODO go to editor
-                            app.switchToEditorPane {
-                            }
+                            // TODO
                         }
+                        isDisable = true
                     }
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.editExisting")
@@ -239,7 +238,14 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 val item = this@CustomSFXCell.item ?: return@setOnMouseClicked
                 if (mouseEvent.button == MouseButton.PRIMARY && mouseEvent.clickCount >= 2) {
                     app.switchToEditorPane {
-                        addEditor(Editor(item.folder, this))
+                        val sameFolder = this.editors.firstOrNull { it.folder == item.folder }
+                        if (sameFolder == null) {
+                            val newEditor = Editor(item.folder, this)
+                            addEditor(newEditor)
+                            this.centreTabPane.selectionModel.select(newEditor.tab)
+                        } else {
+                            this.centreTabPane.selectionModel.select(sameFolder.tab)
+                        }
                     }
                 }
             }

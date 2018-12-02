@@ -51,6 +51,8 @@ class RSDE : Application() {
     lateinit var gameRegistry: GameRegistry
         private set
 
+    private val editorPane: EditorPane by lazy { EditorPane(this) }
+
     override fun init() {
         DiscordHelper.init(enabled = true)
 
@@ -111,7 +113,7 @@ class RSDE : Application() {
 
     fun switchToEditorPane(apply: EditorPane.() -> Unit) {
         val stage = primaryStage
-        stage.scene.root = EditorPane(this).apply {
+        stage.scene.root = editorPane.apply {
             apply()
         }
 //        stage.sizeToScene()
