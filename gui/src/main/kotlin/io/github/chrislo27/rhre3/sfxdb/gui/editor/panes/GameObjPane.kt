@@ -93,8 +93,9 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             AddMenuItem("KeepTheBeatObject") { KeepTheBeat("", "", mutableListOf(), mutableListOf()) },
             AddMenuItem("RandomCueObject") { RandomCue("", "", mutableListOf(), mutableListOf()) }
         )
+        val selectionModel = objectsListView.selectionModel
         removeButton.setOnAction {
-            val current = objectsListView.selectionModel.selectedItems
+            val current = selectionModel.selectedItems
             if (current != null && current.isNotEmpty()) {
                 val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
                     val text = UiLocalization[if (current.size == 1) "editor.removeObjectConfirm" else "editor.removeObjectConfirm.multiple"]
@@ -110,40 +111,51 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             }
         }
         moveUpButton.setOnAction { _ ->
-            val current = objectsListView.selectionModel.selectedItem
-            if (current != null) {
+            val current = selectionModel.selectedItems?.toList()?.filterIsInstance<Datamodel>()
+            if (current != null && current.isNotEmpty() && selectionModel.isSelectionContiguous()) {
                 val list = gameObject.objects
-                val index = list.indexOf(current)
-                if (index != -1 && index - 1 >= 0) {
-                    val removed = list.removeAt(index)
-                    list.add(index - 1, removed)
+                val indices = selectionModel.selectedIndices.toList()
+                val first = indices.min() ?: -1
+                if (indices.isNotEmpty() && first - 1 >= 0) {
+                    list.removeAll(current)
+                    current.forEachIndexed { i, it ->
+                        list.add(first - 1 + i, it)
+                    }
                     editor.editorPane.fireUpdate()
-                    objectsListView.selectionModel.select(index - 1)
+                    selectionModel.clearSelection()
+                    val newIndices = indices.map { it - 1 }
+                    selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
                 }
             }
         }
         moveDownButton.setOnAction { _ ->
-            val current = objectsListView.selectionModel.selectedItem
-            if (current != null) {
+            val current = selectionModel.selectedItems?.toList()?.filterIsInstance<Datamodel>()
+            if (current != null && current.isNotEmpty() && selectionModel.isSelectionContiguous()) {
                 val list = gameObject.objects
-                val index = list.indexOf(current)
-                if (index != -1 && index + 1 < list.size) {
-                    val removed = list.removeAt(index)
-                    list.add(index + 1, removed)
+                val indices = selectionModel.selectedIndices.toList()
+                val first = indices.min() ?: -1
+                val last = indices.max() ?: Int.MAX_VALUE
+                if (indices.isNotEmpty() && last + 1 < list.size) {
+                    list.removeAll(current)
+                    current.forEachIndexed { i, it ->
+                        list.add(first + 1 + i, it)
+                    }
                     editor.editorPane.fireUpdate()
-                    objectsListView.selectionModel.select(index + 1)
+                    selectionModel.clearSelection()
+                    val newIndices = indices.map { it + 1 }
+                    selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
                 }
             }
         }
 
-        objectsListView.selectionModel.selectionMode = SelectionMode.MULTIPLE
-        objectsListView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+        selectionModel.selectionMode = SelectionMode.MULTIPLE
+        selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             removeButton.isDisable = newValue == null
-            moveUpButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex > 0
-            moveDownButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex < objectsListView.items.size - 1
+            moveUpButton.isDisable = newValue == null || selectionModel.selectedIndices.min() ?: -1 <= 0 || !selectionModel.isSelectionContiguous()
+            moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE >= objectsListView.items.size - 1 || !selectionModel.isSelectionContiguous()
         }
         objectsListView.setOnMouseClicked { evt ->
-            val item = objectsListView.selectionModel.selectedItem
+            val item = selectionModel.selectedItem
             if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 2) {
                 val pane = try {
                     editor.getPane(item)

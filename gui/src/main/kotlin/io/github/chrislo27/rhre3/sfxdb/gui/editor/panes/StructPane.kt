@@ -160,8 +160,9 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             addButton.setOnAction {
                 // TODO implement adding of cue pointers
             }
+            val selectionModel = cuesListView.selectionModel
             removeButton.setOnAction {
-                val current = cuesListView.selectionModel.selectedItems
+                val current = selectionModel.selectedItems
                 if (current != null && current.isNotEmpty()) {
                     val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
                         val text = UiLocalization[if (current.size == 1) "editor.removeCuePointerConfirm" else "editor.removeCuePointerConfirm.multiple"]
@@ -177,41 +178,51 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 }
             }
             moveUpButton.setOnAction { _ ->
-                val current = cuesListView.selectionModel.selectedItem
-                if (current != null) {
+                val current = selectionModel.selectedItems?.toList()
+                if (current != null && current.isNotEmpty() && selectionModel.isSelectionContiguous()) {
                     val list = parentPane.struct.cues
-                    val index = list.indexOf(current)
-                    if (index != -1 && index - 1 >= 0) {
-                        val removed = list.removeAt(index)
-                        list.add(index - 1, removed)
+                    val indices = selectionModel.selectedIndices.toList()
+                    val first = indices.min() ?: -1
+                    if (indices.isNotEmpty() && first - 1 >= 0) {
+                        list.removeAll(current)
+                        current.forEachIndexed { i, it ->
+                            list.add(first - 1 + i, it)
+                        }
                         parentPane.editor.editorPane.fireUpdate()
-                        cuesListView.selectionModel.select(index - 1)
+                        selectionModel.clearSelection()
+                        val newIndices = indices.map { it - 1 }
+                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
                     }
                 }
             }
             moveDownButton.setOnAction { _ ->
-                val current = cuesListView.selectionModel.selectedItem
-                if (current != null) {
+                val current = selectionModel.selectedItems?.toList()
+                if (current != null && current.isNotEmpty() && selectionModel.isSelectionContiguous()) {
                     val list = parentPane.struct.cues
-                    val index = list.indexOf(current)
-                    println(index)
-                    if (index != -1 && index + 1 < list.size) {
-                        val removed = list.removeAt(index)
-                        list.add(index + 1, removed)
+                    val indices = selectionModel.selectedIndices.toList()
+                    val first = indices.min() ?: -1
+                    val last = indices.max() ?: Int.MAX_VALUE
+                    if (indices.isNotEmpty() && last + 1 < list.size) {
+                        list.removeAll(current)
+                        current.forEachIndexed { i, it ->
+                            list.add(first + 1 + i, it)
+                        }
                         parentPane.editor.editorPane.fireUpdate()
-                        cuesListView.selectionModel.select(index + 1)
+                        selectionModel.clearSelection()
+                        val newIndices = indices.map { it + 1 }
+                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
                     }
                 }
             }
 
-            cuesListView.selectionModel.selectionMode = SelectionMode.MULTIPLE
-            cuesListView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+            selectionModel.selectionMode = SelectionMode.MULTIPLE
+            selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                 removeButton.isDisable = newValue == null
-                moveUpButton.isDisable = newValue == null && cuesListView.selectionModel.selectedIndex > 0
-                moveDownButton.isDisable = newValue == null && cuesListView.selectionModel.selectedIndex < cuesListView.items.size - 1
+                moveUpButton.isDisable = newValue == null || selectionModel.selectedIndices.min() ?: -1 <= 0 || !selectionModel.isSelectionContiguous()
+                moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE > cuesListView.items.size - 1 || !selectionModel.isSelectionContiguous()
             }
             cuesListView.setOnMouseClicked { evt ->
-                val item = cuesListView.selectionModel.selectedItem
+                val item = selectionModel.selectedItem
                 if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 1) {
                     displayPane.children.clear()
                     displayPane.children.add(getPaneForCuePointer(item))

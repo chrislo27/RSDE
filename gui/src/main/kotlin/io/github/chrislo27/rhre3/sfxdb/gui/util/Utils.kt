@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.util
 
 import javafx.scene.Scene
+import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.Spinner
 import javafx.scene.control.SpinnerValueFactory
 import javafx.scene.input.KeyCombination
@@ -53,3 +54,12 @@ fun intSpinnerFactory(min: Int, max: Int, initial: Int, step: Int = 1): Spinner<
         isEditable = true
     }
 
+/**
+ * @return true iff there is a selection and the selection is contiguous
+ */
+fun <T> MultipleSelectionModel<T>.isSelectionContiguous(): Boolean {
+    if (this.selectedIndices.isEmpty()) return false
+    if (this.selectedIndices.size == 1) return true
+    val sorted = this.selectedIndices.toList().sorted()
+    return sorted.drop(1).fold(sorted.first()) { acc, _ -> acc + 1} == sorted.last()
+}

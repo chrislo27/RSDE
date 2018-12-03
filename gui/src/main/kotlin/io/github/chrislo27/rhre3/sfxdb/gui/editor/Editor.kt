@@ -37,7 +37,9 @@ class Editor(val folder: File, val editorPane: EditorPane) {
                     this.fitWidth = 1.5.em
                     this.fitHeight = 1.5.em
                 }
-
+        setOnClosed {
+            editorPane.removeEditor(this@Editor)
+        }
     }
     private val pickFirstLabel = Label().bindLocalized("editor.selectAnItem").apply {
         id = "pick-first-label"
