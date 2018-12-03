@@ -152,7 +152,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     fun attemptSave(editor: Editor): Boolean {
         // Check validation for all
         val allPanes = (listOf(editor.gameObject) + editor.gameObject.objects).mapNotNull { editor.paneMap[it] }.filterIsInstance<StructPane<*>>()
-        if (allPanes.any { it.validation.isInvalid }) {
+        if (allPanes.any { it.validation.initInitialDecoration(); it.validation.isInvalid }) {
             return false
         }
 
