@@ -94,16 +94,17 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             AddMenuItem("RandomCueObject") { RandomCue("", "", mutableListOf(), mutableListOf()) }
         )
         removeButton.setOnAction {
-            val current = objectsListView.selectionModel.selectedItem
-            if (current != null) {
+            val current = objectsListView.selectionModel.selectedItems
+            if (current != null && current.isNotEmpty()) {
                 val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
-                    this.titleProperty().bind(UiLocalization["editor.removeObjectConfirm"])
-                    this.contentTextProperty().bind(UiLocalization["editor.removeObjectConfirm"])
+                    val text = UiLocalization[if (current.size == 1) "editor.removeObjectConfirm" else "editor.removeObjectConfirm.multiple"]
+                    this.titleProperty().bind(text)
+                    this.contentTextProperty().bind(text)
                     this.addWindowIcons()
                 }
                 val result = dialog.showAndWait()
                 if (result.orElse(null) == ButtonType.OK) {
-                    gameObject.objects.remove(current)
+                    gameObject.objects.removeAll(current)
                     editor.editorPane.fireUpdate()
                 }
             }
@@ -135,6 +136,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             }
         }
 
+        objectsListView.selectionModel.selectionMode = SelectionMode.MULTIPLE
         objectsListView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             removeButton.isDisable = newValue == null
             moveUpButton.isDisable = newValue == null && objectsListView.selectionModel.selectedIndex > 0

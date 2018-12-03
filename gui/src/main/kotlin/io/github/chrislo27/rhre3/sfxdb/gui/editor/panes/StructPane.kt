@@ -2,9 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Constants
 import io.github.chrislo27.rhre3.sfxdb.adt.*
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
@@ -161,16 +161,17 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 // TODO implement adding of cue pointers
             }
             removeButton.setOnAction {
-                val current = cuesListView.selectionModel.selectedItem
-                if (current != null) {
+                val current = cuesListView.selectionModel.selectedItems
+                if (current != null && current.isNotEmpty()) {
                     val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
-                        this.titleProperty().bind(UiLocalization["editor.removeObjectConfirm"])
-                        this.contentTextProperty().bind(UiLocalization["editor.removeObjectConfirm"])
+                        val text = UiLocalization[if (current.size == 1) "editor.removeCuePointerConfirm" else "editor.removeCuePointerConfirm.multiple"]
+                        this.titleProperty().bind(text)
+                        this.contentTextProperty().bind(text)
                         this.addWindowIcons()
                     }
                     val result = dialog.showAndWait()
                     if (result.orElse(null) == ButtonType.OK) {
-                        parentPane.struct.cues.remove(current)
+                        parentPane.struct.cues.removeAll(current)
                         parentPane.editor.editorPane.fireUpdate()
                     }
                 }
@@ -203,6 +204,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 }
             }
 
+            cuesListView.selectionModel.selectionMode = SelectionMode.MULTIPLE
             cuesListView.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                 removeButton.isDisable = newValue == null
                 moveUpButton.isDisable = newValue == null && cuesListView.selectionModel.selectedIndex > 0
