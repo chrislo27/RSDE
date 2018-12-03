@@ -193,7 +193,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 if (current != null) {
                     val list = parentPane.struct.cues
                     val index = list.indexOf(current)
-                    if (index != -1 && index + 1 < list.size - 1) {
+                    println(index)
+                    if (index != -1 && index + 1 < list.size) {
                         val removed = list.removeAt(index)
                         list.add(index + 1, removed)
                         parentPane.editor.editorPane.fireUpdate()

@@ -126,7 +126,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
             if (current != null) {
                 val list = gameObject.objects
                 val index = list.indexOf(current)
-                if (index != -1 && index + 1 < list.size - 1) {
+                if (index != -1 && index + 1 < list.size) {
                     val removed = list.removeAt(index)
                     list.add(index + 1, removed)
                     editor.editorPane.fireUpdate()
