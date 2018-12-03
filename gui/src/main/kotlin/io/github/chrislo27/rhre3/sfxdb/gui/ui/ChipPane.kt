@@ -1,4 +1,4 @@
-package io.github.chrislo27.rhre3.sfxdb.gui.control
+package io.github.chrislo27.rhre3.sfxdb.gui.ui
 
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
 import javafx.beans.property.SimpleBooleanProperty

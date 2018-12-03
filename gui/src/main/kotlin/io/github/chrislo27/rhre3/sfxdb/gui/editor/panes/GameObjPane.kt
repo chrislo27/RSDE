@@ -2,9 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.adt.*
-import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
-import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections

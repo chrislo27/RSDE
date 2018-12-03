@@ -2,8 +2,8 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.Constants
 import io.github.chrislo27.rhre3.sfxdb.adt.*
-import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
-import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.L10NValidationSupport
@@ -158,7 +158,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             add(selectLabel, 6, 1)
 
             addButton.setOnAction {
-
+                // TODO implement adding of cue pointers
             }
             removeButton.setOnAction {
                 val current = cuesListView.selectionModel.selectedItem

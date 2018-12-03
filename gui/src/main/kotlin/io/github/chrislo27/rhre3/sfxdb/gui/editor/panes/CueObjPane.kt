@@ -2,8 +2,8 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
-import io.github.chrislo27.rhre3.sfxdb.gui.control.Chip
-import io.github.chrislo27.rhre3.sfxdb.gui.control.ChipPane
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
+import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
