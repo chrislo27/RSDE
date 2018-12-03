@@ -195,7 +195,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                                     }
                                     ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"])
                                         .showAndWait()
-                                        .ifPresent { exitProcess(0) }
+                                    exitProcess(0)
                                 }
                             } else {
                                 val gameObject = gameResult.getOrNull()!!
