@@ -2,6 +2,8 @@ package io.github.chrislo27.rhre3.sfxdb.gui.validation
 
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
+import io.github.chrislo27.rhre3.sfxdb.adt.Cue
+import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GameObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
@@ -11,6 +13,7 @@ import javafx.scene.control.Control
 import org.controlsfx.validation.Severity
 import org.controlsfx.validation.ValidationResult
 import org.controlsfx.validation.Validator
+import java.io.File
 
 
 object Validators {
@@ -54,13 +57,16 @@ object Validators {
         fromErrorIf(t, UiLocalization["validation.objIDRegex", Transformers.ID_REGEX.pattern], !Transformers.ID_REGEX.matches(u))
     }
     val OBJ_ID_STAR_SUB: Validator<String> = Validator { t, u ->
-        fromErrorIf(t, UiLocalization["validation.objIDStarSub"], !u.startsWith("*_"))
+        fromErrorIf(t, UiLocalization["validation.objIDStarSub"], u != null && !u.startsWith("*_"))
     }
     val CUE_ID_STAR_SUB: Validator<String> = Validator { t, u ->
-        fromErrorIf(t, UiLocalization["validation.cueIDStarSub"], !u.startsWith("*/"))
+        fromErrorIf(t, UiLocalization["validation.cueIDStarSub"], u != null && !u.startsWith("*/"))
     }
     val NAME_BLANK: Validator<String> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.nameBlank"], u.isNullOrBlank())
+    }
+    fun identicalObjID(game: Game, datamodel: Datamodel) = Validator<String> { t, u ->
+        fromErrorIf(t, UiLocalization["validation.identicalObjID"], u != null && game.objects.any { it != datamodel && it.id == u.trim()})
     }
 
     // CuePointer
@@ -103,6 +109,10 @@ object Validators {
     // CueObject
     val FILE_EXT_NOT_OGG: Validator<String> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], !u.isNullOrEmpty() && u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt)
+    }
+    fun soundFileNotFound(parentFolder: File, cue: Cue): Validator<String> = Validator { t, u ->
+        val expectedFile = parentFolder.resolve("${cue.id.replaceFirst("*/", "")}.${cue.fileExtension}")
+        fromWarningIf(t, UiLocalization["validation.cueFileNotFound", expectedFile.name], cue.id.startsWith("*/") && !expectedFile.exists())
     }
 
 }

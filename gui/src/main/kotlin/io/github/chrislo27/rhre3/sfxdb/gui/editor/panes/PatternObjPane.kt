@@ -33,7 +33,7 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
 
     init {
         // Validators
-        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB)
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct))
         validation.registerValidator(nameField, Validators.NAME_BLANK)
     }
 

@@ -2,9 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.adt.CuePointer
 import io.github.chrislo27.rhre3.sfxdb.adt.RandomCue
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
 import javafx.collections.FXCollections
@@ -42,7 +42,7 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
 
     init {
         // Validators
-        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB)
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct))
         validation.registerValidator(nameField, Validators.NAME_BLANK)
 //        validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject)) // TODO
     }

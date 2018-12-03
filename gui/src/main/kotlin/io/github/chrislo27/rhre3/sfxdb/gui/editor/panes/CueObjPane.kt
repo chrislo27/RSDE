@@ -2,9 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.doubleSpinnerFactory
@@ -70,7 +70,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         baseBpmField.valueProperty().addListener { _, _, newValue -> struct.baseBpm = newValue.toFloat() }
         introSoundField.textProperty().addListener { _, _, newValue -> struct.introSound = newValue?.takeUnless { it.isBlank() } }
         endingSoundField.textProperty().addListener { _, _, newValue -> struct.endingSound = newValue?.takeUnless { it.isBlank() } }
-        fileExtField.textProperty().addListener { _, _, newValue -> struct.fileExtension = newValue?.takeUnless { it == SoundFileExtensions.DEFAULT.fileExt } ?: "" }
+        fileExtField.textProperty().addListener { _, _, newValue -> struct.fileExtension = newValue?.takeUnless { it.isBlank() } ?: SoundFileExtensions.DEFAULT.fileExt }
         responseIDsField.list.addListener(ListChangeListener { evt ->
             val list = mutableListOf<String>()
             while (evt.next()) {
@@ -82,9 +82,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
 
     init {
         // Validators
-        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB)
+        validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct), Validators.soundFileNotFound(editor.folder, this.struct))
         validation.registerValidator(nameField, Validators.NAME_BLANK)
-        validation.registerValidator(fileExtField, Validators.FILE_EXT_NOT_OGG)
+        validation.registerValidators(fileExtField, Validators.FILE_EXT_NOT_OGG)
         validation.registerValidators(introSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(endingSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
 //        validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject)) // TODO
