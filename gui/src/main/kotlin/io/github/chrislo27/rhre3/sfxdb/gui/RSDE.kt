@@ -10,11 +10,13 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.scene.Scene
+import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -101,9 +103,18 @@ class RSDE : Application() {
         Thread.currentThread().setUncaughtExceptionHandler { t, e ->
             e.printStackTrace()
             Platform.runLater {
-                ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred").showAndWait()
+                val exitButton = ButtonType(Localization["opts.closeProgram"])
+                val buttonType: Optional<ButtonType> = ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred").apply {
+                    this.buttonTypes += exitButton
+                }.showAndWait()
+                if (buttonType.isPresent) {
+                    if (buttonType.get() == exitButton) {
+                        exitProcess(0)
+                    }
+                }
             }
         }
+
     }
 
     override fun stop() {
