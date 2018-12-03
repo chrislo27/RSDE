@@ -61,5 +61,5 @@ fun <T> MultipleSelectionModel<T>.isSelectionContiguous(): Boolean {
     if (this.selectedIndices.isEmpty()) return false
     if (this.selectedIndices.size == 1) return true
     val sorted = this.selectedIndices.toList().sorted()
-    return sorted.drop(1).fold(sorted.first()) { acc, _ -> acc + 1} == sorted.last()
+    return sorted.first() + sorted.size - 1 == sorted.last()
 }
