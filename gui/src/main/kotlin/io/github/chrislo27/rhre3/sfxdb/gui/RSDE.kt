@@ -12,6 +12,7 @@ import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.control.ButtonType
 import javafx.scene.image.Image
+import javafx.scene.layout.StackPane
 import javafx.stage.Stage
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -124,9 +125,10 @@ class RSDE : Application() {
 
     fun switchToEditorPane(apply: EditorPane.() -> Unit) {
         val stage = primaryStage
-        stage.scene.root = editorPane.apply {
+        val scene = stage.scene
+        scene.root = StackPane(editorPane.apply {
             apply()
-        }
+        })
 //        stage.sizeToScene()
     }
 }
