@@ -78,7 +78,10 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             items += MenuItem().bindLocalized("editor.toolbar.file.save").apply {
                 setOnAction {
                     val editor = currentEditor ?: return@setOnAction
-                    statusBar.text = Localization[if (attemptSave(editor)) "editor.status.save.successful" else "editor.status.save.cannot"]
+                    val attemptSave = attemptSave(editor)
+                    statusBar.text = if (attemptSave.first == 0) {
+                        Localization["editor.status.save.successful", attemptSave.second]
+                    } else Localization["editor.status.save.cannot", attemptSave.first, attemptSave.second]
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+S")
             }
@@ -149,17 +152,21 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         fireUpdate()
     }
 
-    fun attemptSave(editor: Editor): Boolean {
+    fun attemptSave(editor: Editor): Pair<Int, Int> {
         // Check validation for all
         val allPanes = (listOf(editor.gameObject) + editor.gameObject.objects).mapNotNull { editor.paneMap[it] }.filterIsInstance<StructPane<*>>()
-        if (allPanes.any { it.validation.initInitialDecoration(); it.validation.isInvalid }) {
-            return false
+        allPanes.forEach {
+            it.validation.initInitialDecoration()
+        }
+        val warnings = allPanes.sumBy { it.validation.validationResult.warnings.size }
+        if (allPanes.any { it.validation.isInvalid }) {
+            return allPanes.sumBy { it.validation.validationResult.errors.size } to warnings
         }
 
         val datajson = editor.folder.resolve("data.json")
         datajson.copyTo(editor.folder.resolve("OLD-data.json"), true)
         datajson.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(editor.gameObject))
-        return true
+        return 0 to warnings
     }
 
 }
