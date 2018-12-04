@@ -10,17 +10,16 @@ import io.github.chrislo27.rhre3.sfxdb.gui.editor.HasValidator
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.StructurePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
+import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.geometry.Side
-import javafx.scene.control.Menu
-import javafx.scene.control.MenuBar
-import javafx.scene.control.MenuItem
-import javafx.scene.control.TabPane
+import javafx.scene.control.*
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
+import javafx.scene.web.WebView
 import javafx.stage.FileChooser
 import org.controlsfx.control.StatusBar
 import java.io.File
@@ -113,6 +112,29 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 accelerator = KeyCombination.keyCombination("Shortcut+E")
             }
         }
+        toolbar.menus += Menu().bindLocalized("editor.toolbar.help").apply {
+            items += MenuItem().bindLocalized("editor.toolbar.help.docs").apply {
+                setOnAction { _ ->
+                    val docsTab: DocsTab? = centreTabPane.tabs.firstOrNull { it is DocsTab } as DocsTab?
+                    if (docsTab == null) {
+                        val newTab = DocsTab()
+                        newTab.textProperty().bind(UiLocalization["editor.toolbar.help.docs"])
+                        centreTabPane.tabs += newTab
+                        centreTabPane.selectionModel.select(newTab)
+                    } else {
+                        centreTabPane.selectionModel.select(docsTab)
+                        if (docsTab.webView.engine.location != docsTab.docsUrl) {
+                            docsTab.webView.engine.load(docsTab.docsUrl)
+                        }
+                    }
+                }
+            }
+            items += MenuItem().bindLocalized("editor.toolbar.help.about").apply {
+                setOnAction { _ ->
+                    // TODO open about thing
+                }
+            }
+        }
 
         centreTabPane.selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
             if (oldValue != newValue) {
@@ -165,6 +187,16 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         datajson.copyTo(editor.folder.resolve("OLD-data.json"), true)
         datajson.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(editor.gameObject))
         return 0 to result.warnings.size
+    }
+
+    class DocsTab(val docsBranch: String = "dev") : Tab() {
+        val docsUrl = RSDE.getDocsUrl(docsBranch)
+        val webView = WebView()
+        init {
+            this.content = webView
+            val engine = webView.engine
+            engine.load(docsUrl)
+        }
     }
 
 }

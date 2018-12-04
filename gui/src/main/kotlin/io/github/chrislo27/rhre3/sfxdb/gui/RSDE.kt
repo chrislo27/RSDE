@@ -45,6 +45,11 @@ class RSDE : Application() {
             LOGGER.info("Launching $TITLE $VERSION...")
             Application.launch(RSDE::class.java, *args)
         }
+
+        /**
+         * @param version "dev" or "latest"
+         */
+        fun getDocsUrl(version: String): String = "https://rhre.readthedocs.io/en/$version/JSON-object-definitions/"
     }
 
     lateinit var primaryStage: Stage
