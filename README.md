@@ -1,6 +1,6 @@
 <img align="right" src="gui/src/main/resources/icon/256.png" height="256" width="256">
 
-# [RHRE](https://github.com/chrislo27/RhythmHeavenRemixEditor) SFX Database Editor
+# [**R**HRE](https://github.com/chrislo27/RhythmHeavenRemixEditor) **S**FX **D**atabase **E**ditor
 
 RSDE is a GUI SFX Database editor for [RHRE](https://github.com/chrislo27/RhythmHeavenRemixEditor).
 
