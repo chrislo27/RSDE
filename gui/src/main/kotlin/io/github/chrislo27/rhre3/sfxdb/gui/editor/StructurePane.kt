@@ -2,11 +2,11 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.StructPane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.scene.control.Label
 import javafx.scene.control.TreeCell
 import javafx.scene.control.TreeItem
@@ -58,7 +58,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         val gameObj = currentEditor.gameObject
 
         // Build tree
-        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id, Transformers.anyNonSuccess(gameObj)))
+        val root = TreeItem(DataNode(this, currentEditor, gameObj, gameObj.id))
         gameObj.objects.forEach { obj ->
             val datamodel = obj
 
@@ -73,7 +73,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
     class DataNode(
         val structure: StructurePane,
         val editor: Editor,
-        val struct: JsonStruct, val text: String, val invalid: Boolean = false // FIXME
+        val struct: JsonStruct, val text: String
     )
 
     class DataNodeCell : TreeCell<DataNode>() {
@@ -83,10 +83,13 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                 text = ""
             } else {
                 text = item.text
-                if (item.invalid) {
-                    if ("bad-data-node" !in styleClass) styleClass += "bad-data-node"
-                } else {
-                    styleClass -= "bad-data-node"
+                val pane = item.editor.getPane(item.struct)
+                if (pane != null && pane is StructPane<*>) {
+                    if (pane.validation.isInvalid) {
+                        if ("bad-data-node" !in styleClass) styleClass += "bad-data-node"
+                    } else {
+                        styleClass -= "bad-data-node"
+                    }
                 }
             }
         }

@@ -21,6 +21,6 @@
     -fx-text-fill: darkgray;
 }
 
-.bad-cue-pointer {
+.bad-list-cell {
     -fx-text-fill: red;
 }

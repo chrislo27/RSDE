@@ -52,6 +52,16 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
                     text = if (item == null || empty) {
                         null
                     } else {
+                        val pane = editor.getPane(item) as? StructPane<*>
+                        if (pane != null) {
+                            val anyErrors = pane.validation.isInvalid
+                            val sClass = "bad-list-cell"
+                            if (anyErrors) {
+                                if (sClass !in styleClass) this.styleClass += sClass
+                            } else {
+                                if (sClass in styleClass) this.styleClass -= sClass
+                            }
+                        }
                         (item as? Datamodel)?.id.takeUnless { it.isNullOrEmpty() } ?: Localization["editor.missingID"]
                     }
                 }

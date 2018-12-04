@@ -127,7 +127,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                             val pane = getPaneForCuePointer(item)
                             if (pane != null) {
                                 val anyErrors = pane.allFields.any { parentPane.validation.getHighestMessage(it)?.orElse(null)?.severity == Severity.ERROR }
-                                val sClass = "bad-cue-pointer"
+                                val sClass = "bad-list-cell"
                                 if (anyErrors) {
                                     if (sClass !in styleClass) this.styleClass += sClass
                                 } else {
@@ -168,18 +168,24 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             add(displayPane, 6, 2)
             add(selectLabel, 6, 1)
 
-            fun switchToPointerPane(pointer: CuePointer) {
+            fun switchToPointerPane(pointer: CuePointer): CuePointerPane<T>? {
                 displayPane.children.clear()
-                displayPane.children.add(getPaneForCuePointer(pointer))
+                val pane = getPaneForCuePointer(pointer)
+                displayPane.children.add(pane)
                 selectLabel.isVisible = false
                 parentPane.validation.initInitialDecoration()
+                return pane
             }
 
-            addButton.setOnAction {
+            addButton.setOnAction { _ ->
                 val struct = parentPane.struct
-                val pointer = CuePointer("")
+                val pointer = CuePointer("*/")
                 struct.cues.add(pointer)
-                switchToPointerPane(pointer)
+                val pane = switchToPointerPane(pointer)
+                pane?.idField?.let {
+                    it.requestFocus()
+                    it.end()
+                }
                 update()
             }
             val selectionModel = cuesListView.selectionModel
@@ -253,7 +259,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             updateObjectsList()
         }
 
-        fun getPaneForCuePointer(cuePointer: CuePointer): CuePointerPane<*>? {
+        fun getPaneForCuePointer(cuePointer: CuePointer): CuePointerPane<T>? {
             paneMap as MutableMap
             val fromMap = paneMap[cuePointer]
             if (fromMap == null) {
