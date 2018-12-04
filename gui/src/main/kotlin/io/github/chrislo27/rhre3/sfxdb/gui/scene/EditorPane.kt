@@ -158,6 +158,9 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     }
 
     override fun getPresenceState(): DefaultRichPresence {
+        if (currentEditor == null && centreTabPane.selectionModel.selectedItem is DocsTab) {
+            return PresenceState.ReadingDocs.toRichPresenceObj()
+        }
         return PresenceState.InEditor(currentEditor?.folder?.name).toRichPresenceObj()
     }
 
