@@ -33,6 +33,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val toolbar: MenuBar
     val centreTabPane: TabPane = TabPane().apply {
         this.side = Side.TOP
+        this.tabClosingPolicy = TabPane.TabClosingPolicy.ALL_TABS
     }
     //    val leftTabPane: TabPane = TabPane().apply {
 //        this.side = Side.LEFT
@@ -131,7 +132,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             }
             items += MenuItem().bindLocalized("editor.toolbar.help.about").apply {
                 setOnAction { _ ->
-                    // TODO open about thing
+                    TODO()
                 }
             }
         }
