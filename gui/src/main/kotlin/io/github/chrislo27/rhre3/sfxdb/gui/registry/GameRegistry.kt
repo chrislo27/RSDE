@@ -5,11 +5,12 @@ import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
 import javafx.scene.image.Image
 import java.io.File
 
 
-class GameRegistry(val version: Int) {
+class GameRegistry(val version: Int, val editorVersion: Version) {
 
     companion object {
         val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", 32.0, 32.0, false, true, true) }

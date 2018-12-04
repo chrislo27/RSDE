@@ -71,7 +71,7 @@ class RSDE : Application() {
             if (editorVersion.minor > MIN_RHRE_VERSION.minor) {
                 databasePresent = DatabaseStatus.INCOMPATIBLE
             } else {
-                gameRegistry = GameRegistry(verNum)
+                gameRegistry = GameRegistry(verNum, editorVersion)
             }
         } catch (e: Exception) {
             e.printStackTrace()

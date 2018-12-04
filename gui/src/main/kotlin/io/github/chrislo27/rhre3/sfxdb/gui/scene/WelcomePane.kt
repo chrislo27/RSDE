@@ -57,6 +57,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val logo = ImageView("icon/256.png")
     val title = Label(RSDE.TITLE).apply { id = "title" }
     val version = Label(RSDE.VERSION.toString()).apply { id = "version-subtitle" }
+    val sfxdbLabel: Label
 
     val customSfxList: ObservableList<CustomSFX> = FXCollections.observableArrayList()
     val customSfxView: ListView<CustomSFX> = ListView(customSfxList).apply {
@@ -80,13 +81,14 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             id = "centre-pane"
         }
 
+        sfxdbLabel = Label().bindLocalized("welcome.dbBranch", RSDE.SFX_DB_BRANCH).apply {
+            this.textAlignment = TextAlignment.RIGHT
+            this.alignment = Pos.CENTER_RIGHT
+            this.id = "db-version"
+        }
         centrePane.bottom = HBox().apply {
             this.alignment = Pos.BASELINE_RIGHT
-            children += Label().bindLocalized("welcome.dbBranch", RSDE.SFX_DB_BRANCH).apply {
-                this.textAlignment = TextAlignment.RIGHT
-                this.alignment = Pos.CENTER_RIGHT
-                this.id = "db-version"
-            }
+            children += sfxdbLabel
         }
 
         when (app.databasePresent) {
@@ -168,6 +170,8 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 fun finishLoading() {
                     removeLoadingElements()
                     addStartButtons()
+                    val registry = app.gameRegistry
+                    sfxdbLabel.bindLocalized("welcome.sfxDatabase", registry.version, registry.editorVersion, RSDE.SFX_DB_BRANCH)
 
                     // Add detected custom SFX
                     GlobalScope.launch {
