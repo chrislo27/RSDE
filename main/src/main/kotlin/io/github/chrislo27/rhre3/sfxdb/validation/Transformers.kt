@@ -170,7 +170,7 @@ object Transformers {
                 Parser.buildStruct(this, node, printProperties)
                 this to getNonSuccess(this)
             }
-            "subtitle" -> SubtitleEntityObject().run {
+            "subtitleEntity" -> SubtitleEntityObject().run {
                 Parser.buildStruct(this, node, printProperties)
                 this to getNonSuccess(this)
             }
