@@ -139,6 +139,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
 
         val addButton: Button = Button("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true)))
         val removeButton: Button = Button("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true)))
+        val copyButton: Button = Button("", ImageView(Image("/image/ui/copy.png", 16.0, 16.0, true, true, true)))
         val moveUpButton: Button = Button("", ImageView(Image("/image/ui/up.png", 16.0, 16.0, true, true, true)))
         val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
         val cuesListView: ListView<CuePointer> = ListView<CuePointer>(FXCollections.observableArrayList()).apply {
@@ -187,11 +188,18 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             add(Label().bindLocalized("multipart.cues"), 0, 0)
             add(addButton, 0, 1)
             add(removeButton, 1, 1)
-            add(moveUpButton, 2, 1)
-            add(moveDownButton, 3, 1)
+            add(copyButton, 2, 1)
+            add(moveUpButton, 3, 1)
+            add(moveDownButton, 4, 1)
             add(cuesListView, 0, 2, 5, 1)
             add(displayPane, 6, 2)
             add(selectLabel, 6, 1)
+
+            addButton.tooltip = Tooltip().bindLocalized("editor.add.cuePointer")
+            removeButton.tooltip = Tooltip().bindLocalized("editor.remove")
+            copyButton.tooltip = Tooltip().bindLocalized("editor.copy")
+            moveUpButton.tooltip = Tooltip().bindLocalized("editor.moveUp")
+            moveDownButton.tooltip = Tooltip().bindLocalized("editor.moveDown")
 
             fun switchToPointerPane(pointer: CuePointer): CuePointerPane<T>? {
                 displayPane.children.clear()
@@ -202,9 +210,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 return pane
             }
 
-            addButton.setOnAction { _ ->
-                val struct = parentPane.struct
-                val pointer = CuePointer("*/")
+            val struct = parentPane.struct
+            fun addPointer(pointer: CuePointer) {
                 struct.cues.add(pointer)
                 val pane = switchToPointerPane(pointer)
                 pane?.idField?.let {
@@ -212,6 +219,11 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                     it.end()
                 }
                 update()
+            }
+
+            addButton.setOnAction { _ ->
+                val pointer = CuePointer("*/")
+                addPointer(pointer)
             }
             val selectionModel = cuesListView.selectionModel
             removeButton.setOnAction {
@@ -228,6 +240,12 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         parentPane.struct.cues.removeAll(current)
                         parentPane.editor.editorPane.fireUpdate()
                     }
+                }
+            }
+            copyButton.setOnAction {
+                val current = selectionModel.selectedItem
+                if (current != null) {
+                    addPointer(current.copy())
                 }
             }
             moveUpButton.setOnAction { _ ->
@@ -271,6 +289,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             selectionModel.selectionMode = SelectionMode.MULTIPLE
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                 removeButton.isDisable = newValue == null
+                copyButton.isDisable = newValue == null || selectionModel.selectedIndices.size != 1
                 moveUpButton.isDisable = newValue == null || selectionModel.selectedIndices.min() ?: -1 <= 0 || !selectionModel.isSelectionContiguous()
                 moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE > cuesListView.items.size - 1 || !selectionModel.isSelectionContiguous()
             }

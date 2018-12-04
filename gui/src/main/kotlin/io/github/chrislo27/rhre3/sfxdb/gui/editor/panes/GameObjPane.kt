@@ -44,6 +44,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     }
     val addButton: MenuButton = MenuButton("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true)))
     val removeButton: Button = Button("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true)))
+    val copyButton: Button = Button("", ImageView(Image("/image/ui/copy.png", 16.0, 16.0, true, true, true)))
     val moveUpButton: Button = Button("", ImageView(Image("/image/ui/up.png", 16.0, 16.0, true, true, true)))
     val moveDownButton: Button = Button("", ImageView(Image("/image/ui/down.png", 16.0, 16.0, true, true, true)))
     val objectsListView: ListView<JsonStruct> = ListView<JsonStruct>(FXCollections.observableArrayList()).apply {
@@ -92,10 +93,16 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             add(Label().bindLocalized("gameObject.objects"), 0, 0)
             add(addButton, 0, 1)
             add(removeButton, 1, 1)
-            add(moveUpButton, 2, 1)
-            add(moveDownButton, 3, 1)
+            add(copyButton, 2, 1)
+            add(moveUpButton, 3, 1)
+            add(moveDownButton, 4, 1)
             add(objectsListView, 0, 2, 5, 1)
         }
+        addButton.tooltip = Tooltip().bindLocalized("editor.add.datamodel")
+        removeButton.tooltip = Tooltip().bindLocalized("editor.remove")
+        copyButton.tooltip = Tooltip().bindLocalized("editor.copy")
+        moveUpButton.tooltip = Tooltip().bindLocalized("editor.moveUp")
+        moveDownButton.tooltip = Tooltip().bindLocalized("editor.moveDown")
 
         addButton.items.addAll(
             AddMenuItem("CueObject") { Cue("", "", mutableListOf(), 0f) },
@@ -120,6 +127,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     gameObject.objects.removeAll(current)
                     editor.editorPane.fireUpdate()
                 }
+            }
+        }
+        copyButton.setOnAction {
+            val current = selectionModel.selectedItem as? Datamodel
+            if (current != null) {
+                val datamodel = current.copy()
+                addDatamodel(datamodel)
             }
         }
         moveUpButton.setOnAction { _ ->
@@ -163,6 +177,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         selectionModel.selectionMode = SelectionMode.MULTIPLE
         selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             removeButton.isDisable = newValue == null
+            copyButton.isDisable = newValue == null || selectionModel.selectedIndices.size != 1 || selectionModel.selectedItem !is Datamodel
             moveUpButton.isDisable = newValue == null || selectionModel.selectedIndices.min() ?: -1 <= 0 || !selectionModel.isSelectionContiguous()
             moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE >= objectsListView.items.size - 1 || !selectionModel.isSelectionContiguous()
         }
@@ -243,27 +258,31 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         }
     }
 
+    private fun addDatamodel(datamodel: Datamodel) {
+        gameObject.objects.add(datamodel)
+        val pane = try {
+            editor.getPane(datamodel)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            ExceptionAlert(e).showAndWait()
+            return
+        }
+        editor.switchToPane(pane)
+        (pane as? DatamodelPane<*>)?.let {
+            if (it.idField.text.isEmpty()) {
+                it.idField.text = if (pane.struct is Cue) "*/" else "*_"
+            }
+            it.idField.requestFocus()
+            it.idField.end()
+        }
+        editor.editorPane.fireUpdate()
+    }
+
     inner class AddMenuItem(text: String, factory: () -> Datamodel) : MenuItem(text) {
         init {
             setOnAction { _ ->
                 val datamodel: Datamodel = factory()
-                gameObject.objects.add(datamodel)
-                val pane = try {
-                    editor.getPane(datamodel)
-                } catch (e: Throwable) {
-                    e.printStackTrace()
-                    ExceptionAlert(e).showAndWait()
-                    return@setOnAction
-                }
-                editor.switchToPane(pane)
-                (pane as? DatamodelPane<*>)?.let {
-                    if (it.idField.text.isEmpty()) {
-                        it.idField.text = if (pane.struct is Cue) "*/" else "*_"
-                    }
-                    it.idField.requestFocus()
-                    it.idField.end()
-                }
-                editor.editorPane.fireUpdate()
+                addDatamodel(datamodel)
             }
         }
     }
