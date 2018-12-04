@@ -110,7 +110,7 @@ class RSDE : Application() {
             e.printStackTrace()
             Platform.runLater {
                 val exitButton = ButtonType(Localization["opts.closeProgram"])
-                val buttonType: Optional<ButtonType> = ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}", "An uncaught exception occurred").apply {
+                val buttonType: Optional<ButtonType> = ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}\n${e::class.java.simpleName}", "An uncaught exception occurred").apply {
                     this.buttonTypes += exitButton
                 }.showAndWait()
                 if (buttonType.isPresent) {
@@ -131,9 +131,19 @@ class RSDE : Application() {
     fun switchToEditorPane(apply: EditorPane.() -> Unit) {
         val stage = primaryStage
         val scene = stage.scene
-        scene.root = StackPane(editorPane.apply {
-            apply()
-        })
+        scene.root = object : StackPane(), ChangesPresenceState {
+            private val editorPane: EditorPane = this@RSDE.editorPane.apply {
+                apply()
+            }
+
+            init {
+                children += editorPane
+            }
+
+            override fun getPresenceState(): DefaultRichPresence {
+                return editorPane.getPresenceState()
+            }
+        }
 //        stage.sizeToScene()
     }
 }
