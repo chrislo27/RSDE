@@ -116,8 +116,8 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 accelerator = KeyCombination.keyCombination("Shortcut+E")
             }
         }
-        toolbar.menus += Menu().bindLocalized("editor.toolbar.help").apply {
-            items += MenuItem().bindLocalized("editor.toolbar.help.docs").apply {
+        toolbar.menus += Menu().bindLocalized("editor.toolbar.about").apply {
+            items += MenuItem().bindLocalized("editor.toolbar.about.docs").apply {
                 setOnAction { _ ->
                     val docsTab: DocsTab? = centreTabPane.tabs.firstOrNull { it is DocsTab } as DocsTab?
                     if (docsTab == null) {
@@ -132,8 +132,9 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         }
                     }
                 }
+                accelerator = KeyCombination.keyCombination("Shortcut+Shift+D")
             }
-            items += MenuItem().bindLocalized("editor.toolbar.help.about").apply {
+            items += MenuItem().bindLocalized("editor.toolbar.about.about").apply {
                 setOnAction { _ ->
                     TODO()
                 }
