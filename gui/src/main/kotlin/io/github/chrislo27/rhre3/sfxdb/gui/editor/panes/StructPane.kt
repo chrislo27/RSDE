@@ -21,6 +21,7 @@ import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.util.Callback
 import javafx.util.StringConverter
+import org.controlsfx.validation.Severity
 import java.util.*
 
 
@@ -123,6 +124,16 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         text = if (item == null || empty) {
                             null
                         } else {
+                            val pane = getPaneForCuePointer(item)
+                            if (pane != null) {
+                                val anyErrors = pane.allFields.any { parentPane.validation.getHighestMessage(it)?.orElse(null)?.severity == Severity.ERROR }
+                                val sClass = "bad-cue-pointer"
+                                if (anyErrors) {
+                                    if (sClass !in styleClass) this.styleClass += sClass
+                                } else {
+                                    if (sClass in styleClass) this.styleClass -= sClass
+                                }
+                            }
                             "${this.index + 1}. " + (item.id.takeUnless { it.isEmpty() } ?: Localization["editor.missingID"])
                         }
                     }
@@ -157,8 +168,19 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             add(displayPane, 6, 2)
             add(selectLabel, 6, 1)
 
+            fun switchToPointerPane(pointer: CuePointer) {
+                displayPane.children.clear()
+                displayPane.children.add(getPaneForCuePointer(pointer))
+                selectLabel.isVisible = false
+                parentPane.validation.initInitialDecoration()
+            }
+
             addButton.setOnAction {
-                // TODO implement adding of cue pointers
+                val struct = parentPane.struct
+                val pointer = CuePointer("")
+                struct.cues.add(pointer)
+                switchToPointerPane(pointer)
+                update()
             }
             val selectionModel = cuesListView.selectionModel
             removeButton.setOnAction {
@@ -224,16 +246,14 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             cuesListView.setOnMouseClicked { evt ->
                 val item = selectionModel.selectedItem
                 if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 1) {
-                    displayPane.children.clear()
-                    displayPane.children.add(getPaneForCuePointer(item))
-                    selectLabel.isVisible = false
+                    switchToPointerPane(item)
                 }
             }
 
             updateObjectsList()
         }
 
-        fun getPaneForCuePointer(cuePointer: CuePointer): Pane? {
+        fun getPaneForCuePointer(cuePointer: CuePointer): CuePointerPane<*>? {
             paneMap as MutableMap
             val fromMap = paneMap[cuePointer]
             if (fromMap == null) {
@@ -290,6 +310,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         val trackField: Spinner<Int> = intSpinnerFactory(-16, 16, cuePointer.track, 1)
         val volumeField: Spinner<Int> = intSpinnerFactory(Constants.VOLUME_RANGE.first, Constants.VOLUME_RANGE.last, cuePointer.volume, 25)
 
+        val allFields: List<Control> by lazy { listOf(idField, beatField, durationField, semitoneField, trackField, volumeField) }
+
         init {
             styleClass += "grid-pane"
         }
@@ -298,6 +320,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             // Bind to struct
             idField.textProperty().addListener { _, _, newValue ->
                 cuePointer.id = newValue
+                parentPane.update()
             }
             beatField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.beat = newValue.toFloat()

@@ -20,3 +20,7 @@
     -fx-font: italic 12pt "Roboto";
     -fx-text-fill: darkgray;
 }
+
+.bad-cue-pointer {
+    -fx-text-fill: red;
+}
