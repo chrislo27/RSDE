@@ -10,8 +10,8 @@
     -fx-padding: 0.1em 0.5em -0.2em 0.5em;
 }
 
-#centre-vbox {
-    -fx-padding: 2em 3em 2em 3em;
+#centre-box {
+    -fx-padding: 3em 4em 2em 4em;
 }
 
 #left-vbox {
@@ -36,4 +36,8 @@
 
 .bad-custom-sfx {
     -fx-text-fill: red;
+}
+
+#db-version {
+    -fx-label-padding: 0.25em 0.5em 0.25em 0.5em;
 }

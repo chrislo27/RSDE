@@ -22,10 +22,7 @@ import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
-import javafx.scene.layout.BorderPane
-import javafx.scene.layout.Pane
-import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
+import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.util.Callback
 import kotlinx.coroutines.GlobalScope
@@ -42,10 +39,14 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val EMPTY_CUSTOM_SFX: CustomSFX by lazy { CustomSFX(File(""), true).apply { isEmpty = true } }
 
-    val centreBox: VBox = VBox().apply {
-        this.alignment = Pos.CENTER
-        this.id = "centre-vbox"
+    val centrePane = BorderPane().apply {
         this.styleClass += "spacing"
+    }
+    val centreBox = VBox().apply {
+        this.alignment = Pos.CENTER
+        this.id = "centre-box"
+        this.styleClass += "spacing"
+        centrePane.center = this
     }
     val leftBox: VBox = VBox().apply {
         this.alignment = Pos.TOP_LEFT
@@ -65,7 +66,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     init {
         stylesheets += "style/welcomePane.css"
 
-        center = centreBox
+        center = centrePane
         left = leftBox
 
         VBox.setVgrow(customSfxView, Priority.ALWAYS)
@@ -77,6 +78,15 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         // Spacing between version text and buttons
         centreBox.children += Pane().apply {
             id = "centre-pane"
+        }
+
+        centrePane.bottom = HBox().apply {
+            this.alignment = Pos.BASELINE_RIGHT
+            children += Label().bindLocalized("welcome.dbBranch", RSDE.SFX_DB_BRANCH).apply {
+                this.textAlignment = TextAlignment.RIGHT
+                this.alignment = Pos.CENTER_RIGHT
+                this.id = "db-version"
+            }
         }
 
         when (app.databasePresent) {
