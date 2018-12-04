@@ -113,7 +113,7 @@ class RandomCue(
 class SubtitleEntity(
         id: String, name: String, deprecatedIDs: MutableList<String>,
         @JsonInclude(JsonInclude.Include.NON_EMPTY) var subtitleType: String? = null
-) : Datamodel("subtitle", id, name, deprecatedIDs) {
+) : Datamodel("subtitleEntity", id, name, deprecatedIDs) {
     override fun copy(): Datamodel {
         return SubtitleEntity(id, name, deprecatedIDs, subtitleType)
     }
