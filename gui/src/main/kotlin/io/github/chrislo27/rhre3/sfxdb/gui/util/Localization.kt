@@ -55,6 +55,7 @@ object Localization {
         }
         val firstLang = langsList.firstOrNull() ?: error("No languages defined!")
         currentBundle = langs[firstLang]!!
+        missingKeys.clear()
         UiLocalization.fireLocaleChanged()
     }
 
