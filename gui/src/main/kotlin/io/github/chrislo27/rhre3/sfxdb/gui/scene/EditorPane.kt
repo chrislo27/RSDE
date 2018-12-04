@@ -31,6 +31,7 @@ import java.util.zip.ZipOutputStream
 class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val toolbar: MenuBar
+    val splitPane: SplitPane = SplitPane()
     val centreTabPane: TabPane = TabPane().apply {
         this.side = Side.TOP
         this.tabClosingPolicy = TabPane.TabClosingPolicy.ALL_TABS
@@ -60,13 +61,15 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
         toolbar = MenuBar()
         top = toolbar
-        center = centreTabPane
+        center = splitPane
 //        left = leftTabPane
 //        right = rightTabPane
         bottom = bottomPane
 
         structurePane = StructurePane(this)
-        left = structurePane
+
+        splitPane.items.addAll(structurePane, centreTabPane)
+        splitPane.setDividerPosition(0, 0.3)
 
         toolbar.menus += Menu().bindLocalized("editor.toolbar.file").apply {
             items += MenuItem().bindLocalized("editor.toolbar.file.welcomeScreen").apply {
