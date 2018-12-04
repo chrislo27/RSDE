@@ -3,6 +3,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 import io.github.chrislo27.rhre3.sfxdb.Constants
 import io.github.chrislo27.rhre3.sfxdb.adt.*
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.HasValidator
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
@@ -21,11 +22,11 @@ import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.util.Callback
 import javafx.util.StringConverter
-import org.controlsfx.validation.Severity
+import org.controlsfx.validation.ValidationResult
 import java.util.*
 
 
-abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : BorderPane() {
+abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : BorderPane(), HasValidator {
 
     val gameObject: Game get() = editor.gameObject
 
@@ -67,6 +68,17 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
     open fun update() {
     }
 
+    override fun isInvalid(): Boolean {
+        return validation.isInvalid
+    }
+
+    override fun forceUpdate() {
+        validation.initInitialDecoration()
+    }
+
+    override fun getValidationResult(): ValidationResult {
+        return validation.validationResult
+    }
 }
 
 abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructPane<T>(editor, struct) {
@@ -105,11 +117,24 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         cuesPane.update()
     }
 
+    override fun isInvalid(): Boolean {
+        return super.isInvalid() || cuesPane.isInvalid()
+    }
+
+    override fun forceUpdate() {
+        super.forceUpdate()
+        cuesPane.forceUpdate()
+    }
+
+    override fun getValidationResult(): ValidationResult {
+        return super.getValidationResult().combine(cuesPane.getValidationResult())
+    }
+
     @Suppress("LeakingThis")
     open class CuesPane<T : MultipartDatamodel>(
         val parentPane: MultipartStructPane<T>,
         val paneFactory: (CuePointer, CuesPane<T>) -> CuePointerPane<T>?
-    ) : GridPane() {
+    ) : GridPane(), HasValidator {
         val paneMap: Map<CuePointer, CuePointerPane<T>> = WeakHashMap()
 
         val addButton: Button = Button("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true)))
@@ -126,7 +151,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         } else {
                             val pane = getPaneForCuePointer(item)
                             if (pane != null) {
-                                val anyErrors = pane.allFields.any { parentPane.validation.getHighestMessage(it)?.orElse(null)?.severity == Severity.ERROR }
+                                val anyErrors = pane.isInvalid()
                                 val sClass = "bad-list-cell"
                                 if (anyErrors) {
                                     if (sClass !in styleClass) this.styleClass += sClass
@@ -190,7 +215,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             }
             val selectionModel = cuesListView.selectionModel
             removeButton.setOnAction {
-                val current = selectionModel.selectedItems
+                val current = selectionModel.selectedItems?.toList()
                 if (current != null && current.isNotEmpty()) {
                     val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
                         val text = UiLocalization[if (current.size == 1) "editor.removeCuePointerConfirm" else "editor.removeCuePointerConfirm.multiple"]
@@ -276,6 +301,20 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             updateObjectsList()
         }
 
+        override fun isInvalid(): Boolean {
+            return parentPane.struct.cues.any { cue -> paneMap[cue]?.isInvalid() == true }
+        }
+
+        override fun forceUpdate() {
+            parentPane.struct.cues.forEach { cue -> paneMap[cue]?.forceUpdate() }
+        }
+
+        override fun getValidationResult(): ValidationResult {
+            return parentPane.struct.cues.mapNotNull { cue -> paneMap[cue]?.getValidationResult() }.fold(ValidationResult()) { acc, it ->
+                acc.combine(it)
+            }
+        }
+
         private fun updateObjectsList() {
             val cuePointers = parentPane.struct.cues
             cuesListView.items.apply {
@@ -295,7 +334,9 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         }
     }
 
-    open class CuePointerPane<T : MultipartDatamodel>(val parentPane: CuesPane<T>, val cuePointer: CuePointer) : GridPane() {
+    open class CuePointerPane<T : MultipartDatamodel>(val parentPane: CuesPane<T>, val cuePointer: CuePointer) : GridPane(), HasValidator {
+        val validation = L10NValidationSupport()
+
         val idField = TextField(cuePointer.id)
         val beatField: Spinner<Double> = doubleSpinnerFactory(0.0, Double.MAX_VALUE, cuePointer.beat.takeUnless { it == Float.MIN_VALUE }?.toDouble() ?: 0.0, 0.5)
         val durationField: Spinner<Double> = Spinner<Double>().apply {
@@ -347,7 +388,6 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
 
         init {
             // Validation
-            val validation = parentPane.parentPane.validation
             validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(parentPane.parentPane.gameObject))
         }
 
@@ -357,6 +397,18 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             add(label, 0, gridPaneRowIndex)
             add(control, 1, gridPaneRowIndex)
             return ++gridPaneRowIndex
+        }
+
+        override fun isInvalid(): Boolean {
+            return validation.isInvalid
+        }
+
+        override fun forceUpdate() {
+            validation.initInitialDecoration()
+        }
+
+        override fun getValidationResult(): ValidationResult {
+            return validation.validationResult
         }
     }
 }

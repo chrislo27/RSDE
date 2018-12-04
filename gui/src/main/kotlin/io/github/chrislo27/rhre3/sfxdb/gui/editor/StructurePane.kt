@@ -2,7 +2,6 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.StructPane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
@@ -84,8 +83,8 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
             } else {
                 text = item.text
                 val pane = item.editor.getPane(item.struct)
-                if (pane != null && pane is StructPane<*>) {
-                    if (pane.validation.isInvalid) {
+                if (pane != null && pane is HasValidator) {
+                    if (pane.isInvalid()) {
                         if ("bad-data-node" !in styleClass) styleClass += "bad-data-node"
                     } else {
                         styleClass -= "bad-data-node"

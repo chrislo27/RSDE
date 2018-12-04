@@ -3,6 +3,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.adt.*
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.HasValidator
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
@@ -15,9 +16,10 @@ import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.GridPane
 import javafx.util.Callback
+import org.controlsfx.validation.ValidationResult
 
 
-class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) {
+class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject), HasValidator {
 
     val idField = TextField(struct.id).apply {
         isEditable = false
@@ -225,9 +227,25 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
         }
     }
 
+    override fun isInvalid(): Boolean {
+        return validation.isInvalid ||
+                gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().any { it.isInvalid() }
+    }
+
+    override fun forceUpdate() {
+        validation.initInitialDecoration()
+        gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().forEach { it.forceUpdate() }
+    }
+
+    override fun getValidationResult(): ValidationResult {
+        return gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().fold(validation.validationResult) { acc, it ->
+            acc.combine(it.getValidationResult())
+        }
+    }
+
     inner class AddMenuItem(text: String, factory: () -> Datamodel) : MenuItem(text) {
         init {
-            setOnAction {
+            setOnAction { _ ->
                 val datamodel: Datamodel = factory()
                 gameObject.objects.add(datamodel)
                 val pane = try {
@@ -238,6 +256,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject) 
                     return@setOnAction
                 }
                 editor.switchToPane(pane)
+                (pane as? DatamodelPane<*>)?.let {
+                    if (it.idField.text.isEmpty()) {
+                        it.idField.text = if (pane.struct is Cue) "*/" else "*_"
+                    }
+                    it.idField.requestFocus()
+                    it.idField.end()
+                }
                 editor.editorPane.fireUpdate()
             }
         }

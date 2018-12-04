@@ -6,8 +6,8 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.HasValidator
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.StructurePane
-import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.StructPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
@@ -154,19 +154,17 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     fun attemptSave(editor: Editor): Pair<Int, Int> {
         // Check validation for all
-        val allPanes = (listOf(editor.gameObject) + editor.gameObject.objects).mapNotNull { editor.paneMap[it] }.filterIsInstance<StructPane<*>>()
-        allPanes.forEach {
-            it.validation.initInitialDecoration()
-        }
-        val warnings = allPanes.sumBy { it.validation.validationResult.warnings.size }
-        if (allPanes.any { it.validation.isInvalid }) {
-            return allPanes.sumBy { it.validation.validationResult.errors.size } to warnings
+        val mainPane = (editor.getPane(editor.gameObject) as? HasValidator) ?: return 1 to 0
+        mainPane.forceUpdate()
+        val result = mainPane.getValidationResult()
+        if (result.errors.isNotEmpty()) {
+            return result.errors.size to result.warnings.size
         }
 
         val datajson = editor.folder.resolve("data.json")
         datajson.copyTo(editor.folder.resolve("OLD-data.json"), true)
         datajson.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(editor.gameObject))
-        return 0 to warnings
+        return 0 to result.warnings.size
     }
 
 }
