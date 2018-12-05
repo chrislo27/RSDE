@@ -23,11 +23,13 @@ open class Chip(val content: String, val graphic: Node? = null, closeable: Boole
         }
     }
 
-    private val hBox = HBox()
-    val closeButton: Button = Button("⛒").apply {
+    private val hBox = HBox().apply {
+        styleClass += "chip"
+        styleClass += "hbox"
+    }
+    val closeButton: Button = Button().apply {
         isFocusTraversable = false
         HBox.setMargin(this, Insets(0.0))
-        style = """-fx-shape: "M 100 100 a 50 50 0 1 0 0.00001 0"; -fx-padding: 0;"""
     }
     val chipPaneProperty: SimpleObjectProperty<ChipPane?> = SimpleObjectProperty(null)
     val closeableProperty = SimpleBooleanProperty(closeable)
@@ -39,15 +41,20 @@ open class Chip(val content: String, val graphic: Node? = null, closeable: Boole
 
     init {
         hBox.alignment = Pos.CENTER_LEFT
-        style = """-fx-background-color: lightgray; -fx-background-radius: 1em; -fx-padding: 0.25em;"""
+        styleClass += "chip"
 
         closeButton.visibleProperty().bind(closeableProperty)
 
         if (graphic != null) {
             hBox.children += graphic
         }
-        hBox.children += label
-        hBox.children += closeButton
+        hBox.children += label.apply {
+            styleClass += "chip"
+        }
+        hBox.children += closeButton.apply {
+            styleClass += "chip"
+            styleClass += "close-button"
+        }
 
         closeButton.setOnAction {
             val chipPane: ChipPane = chipPaneProperty.value ?: return@setOnAction

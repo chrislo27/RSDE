@@ -61,7 +61,7 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
     init {
         textField.editableProperty().bind(canAddProperty)
         textField.visibleProperty().bind(canAddProperty)
-        style = "-fx-background-color: #eeeeee;"
+        styleClass += "chip-pane"
 
         flowPane.children += textField
 
@@ -77,7 +77,8 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
                 }
             }
         })
-        list.forEach { chip ->
+        list.forEachIndexed { index, chip ->
+            flowPane.children.add(index, chip)
             chip.chipPaneProperty.value = this
         }
     }
