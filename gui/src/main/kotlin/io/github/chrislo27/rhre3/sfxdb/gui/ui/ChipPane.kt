@@ -61,6 +61,7 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
     init {
         textField.editableProperty().bind(canAddProperty)
         textField.visibleProperty().bind(canAddProperty)
+        styleClass += "text-input"
         styleClass += "chip-pane"
 
         flowPane.children += textField
