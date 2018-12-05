@@ -1,0 +1,24 @@
+.root {
+    -fx-base: rgb(38, 38, 38);
+    -fx-text-base-color: ladder(
+        -fx-color,
+        -fx-light-text-color 65%,
+        -fx-dark-text-color  66%,
+        -fx-dark-text-color  79%,
+        -fx-mid-text-color   80%
+    );
+    -fx-text-inner-color: ladder(
+        -fx-control-inner-background,
+        -fx-light-text-color 65%,
+        -fx-dark-text-color  66%,
+        -fx-dark-text-color  79%,
+        -fx-mid-text-color   80%
+    );
+    -fx-text-background-color: ladder(
+        -fx-background,
+        -fx-light-text-color 65%,
+        -fx-dark-text-color  66%,
+        -fx-dark-text-color  79%,
+        -fx-mid-text-color   80%
+    );
+}

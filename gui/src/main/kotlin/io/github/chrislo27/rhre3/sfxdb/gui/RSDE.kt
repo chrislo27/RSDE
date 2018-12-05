@@ -60,6 +60,8 @@ class RSDE : Application() {
     lateinit var gameRegistry: GameRegistry
         private set
 
+    val settings: Settings = Settings(this)
+
     private val editorPane: EditorPane by lazy { EditorPane(this) }
 
     override fun init() {
@@ -106,6 +108,8 @@ class RSDE : Application() {
         primaryStage.setMinimumBoundsToSized()
         primaryStage.show()
 
+        settings.loadFromStorage()
+
         DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
         Thread.currentThread().setUncaughtExceptionHandler { t, e ->
             e.printStackTrace()
@@ -126,6 +130,7 @@ class RSDE : Application() {
 
     override fun stop() {
         super.stop()
+        settings.persistToStorage()
         exitProcess(0)
     }
 

@@ -1,0 +1,12 @@
+#title {
+    -fx-text-alignment: left;
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+    -fx-padding: 0.5em 1em 0.5em 1em;
+}
+
+.grid-pane {
+    -fx-hgap: 1em;
+    -fx-vgap: 0.5em;
+    -fx-padding: 1em;
+}

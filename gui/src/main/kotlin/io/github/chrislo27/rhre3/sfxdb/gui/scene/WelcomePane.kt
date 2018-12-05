@@ -86,9 +86,11 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             this.alignment = Pos.CENTER_RIGHT
             this.id = "db-version"
         }
-        centrePane.bottom = HBox().apply {
-            this.alignment = Pos.BASELINE_RIGHT
-            children += sfxdbLabel
+        centrePane.bottom = BorderPane().apply {
+            right = HBox().apply {
+                this.alignment = Pos.BASELINE_RIGHT
+                children += sfxdbLabel
+            }
         }
 
         when (app.databasePresent) {

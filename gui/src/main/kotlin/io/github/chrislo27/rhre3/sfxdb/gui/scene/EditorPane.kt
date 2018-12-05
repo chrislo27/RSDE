@@ -14,6 +14,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
+import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.geometry.Side
@@ -77,7 +78,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         structurePane = StructurePane(this)
 
         splitPane.items.addAll(structurePane, centreTabPane)
-        splitPane.setDividerPosition(0, 0.3)
+        splitPane.dividers.first().positionProperty().bindBidirectional(app.settings.dividerPositionProperty)
 
         toolbar.menus += Menu().bindLocalized("editor.toolbar.file").apply {
             items += MenuItem().bindLocalized("editor.toolbar.file.welcomeScreen").apply {
@@ -123,6 +124,13 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+E")
             }
+            items += SeparatorMenuItem()
+            items += MenuItem().bindLocalized("editor.toolbar.file.settings").apply {
+                setOnAction { _ ->
+                    openTab({ UiLocalization["settings.title"] }, { SettingsPane.SettingsTab(app) })
+                }
+                accelerator = KeyCombination.keyCombination("Shortcut+Alt+S")
+            }
         }
         toolbar.menus += Menu().bindLocalized("editor.toolbar.analyze").apply {
             items += MenuItem().bindLocalized("editor.toolbar.analyze.validateCurrent").apply {
@@ -162,19 +170,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         toolbar.menus += Menu().bindLocalized("editor.toolbar.about").apply {
             items += MenuItem().bindLocalized("editor.toolbar.about.docs").apply {
                 setOnAction { _ ->
-                    val docsTab: DocsTab? = centreTabPane.tabs.firstOrNull { it is DocsTab } as DocsTab?
-                    if (docsTab == null) {
-                        val newTab = DocsTab()
-                        newTab.textProperty().bind(UiLocalization["editor.toolbar.about.docs"])
-                        newTab.loadDocs()
-                        centreTabPane.tabs += newTab
-                        centreTabPane.selectionModel.select(newTab)
-                    } else {
-                        centreTabPane.selectionModel.select(docsTab)
-                        if (docsTab.engine.location != docsTab.docsUrl) {
-                            docsTab.loadDocs()
-                        }
-                    }
+                    openTab({ UiLocalization["editor.toolbar.about.docs"] }, { DocsTab() }, { it, _ -> it.loadDocs() })
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+Shift+D")
             }
@@ -185,15 +181,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             }
             items += MenuItem().bindLocalized("editor.toolbar.about.about").apply {
                 setOnAction { _ ->
-                    val aboutTab: AboutPane.AboutTab? = centreTabPane.tabs.firstOrNull { it is AboutPane.AboutTab } as AboutPane.AboutTab?
-                    if (aboutTab == null) {
-                        val newTab = AboutPane.AboutTab(app)
-                        newTab.textProperty().bind(UiLocalization["editor.toolbar.about.about"])
-                        centreTabPane.tabs += newTab
-                        centreTabPane.selectionModel.select(newTab)
-                    } else {
-                        centreTabPane.selectionModel.select(aboutTab)
-                    }
+                    openTab({ UiLocalization["editor.toolbar.about.about"] }, { AboutPane.AboutTab(app) })
                 }
             }
         }
@@ -209,6 +197,20 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
         Platform.runLater {
             fireUpdate()
+        }
+    }
+
+    private inline fun <reified T : Tab> openTab(title: () -> ObservableValue<String>, factory: () -> T, action: (T, wasNew: Boolean) -> Unit = { _, _ -> }) {
+        val tab: T? = centreTabPane.tabs.firstOrNull { it is T } as T?
+        if (tab == null) {
+            val newTab = factory()
+            newTab.textProperty().bind(title())
+            action(newTab, true)
+            centreTabPane.tabs += newTab
+            centreTabPane.selectionModel.select(newTab)
+        } else {
+            centreTabPane.selectionModel.select(tab)
+            action(tab, false)
         }
     }
 
