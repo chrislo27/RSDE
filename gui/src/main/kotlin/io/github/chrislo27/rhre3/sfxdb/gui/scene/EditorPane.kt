@@ -13,19 +13,24 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
+import javafx.beans.binding.Bindings
 import javafx.geometry.Side
 import javafx.scene.control.*
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
+import javafx.scene.web.WebEngine
 import javafx.scene.web.WebView
 import javafx.stage.FileChooser
 import org.controlsfx.control.StatusBar
+import org.controlsfx.validation.ValidationResult
 import java.io.File
 import java.nio.file.Files
+import java.text.DecimalFormat
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.system.measureNanoTime
 
 
 class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
@@ -102,7 +107,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     val zos = ZipOutputStream(Files.newOutputStream(zipFilePath))
                     zos.use {
                         val sourceDirPath = editor.folder.toPath()
-                        Files.walk(sourceDirPath).filter { !Files.isDirectory(it) }.forEach { path ->
+                        Files.walk(sourceDirPath).filter { !Files.isDirectory(it) && it.toFile().name != "OLD-data.json" }.forEach { path ->
                             val zipEntry = ZipEntry(sourceDirPath.relativize(path).toString())
                             zos.putNextEntry(zipEntry)
                             zos.write(Files.readAllBytes(path))
@@ -116,23 +121,62 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 accelerator = KeyCombination.keyCombination("Shortcut+E")
             }
         }
+        toolbar.menus += Menu().bindLocalized("editor.toolbar.analyze").apply {
+            items += MenuItem().bindLocalized("editor.toolbar.analyze.validateCurrent").apply {
+                setOnAction { _ ->
+                    val currentEditor = currentEditor
+                    val validator = (currentEditor?.getPane(currentEditor.gameObject) as? HasValidator)
+                    if (currentEditor == null || validator == null) {
+                        statusBar.text = Localization["editor.status.validation.none"]
+                    } else {
+                        val time = (measureNanoTime {
+                            validator.forceUpdate()
+                        } / 1_000_000.0)
+                        val result = validator.getValidationResult()
+                        statusBar.text = Localization["editor.status.validation", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
+                    }
+                }
+                accelerator = KeyCombination.keyCombination("Shortcut+F9")
+            }
+            items += MenuItem().bindLocalized("editor.toolbar.analyze.validateAll").apply {
+                setOnAction { _ ->
+                    val validators = editors.mapNotNull { it.getPane(it.gameObject) as? HasValidator }
+                    if (validators.isEmpty()) {
+                        statusBar.text = Localization["editor.status.validation.none"]
+                    } else {
+                        val time = (measureNanoTime {
+                            validators.forEach(HasValidator::forceUpdate)
+                        } / 1_000_000.0)
+                        val result = validators.fold(ValidationResult()) { acc, it -> acc.combine(it.getValidationResult()) }
+                        statusBar.text = Localization["editor.status.validation.all", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
+                    }
+                }
+                accelerator = KeyCombination.keyCombination("Shortcut+Shift+F9")
+            }
+        }
         toolbar.menus += Menu().bindLocalized("editor.toolbar.about").apply {
             items += MenuItem().bindLocalized("editor.toolbar.about.docs").apply {
                 setOnAction { _ ->
                     val docsTab: DocsTab? = centreTabPane.tabs.firstOrNull { it is DocsTab } as DocsTab?
                     if (docsTab == null) {
                         val newTab = DocsTab()
-                        newTab.textProperty().bind(UiLocalization["editor.toolbar.help.docs"])
+                        newTab.textProperty().bind(UiLocalization["editor.toolbar.about.docs"])
+                        newTab.loadDocs()
                         centreTabPane.tabs += newTab
                         centreTabPane.selectionModel.select(newTab)
                     } else {
                         centreTabPane.selectionModel.select(docsTab)
-                        if (docsTab.webView.engine.location != docsTab.docsUrl) {
-                            docsTab.webView.engine.load(docsTab.docsUrl)
+                        if (docsTab.engine.location != docsTab.docsUrl) {
+                            docsTab.loadDocs()
                         }
                     }
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+Shift+D")
+            }
+            items += MenuItem().bindLocalized("editor.toolbar.about.checkUpdates").apply {
+                setOnAction { _ ->
+                    app.hostServices.showDocument(RSDE.GITHUB + "/releases")
+                }
             }
             items += MenuItem().bindLocalized("editor.toolbar.about.about").apply {
                 setOnAction { _ ->
@@ -197,13 +241,28 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         return 0 to result.warnings.size
     }
 
-    class DocsTab(val docsBranch: String = "dev") : Tab() {
+    inner class DocsTab(docsBranch: String = "dev") : Tab() {
         val docsUrl = RSDE.getDocsUrl(docsBranch)
         val webView = WebView()
+        val engine: WebEngine = webView.engine
+        val progressBar = ProgressBar().apply {
+            this.progressProperty().bind(engine.loadWorker.progressProperty())
+            this.visibleProperty().bind(Bindings.lessThan(this.progressProperty(), 1.0))
+        }
+
         init {
             this.content = webView
-            val engine = webView.engine
+
+            setOnClosed {
+                statusBar.rightItems -= progressBar
+            }
+        }
+
+        fun loadDocs() {
             engine.load(docsUrl)
+            if (progressBar !in statusBar.rightItems) {
+                statusBar.rightItems += progressBar
+            }
         }
     }
 
