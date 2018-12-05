@@ -10,6 +10,7 @@ object LibrariesUsed {
         Library("Apache Log4j", "https://logging.apache.org/log4j/2.x/"),
         Library("java-discord-rpc", "https://github.com/MinnDevelopment/java-discord-rpc"),
         Library("ControlsFX", "http://fxexperience.com/controlsfx/"),
-        Library("EasyBind", "https://github.com/TomasMikula/EasyBind")
+        Library("EasyBind", "https://github.com/TomasMikula/EasyBind"),
+        Library("javafx-themes", "https://github.com/joffrey-bion/javafx-themes")
     ).sortedBy { it.name }
 }

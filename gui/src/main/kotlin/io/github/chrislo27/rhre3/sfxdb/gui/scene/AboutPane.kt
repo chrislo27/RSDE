@@ -2,9 +2,9 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.LibrariesUsed
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Hyperlink
 import javafx.scene.control.Label
@@ -13,7 +13,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.GridPane
-import org.controlsfx.control.HyperlinkLabel
+import javafx.scene.text.TextFlow
 
 
 @Suppress("UNUSED_CHANGED_VALUE")
@@ -51,15 +51,15 @@ class AboutPane(val app: RSDE) : BorderPane() {
                 app.hostServices.showDocument(RSDE.GITHUB)
             }
         }, 1, row++)
-        gridPane.add(HyperlinkLabel(Localization["about.license", RSDE.LICENSE_NAME]).apply {
-            styleClass += "label"
-            setOnAction { evt ->
-                val link = (evt.source as? Hyperlink)?.text ?: return@setOnAction
-                when (link) {
-                    RSDE.LICENSE_NAME -> app.hostServices.showDocument("https://github.com/chrislo27/RSDE/blob/master/LICENSE.txt")
+        gridPane.add(TextFlow().apply {
+            children += Label().bindLocalized("about.license")
+            children += Hyperlink(RSDE.LICENSE_NAME).apply {
+                padding = Insets(0.0)
+                setOnAction { _ ->
+                    app.hostServices.showDocument("https://github.com/chrislo27/RSDE/blob/master/LICENSE.txt")
                 }
             }
-        }, 1, row++)
+        }, 1 ,row++)
         row++
         gridPane.add(Label().bindLocalized("about.oss").apply { styleClass += "oss" }, 1, row++)
         val librariesGridPane = GridPane().apply {
