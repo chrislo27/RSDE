@@ -14,6 +14,8 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import javafx.geometry.Side
 import javafx.scene.control.*
 import javafx.scene.input.KeyCombination
@@ -28,6 +30,7 @@ import org.controlsfx.validation.ValidationResult
 import java.io.File
 import java.nio.file.Files
 import java.text.DecimalFormat
+import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.system.measureNanoTime
@@ -49,7 +52,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 //    }
     val bottomPane: Pane = VBox()
 
-    val editors: List<Editor> = mutableListOf()
+    val editors: ObservableList<Editor> = FXCollections.observableArrayList()
     val currentEditor: Editor?
         get() {
             val currentTab = centreTabPane.selectionModel.selectedItem ?: return null
@@ -81,7 +84,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 setOnAction {
                     app.primaryStage.scene.root = WelcomePane(app)
                 }
-                accelerator = KeyCombination.keyCombination("Shortcut+W")
+                accelerator = KeyCombination.keyCombination("Shortcut+Shift+W")
             }
             items += MenuItem().bindLocalized("editor.toolbar.file.save").apply {
                 setOnAction {
@@ -137,6 +140,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     }
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+F9")
+                disableProperty().bind(Bindings.createBooleanBinding(Callable { currentEditor == null }, centreTabPane.selectionModel.selectedItemProperty()))
             }
             items += MenuItem().bindLocalized("editor.toolbar.analyze.validateAll").apply {
                 setOnAction { _ ->
@@ -152,6 +156,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     }
                 }
                 accelerator = KeyCombination.keyCombination("Shortcut+Shift+F9")
+                disableProperty().bind(Bindings.isEmpty(editors))
             }
         }
         toolbar.menus += Menu().bindLocalized("editor.toolbar.about").apply {
@@ -180,7 +185,15 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             }
             items += MenuItem().bindLocalized("editor.toolbar.about.about").apply {
                 setOnAction { _ ->
-                    TODO()
+                    val aboutTab: AboutPane.AboutTab? = centreTabPane.tabs.firstOrNull { it is AboutPane.AboutTab } as AboutPane.AboutTab?
+                    if (aboutTab == null) {
+                        val newTab = AboutPane.AboutTab(app)
+                        newTab.textProperty().bind(UiLocalization["editor.toolbar.about.about"])
+                        centreTabPane.tabs += newTab
+                        centreTabPane.selectionModel.select(newTab)
+                    } else {
+                        centreTabPane.selectionModel.select(aboutTab)
+                    }
                 }
             }
         }
@@ -188,7 +201,6 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         centreTabPane.selectionModel.selectedItemProperty().addListener { _, oldValue, newValue ->
             if (oldValue != newValue) {
                 DiscordHelper.updatePresence(getPresenceState())
-
                 fireUpdate()
             }
         }
@@ -206,21 +218,24 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     }
 
     override fun getPresenceState(): DefaultRichPresence {
-        if (currentEditor == null && centreTabPane.selectionModel.selectedItem is DocsTab) {
-            return PresenceState.ReadingDocs.toRichPresenceObj()
+        if (currentEditor == null) {
+            val rpObj = when (centreTabPane.selectionModel.selectedItem) {
+                is DocsTab -> PresenceState.ViewingSomething("documentation").toRichPresenceObj()
+                is AboutPane.AboutTab -> PresenceState.ViewingSomething("About page").toRichPresenceObj()
+                else -> null
+            }
+            if (rpObj != null) return rpObj
         }
         return PresenceState.InEditor(currentEditor?.folder?.name).toRichPresenceObj()
     }
 
     fun addEditor(editor: Editor) {
-        editors as MutableList
         editors += editor
         centreTabPane.tabs += editor.tab
         fireUpdate()
     }
 
     fun removeEditor(editor: Editor) {
-        editors as MutableList
         editors -= editor
         centreTabPane.tabs -= editor.tab
         fireUpdate()

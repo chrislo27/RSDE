@@ -34,6 +34,7 @@ class RSDE : Application() {
         const val GITHUB = "https://github.com/chrislo27/RSDE"
         const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"
         val rhreSfxRoot: File = rhreRoot.resolve("sfx/$SFX_DB_BRANCH/")
+        const val LICENSE_NAME = "Apache License 2.0"
 
         val LOGGER: Logger = LogManager.getContext(RSDE::class.java.classLoader, false).getLogger("RSDE")
         val startTimeMillis: Long = System.currentTimeMillis()

@@ -31,12 +31,11 @@ class Editor(val folder: File, val editorPane: EditorPane) {
     val mainPane: StackPane = StackPane()
     val tab: Tab = Tab(folder.name, mainPane).apply tab@{
         val iconFile = folder.resolve("icon.png").takeIf { it.exists() }
-        graphic =
-                ImageView(if (iconFile != null) Image("file:${iconFile.path}") else GameRegistry.missingIconImage).apply iv@{
-                    this.isPreserveRatio = true
-                    this.fitWidth = 1.5.em
-                    this.fitHeight = 1.5.em
-                }
+        graphic = ImageView(if (iconFile != null) Image("file:${iconFile.path}") else GameRegistry.missingIconImage).apply iv@{
+            this.isPreserveRatio = true
+            this.fitWidth = 1.5.em
+            this.fitHeight = 1.5.em
+        }
         setOnClosed {
             editorPane.removeEditor(this@Editor)
         }

@@ -1,0 +1,20 @@
+.title {
+    -fx-font: bold 3.5em "Roboto";
+    -fx-text-overrun: clip;
+}
+
+.version {
+    -fx-font-weight: bold;
+}
+
+.oss {
+    -fx-underline: true;
+}
+
+.hyperlink {
+    -fx-padding: 0;
+}
+
+#libraries-gp {
+    -fx-hgap: 2em;
+}
