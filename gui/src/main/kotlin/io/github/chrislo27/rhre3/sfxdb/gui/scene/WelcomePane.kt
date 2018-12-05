@@ -240,6 +240,26 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
             }
         }
+
+        val secret = "sansundertale"
+        val secretStyle = "style/sans.css"
+        val entry = mutableListOf<Char>()
+        var isSans = false
+        setOnKeyTyped { evt ->
+            entry.add(evt.character[0])
+            if (entry.joinToString(separator = "") != secret.substring(0, entry.size)) {
+                entry.clear()
+            }
+            if (entry.size >= secret.length) {
+                if (isSans) {
+                    stylesheets -= secretStyle
+                } else {
+                    stylesheets += secretStyle
+                }
+                isSans = !isSans
+                entry.clear()
+            }
+        }
     }
 
     override fun getPresenceState(): DefaultRichPresence {
