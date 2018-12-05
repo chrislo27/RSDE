@@ -5,6 +5,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
 import javafx.geometry.Pos
 import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.Tab
 import javafx.scene.image.Image
@@ -56,6 +57,12 @@ class SettingsPane(val app: RSDE) : BorderPane() {
             selectedProperty().bindBidirectional(settings.nightModeProperty)
             settings.persistToStorage()
         })
+        gridPane.add(Button().bindLocalized("settings.resetDivider").apply {
+            setOnAction { _ ->
+                settings.dividerPosition = 0.3
+                settings.persistToStorage()
+            }
+        }, 2, 0)
 
     }
 }
