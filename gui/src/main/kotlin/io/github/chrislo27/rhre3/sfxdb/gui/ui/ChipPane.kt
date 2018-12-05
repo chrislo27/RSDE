@@ -1,21 +1,32 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.ui
 
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import javafx.beans.property.ReadOnlyListWrapper
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.geometry.Orientation
+import javafx.scene.Node
+import javafx.scene.control.Control
+import javafx.scene.control.Skin
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.FlowPane
+import org.controlsfx.tools.ValueExtractor
+import org.fxmisc.easybind.EasyBind
 
 
-open class ChipPane(initialList: ObservableList<Chip>, canAdd: Boolean = true) : FlowPane(Orientation.HORIZONTAL, 0.5.em, 0.5.em) {
+open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArrayList(), canAdd: Boolean = true) : Control() {
 
-    constructor(canAdd: Boolean = true) : this(FXCollections.observableArrayList(), canAdd)
+    companion object {
+        init {
+            ValueExtractor.addObservableValueExtractor({ it is ChipPane }, { (it as ChipPane).readOnlyListStringWrapper })
+        }
+    }
 
-    val list: ObservableList<Chip> = FXCollections.observableArrayList()
+    private val readOnlyListStringWrapper: ReadOnlyListWrapper<String> = ReadOnlyListWrapper(EasyBind.map(list, Chip::content))
+    val flowPane: FlowPane = FlowPane(Orientation.HORIZONTAL, 0.5.em, 0.5.em)
     private val textField: TextField = TextField().apply {
         style = """-fx-background-color: none;"""
         setOnAction { evt ->
@@ -43,21 +54,25 @@ open class ChipPane(initialList: ObservableList<Chip>, canAdd: Boolean = true) :
         }
     var chipFactory: (text: String) -> Chip = { Chip(it) }
 
+    override fun createDefaultSkin(): Skin<ChipPane> {
+        return ChipPaneSkin()
+    }
+
     init {
         textField.editableProperty().bind(canAddProperty)
         textField.visibleProperty().bind(canAddProperty)
         style = "-fx-background-color: #eeeeee;"
 
-        children += textField
+        flowPane.children += textField
 
         list.addListener(ListChangeListener { ch ->
             while (ch.next()) {
                 ch.removed.forEach { chip ->
-                    children -= chip
+                    flowPane.children -= chip
                     chip.chipPaneProperty.value = null
                 }
                 ch.addedSubList.forEachIndexed { index, chip ->
-                    children.add(index + ch.from, chip)
+                    flowPane.children.add(index + ch.from, chip)
                     chip.chipPaneProperty.value = this
                 }
             }
@@ -65,8 +80,15 @@ open class ChipPane(initialList: ObservableList<Chip>, canAdd: Boolean = true) :
         list.forEach { chip ->
             chip.chipPaneProperty.value = this
         }
+    }
 
-        list.addAll(initialList)
+    inner class ChipPaneSkin : Skin<ChipPane> {
+        override fun getSkinnable(): ChipPane = this@ChipPane
+
+        override fun getNode(): Node = this@ChipPane.flowPane
+
+        override fun dispose() {
+        }
     }
 
 }

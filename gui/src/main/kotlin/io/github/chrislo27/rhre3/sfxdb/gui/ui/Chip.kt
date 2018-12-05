@@ -10,7 +10,8 @@ import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 
 
-open class Chip(val label: Label, val graphic: Node? = null, closeable: Boolean = true) : HBox() {
+open class Chip(val content: String, val graphic: Node? = null, closeable: Boolean = true, val label: Label = Label(content))
+    : HBox() {
 
     val closeButton: Button = Button("⛒").apply {
         isFocusTraversable = false
@@ -24,8 +25,6 @@ open class Chip(val label: Label, val graphic: Node? = null, closeable: Boolean 
         set(value) {
             closeableProperty.value = value
         }
-
-    constructor(text: String, graphic: Node? = null, closeable: Boolean = true) : this(Label(text), graphic, closeable)
 
     init {
         alignment = Pos.CENTER_LEFT

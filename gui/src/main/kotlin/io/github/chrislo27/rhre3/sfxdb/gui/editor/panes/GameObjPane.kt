@@ -98,6 +98,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             add(moveDownButton, 4, 1)
             add(objectsListView, 0, 2, 5, 1)
         }
+
         addButton.tooltip = Tooltip().bindLocalized("editor.add.datamodel")
         removeButton.tooltip = Tooltip().bindLocalized("editor.remove")
         copyButton.tooltip = Tooltip().bindLocalized("editor.copy")

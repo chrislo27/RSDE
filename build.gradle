@@ -90,5 +90,6 @@ project(":gui") {
         implementation "org.apache.logging.log4j:log4j-api:${log4j_version}"
         implementation "com.github.MinnDevelopment:java-discord-rpc:v2.0.1"
         implementation "org.controlsfx:controlsfx:8.40.15-SNAPSHOT"
+        implementation "org.fxmisc.easybind:easybind:1.0.3"
     }
 }
