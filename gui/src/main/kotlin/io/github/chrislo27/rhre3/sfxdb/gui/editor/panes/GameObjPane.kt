@@ -227,7 +227,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     init {
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.GAME_ID)
-        validation.registerValidator(nameField, Validators.NAME_BLANK)
+        validation.registerValidators(nameField, Validators.NAME_BLANK, Validators.appropriateNameSuffixFromSeries(this), Validators.deprecatedFeverName(this))
         validation.registerValidator(noDisplayCheckbox, Validators.NO_DISPLAY)
     }
 

@@ -65,8 +65,9 @@ object Validators {
     val NAME_BLANK: Validator<String> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.nameBlank"], u.isNullOrBlank())
     }
+
     fun identicalObjID(game: Game, datamodel: Datamodel) = Validator<String> { t, u ->
-        fromErrorIf(t, UiLocalization["validation.identicalObjID"], u != null && game.objects.any { it != datamodel && it.id == u.trim()})
+        fromErrorIf(t, UiLocalization["validation.identicalObjID"], u != null && game.objects.any { it != datamodel && it.id == u.trim() })
     }
 
     // CuePointer
@@ -99,17 +100,24 @@ object Validators {
         fromWarningIf(t, UiLocalization["validation.noDisplay"], u)
     }
 
-    fun nameSuffixFromSeries(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
-        // FIXME not very good at detecting when this is necessary. Lots of edge cases
+    fun appropriateNameSuffixFromSeries(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
         val selectedSeries: Series? = gameObjPane.seriesComboBox.value
-        val suffix = "(${selectedSeries?.properName})"
-        fromWarningIf(t, UiLocalization["validation.gameNameSuffixFromSeries", selectedSeries, suffix], if (selectedSeries == null || selectedSeries.properName.isEmpty()) false else (!u.endsWith(" $suffix")))
+        val wrongSeries: Series? = Series.VALUES.find {
+            "(${it.properName})" in u && selectedSeries != it
+        }
+        fromWarningIf(t, UiLocalization["validation.gameNameWithSeries", "(${wrongSeries?.properName})", selectedSeries], !(selectedSeries == null || wrongSeries == null || selectedSeries.properName.isEmpty()))
+    }
+
+    fun deprecatedFeverName(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
+        val selectedSeries: Series? = gameObjPane.seriesComboBox.value
+        fromWarningIf(t, UiLocalization["validation.deprecatedFeverName"], if (selectedSeries == null || selectedSeries.properName.isEmpty()) false else (selectedSeries == Series.FEVER && u.contains("Wii")))
     }
 
     // CueObject
     val FILE_EXT_NOT_OGG: Validator<String> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], !u.isNullOrEmpty() && u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt)
     }
+
     fun soundFileNotFound(parentFolder: File, cue: Cue): Validator<String> = Validator { t, u ->
         val expectedFile = parentFolder.resolve("${cue.id.replaceFirst("*/", "")}.${cue.fileExtension}")
         fromWarningIf(t, UiLocalization["validation.cueFileNotFound", expectedFile.name], cue.id.startsWith("*/") && !expectedFile.exists())
