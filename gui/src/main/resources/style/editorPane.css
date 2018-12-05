@@ -4,7 +4,8 @@
 }
 
 #pick-first-label {
-    -fx-font: italic 16pt "Roboto";
+    -fx-font-style: italic;
+    -fx-font-size: 133%;
     -fx-text-fill: darkgray;
 }
 
@@ -13,7 +14,6 @@
 }
 
 .menu-button {
-    -fx-font: normal 12pt "Roboto";
     -fx-padding: 0.1em 0.25em 0.1em 0.25em;
 }
 

@@ -1,6 +1,7 @@
 #title {
     -fx-text-alignment: left;
-    -fx-font: bold 2em "Roboto";
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
     -fx-padding: 0.5em 1em 0.5em 1em;
 }
 
@@ -17,7 +18,7 @@
 }
 
 #pick-cue-pointer-label {
-    -fx-font: italic 12pt "Roboto";
+    -fx-font-style: italic;
     -fx-text-fill: darkgray;
 }
 

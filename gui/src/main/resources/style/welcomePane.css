@@ -1,5 +1,6 @@
 #title {
-    -fx-font: normal bold 3em "Roboto";
+    -fx-font-weight: bold;
+    -fx-font-size: 3em;
 }
 
 #version-subtitle {
