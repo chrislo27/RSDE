@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.util
 
+import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.scene.control.MultipleSelectionModel
 import javafx.scene.control.Spinner
@@ -12,6 +13,21 @@ import javafx.util.StringConverter
 
 fun Scene.addDebugAccelerators() {
     this.accelerators[KeyCombination.keyCombination("Shortcut+Alt+'i'")] = Runnable(Localization::refreshLangs)
+    this.accelerators[KeyCombination.keyCombination("F5")] = Runnable {
+        val sheets = this.stylesheets.toList()
+        this.stylesheets.clear()
+        this.stylesheets.addAll(sheets)
+
+        @Suppress("NAME_SHADOWING")
+        fun Parent.reload() {
+            val sheets = this.stylesheets.toList()
+            this.stylesheets.clear()
+            this.stylesheets.addAll(sheets)
+            this.childrenUnmodifiable.forEach { if (it is Parent) it.reload() }
+        }
+
+        this.root.reload()
+    }
 }
 
 fun Stage.setMinimumBoundsToSized() {
