@@ -76,7 +76,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
     )
 
     class DataNodeCell : TreeCell<DataNode>() {
-        private val cntxtMenu: ContextMenu = ContextMenu().apply {
+        private val datamodelContextMenu: ContextMenu = ContextMenu().apply {
             items += MenuItem("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true))).apply {
                 bindLocalized("editor.remove")
                 setOnAction { _ ->
@@ -100,6 +100,15 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                 }
             }
         }
+        private val gameContextMenu: ContextMenu = ContextMenu().apply {
+            items += MenuItem().apply {
+                bindLocalized("editor.openFolderLocation")
+                setOnAction { _ ->
+                    val item = item ?: return@setOnAction
+                    item.structure.app.hostServices.showDocument("file://${item.editor.folder.absolutePath}")
+                }
+            }
+        }
 
         override fun updateItem(item: DataNode?, empty: Boolean) {
             super.updateItem(item, empty)
@@ -109,7 +118,12 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                 graphic = null
             } else {
                 text = item.text
-                contextMenu = cntxtMenu.takeIf { item.struct is Datamodel }
+                contextMenu = when (item.struct) {
+                    is Datamodel -> datamodelContextMenu
+                    is Game -> gameContextMenu
+                    else -> null
+
+                }
                 graphic = if (item.struct is Game) ImageView(item.editor.iconGraphic).apply {
                     this.isPreserveRatio = true
                     this.fitWidth = 1.5.em
