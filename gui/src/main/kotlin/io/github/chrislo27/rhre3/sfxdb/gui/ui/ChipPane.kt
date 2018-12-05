@@ -29,8 +29,8 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
     val flowPane: FlowPane = FlowPane(Orientation.HORIZONTAL, 0.5.em, 0.5.em)
     private val textField: TextField = TextField().apply {
         style = """-fx-background-color: none;"""
-        setOnAction { evt ->
-            val text = this.text
+        setOnAction { _ ->
+            val text = this.text.trim()
             if (text.isNotBlank() && canAdd) {
                 list += chipFactory(text)
                 this.text = ""
