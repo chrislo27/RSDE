@@ -124,9 +124,8 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         tooltip = Tooltip().bindLocalized("welcome.startNewGame.tooltip")
 
                         onAction = EventHandler {
-                            // TODO
+                            app.primaryStage.scene.root = StartNewPane(app)
                         }
-                        isDisable = true
                     }
                     centreBox.children += Button().apply {
                         this.bindLocalized("welcome.editExisting")
