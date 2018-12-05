@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
+import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
@@ -65,6 +66,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         root.isExpanded = true
 
         treeView.root = root
+        treeView.refresh()
     }
 
     class DataNode(
@@ -101,9 +103,15 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
             if (item == null || empty) {
                 text = ""
                 contextMenu = null
+                graphic = null
             } else {
                 text = item.text
                 contextMenu = cntxtMenu.takeIf { item.struct is Datamodel }
+                graphic = if (item.struct is Game) ImageView(item.editor.iconGraphic).apply {
+                    this.isPreserveRatio = true
+                    this.fitWidth = 1.5.em
+                    this.fitHeight = 1.5.em
+                } else null
                 val pane = item.editor.getPane(item.struct)
                 if (pane != null && pane is HasValidator) {
                     if (pane.isInvalid()) {
