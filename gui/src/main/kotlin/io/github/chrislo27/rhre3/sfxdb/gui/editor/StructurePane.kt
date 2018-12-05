@@ -122,7 +122,6 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                     is Datamodel -> datamodelContextMenu
                     is Game -> gameContextMenu
                     else -> null
-
                 }
                 graphic = if (item.struct is Game) ImageView(item.editor.iconGraphic).apply {
                     this.isPreserveRatio = true
