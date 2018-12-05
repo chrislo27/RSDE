@@ -252,9 +252,9 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             }
             if (entry.size >= secret.length) {
                 if (isSans) {
-                    stylesheets -= secretStyle
+                    scene.stylesheets -= secretStyle
                 } else {
-                    stylesheets += secretStyle
+                    scene.stylesheets += secretStyle
                 }
                 isSans = !isSans
                 entry.clear()
