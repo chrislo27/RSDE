@@ -17,6 +17,6 @@ Rhythm Heaven is not my property -- it is the property of Nintendo.<br>
 This program is **NOT** endorsed or sponsored in any way by Nintendo.<br>
 All used properties of Nintendo (such as names, audio, graphics, etc.) in this software are not intended to maliciously infringe trademark rights.<br>
 This is a community project and this is available for others to use
-however they like (abiding by the code's GPL-3.0 license), for free.
+however they like (abiding by the code's Apache-2.0 license), for free.
 
 RSDE logo designed by [GlitchyPSIX](https://www.youtube.com/user/supermarioglitchy33/).<br>
