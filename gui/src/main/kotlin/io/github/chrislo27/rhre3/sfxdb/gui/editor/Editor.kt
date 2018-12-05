@@ -31,6 +31,7 @@ class Editor(val folder: File, val editorPane: EditorPane) {
     val mainPane: StackPane = StackPane()
     val iconGraphic: Image
     val tab: Tab
+
     init {
         val iconFile = folder.resolve("icon.png").takeIf { it.exists() }
         iconGraphic = if (iconFile != null) Image("file:${iconFile.path}") else GameRegistry.missingIconImage
@@ -45,6 +46,7 @@ class Editor(val folder: File, val editorPane: EditorPane) {
             }
         }
     }
+
     private val pickFirstLabel = Label().bindLocalized("editor.selectAnItem").apply {
         id = "pick-first-label"
         alignment = Pos.CENTER
@@ -96,7 +98,9 @@ class Editor(val folder: File, val editorPane: EditorPane) {
     }
 
     fun update() {
+        paneMap as MutableMap
         paneMap.values.forEach { if (it is StructPane<*>) it.update() }
+        paneMap.keys.filter { it !in gameObject.objects }.filterIsInstance<Datamodel>().forEach { paneMap.remove(it) }
     }
 
     fun switchToPane(pane: Pane?) {

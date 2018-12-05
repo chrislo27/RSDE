@@ -90,9 +90,12 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                     }
                     val result = dialog.showAndWait()
                     if (result.orElse(null) == ButtonType.OK) {
-                        item.editor.gameObject.objects.remove(datamodel)
-                        item.editor.editorPane.fireUpdate()
-                        item.editor.switchToPane(null)
+                        val editor = item.editor
+                        if (editor.mainPane.children.first() == editor.getPane(datamodel)) {
+                            editor.switchToPane(null)
+                        }
+                        editor.gameObject.objects.remove(datamodel)
+                        editor.editorPane.fireUpdate()
                     }
                 }
             }
