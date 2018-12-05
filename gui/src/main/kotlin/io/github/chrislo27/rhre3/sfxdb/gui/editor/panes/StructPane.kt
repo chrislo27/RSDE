@@ -372,7 +372,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             }
             isEditable = true
         }
-        val semitoneField: Spinner<Int> = intSpinnerFactory(Constants.SEMITONE_RANGE.first, Constants.SEMITONE_RANGE.last, cuePointer.semitone, 1)
+        // -39..48 is the range of a standard piano
+        val semitoneField: Spinner<Int> = intSpinnerFactory(-39, 48, cuePointer.semitone, 1)
         val trackField: Spinner<Int> = intSpinnerFactory(-16, 16, cuePointer.track, 1)
         val volumeField: Spinner<Int> = intSpinnerFactory(Constants.VOLUME_RANGE.first, Constants.VOLUME_RANGE.last, cuePointer.volume, 25)
 
@@ -408,6 +409,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         init {
             // Validation
             validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(parentPane.parentPane.gameObject))
+            validation.registerValidators(trackField, Validators.TRACK_TOO_TALL)
+            validation.registerValidators(semitoneField, Validators.ABNORMAL_SEMITONE)
         }
 
         private var gridPaneRowIndex: Int = 0

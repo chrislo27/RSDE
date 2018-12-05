@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.validation
 
+import io.github.chrislo27.rhre3.sfxdb.Constants
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
@@ -14,6 +15,7 @@ import org.controlsfx.validation.Severity
 import org.controlsfx.validation.ValidationResult
 import org.controlsfx.validation.Validator
 import java.io.File
+import kotlin.math.absoluteValue
 
 
 object Validators {
@@ -74,6 +76,12 @@ object Validators {
     val EXTERNAL_CUE_POINTER: Validator<String> = Validator { t, u ->
         fromWarningIf(t, UiLocalization["validation.cuePointerExtDependency"], u != null && !u.startsWith("*") && u.isNotEmpty())
     }
+    val TRACK_TOO_TALL: Validator<Int> = Validator { t, u ->
+        fromWarningIf(t, UiLocalization["validation.cuePointerTooTall", Constants.TRACK_RANGE.first - 1], u.absoluteValue >= Constants.TRACK_RANGE.first)
+    }
+    val ABNORMAL_SEMITONE: Validator<Int> = Validator { t, u ->
+        fromWarningIf(t, UiLocalization["validation.abnormalSemitone", Constants.SEMITONE_RANGE.toString()], u !in Constants.SEMITONE_RANGE)
+    }
 
     fun cuePointerPointsNowhere(gameObj: Game): Validator<String> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.invalidCuePointer"], u != null && u.startsWith("*") && u.isNotEmpty() && u !in gameObj.objects.map { it.id })
@@ -122,5 +130,8 @@ object Validators {
         val expectedFile = parentFolder.resolve("${cue.id.replaceFirst("*/", "")}.${cue.fileExtension}")
         fromWarningIf(t, UiLocalization["validation.cueFileNotFound", expectedFile.name], cue.id.startsWith("*/") && !expectedFile.exists())
     }
+
+    // MultipartObject
+
 
 }
