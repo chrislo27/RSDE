@@ -1,15 +1,13 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
+import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
-import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
-import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import javafx.scene.control.Label
-import javafx.scene.control.TreeCell
-import javafx.scene.control.TreeItem
-import javafx.scene.control.TreeView
+import io.github.chrislo27.rhre3.sfxdb.gui.util.*
+import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
@@ -76,12 +74,36 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
     )
 
     class DataNodeCell : TreeCell<DataNode>() {
+        private val cntxtMenu: ContextMenu = ContextMenu().apply {
+            items += MenuItem("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true))).apply {
+                bindLocalized("editor.remove")
+                setOnAction { _ ->
+                    val item = item ?: return@setOnAction
+                    val datamodel = (item.struct as? Datamodel) ?: return@setOnAction
+                    val dialog = Alert(Alert.AlertType.CONFIRMATION).apply {
+                        val text = UiLocalization["editor.removeObjectConfirm"]
+                        this.titleProperty().bind(text)
+                        this.contentTextProperty().bind(text)
+                        this.addWindowIcons()
+                    }
+                    val result = dialog.showAndWait()
+                    if (result.orElse(null) == ButtonType.OK) {
+                        item.editor.gameObject.objects.remove(datamodel)
+                        item.editor.editorPane.fireUpdate()
+                        item.editor.switchToPane(null)
+                    }
+                }
+            }
+        }
+
         override fun updateItem(item: DataNode?, empty: Boolean) {
             super.updateItem(item, empty)
             if (item == null || empty) {
                 text = ""
+                contextMenu = null
             } else {
                 text = item.text
+                contextMenu = cntxtMenu.takeIf { item.struct is Datamodel }
                 val pane = item.editor.getPane(item.struct)
                 if (pane != null && pane is HasValidator) {
                     if (pane.isInvalid()) {
