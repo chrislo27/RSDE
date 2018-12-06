@@ -235,10 +235,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         noDisplayCheckbox.selectedProperty().addListener { _, _, newValue -> struct.noDisplay = newValue }
 
         idField.textProperty().addListener { _, _, _ ->
-            editor.editorPane.fireUpdate()
+            editor.refreshLists()
         }
         nameField.textProperty().addListener { _, _, _ ->
-            editor.editorPane.fireUpdate()
+            editor.refreshLists()
+        }
+        noDisplayCheckbox.textProperty().addListener { _, _, _ ->
+            editor.refreshLists()
         }
     }
 

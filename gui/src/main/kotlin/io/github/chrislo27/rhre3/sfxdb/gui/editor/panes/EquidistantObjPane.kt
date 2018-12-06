@@ -39,12 +39,16 @@ class EquidistantObjPane(editor: Editor, struct: Equidistant) : MultipartStructP
         // Bind to struct
         distanceField.valueProperty().addListener { _, _, newValue -> struct.distance = newValue.toFloat() }
         stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
+
+        distanceField.valueProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
     }
 
     init {
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct))
-        validation.registerValidator(nameField, Validators.NAME_BLANK)
+        validation.registerValidators(nameField, Validators.NAME_BLANK)
         validation.registerValidators(distanceField, Validators.ZERO_DISTANCE)
     }
 

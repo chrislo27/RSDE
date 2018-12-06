@@ -103,10 +103,10 @@ abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructP
             struct.deprecatedIDs = list
         })
         idField.textProperty().addListener { _, _, _ ->
-            editor.editorPane.fireUpdate()
+            editor.refreshLists()
         }
         nameField.textProperty().addListener { _, _, _ ->
-            editor.editorPane.fireUpdate()
+            editor.refreshLists()
         }
     }
 }

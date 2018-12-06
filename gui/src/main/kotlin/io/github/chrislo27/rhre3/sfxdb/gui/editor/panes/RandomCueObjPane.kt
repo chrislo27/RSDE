@@ -41,6 +41,8 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
                 list.addAll(evt.list.map { chip -> chip.label.text })
             }
             struct.responseIDs = list.distinct().takeUnless { it.isEmpty() }
+
+            editor.refreshLists()
         })
     }
 

@@ -88,12 +88,29 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
             }
             struct.responseIDs = list.takeUnless { it.isEmpty() }
         })
+
+        fileExtField.textProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
+        introSoundField.textProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
+        endingSoundField.textProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
+        responseIDsField.list.addListener(ListChangeListener {
+            it.next()
+            editor.refreshLists()
+        })
+        durationField.valueProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
     }
 
     init {
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct), Validators.soundFileNotFound(editor.folder, this.struct))
-        validation.registerValidator(nameField, Validators.NAME_BLANK)
+        validation.registerValidators(nameField, Validators.NAME_BLANK)
         validation.registerValidators(fileExtField, Validators.FILE_EXT_NOT_OGG)
         validation.registerValidators(introSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(endingSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
