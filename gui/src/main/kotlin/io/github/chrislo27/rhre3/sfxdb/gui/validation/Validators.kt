@@ -11,6 +11,8 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.Control
+import javafx.scene.control.Spinner
+import org.controlsfx.tools.ValueExtractor
 import org.controlsfx.validation.Severity
 import org.controlsfx.validation.ValidationResult
 import org.controlsfx.validation.Validator
@@ -19,6 +21,10 @@ import kotlin.math.absoluteValue
 
 
 object Validators {
+
+    init {
+        ValueExtractor.addObservableValueExtractor({ it is Spinner<*> }, { (it as Spinner<*>).valueFactory.valueProperty() })
+    }
 
     fun fromErrorIf(control: Control, text: ObservableValue<String>, condition: Boolean): ValidationResult {
         return fromMessageIf(control, text, Severity.ERROR, condition)
@@ -131,7 +137,13 @@ object Validators {
         fromWarningIf(t, UiLocalization["validation.cueFileNotFound", expectedFile.name], cue.id.startsWith("*/") && !expectedFile.exists())
     }
 
-    // MultipartObject
+    val ZERO_DURATION: Validator<Double> = Validator { t, u ->
+        fromErrorIf(t, UiLocalization["validation.zeroDuration"], u <= 0.0)
+    }
 
+    // MultipartObject
+    val ZERO_DISTANCE: Validator<Double> = Validator { t, u ->
+        fromErrorIf(t, UiLocalization["validation.zeroDistance"], u <= 0.0)
+    }
 
 }

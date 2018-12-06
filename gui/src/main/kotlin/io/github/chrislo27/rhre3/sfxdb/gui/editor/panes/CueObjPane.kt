@@ -88,6 +88,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         validation.registerValidators(introSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(endingSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject))
+        validation.registerValidators(durationField, Validators.ZERO_DURATION)
     }
 
 }

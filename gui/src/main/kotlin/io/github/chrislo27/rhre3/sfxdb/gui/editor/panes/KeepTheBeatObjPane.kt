@@ -35,6 +35,7 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.OBJ_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct))
         validation.registerValidator(nameField, Validators.NAME_BLANK)
+        validation.registerValidators(defaultDurationField, Validators.ZERO_DURATION)
     }
 
     class KeepTheBeatCuePointerPane(cuePointer: CuePointer, parent: CuesPane<KeepTheBeat>) : CuePointerPane<KeepTheBeat>(parent, cuePointer) {
