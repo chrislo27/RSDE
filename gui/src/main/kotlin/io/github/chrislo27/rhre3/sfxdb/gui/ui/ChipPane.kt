@@ -44,7 +44,7 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
                 }
             }
         }
-        prefWidth = 10.0.em
+        prefWidth = 14.0.em
     }
     val canAddProperty = SimpleBooleanProperty(canAdd)
     var canAdd: Boolean

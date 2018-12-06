@@ -53,3 +53,7 @@
     -fx-min-height: -fx-pref-height;
     -fx-max-height: -fx-pref-height;
 }
+
+.chip > .close-button:hover {
+    -fx-background-color: red;
+}
