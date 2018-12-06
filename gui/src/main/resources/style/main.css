@@ -29,6 +29,11 @@
     -fx-cursor: default;
 }
 
+.chip-pane > .flow-pane {
+    -fx-hgap: 0em;
+    -fx-vgap: 0em;
+}
+
 .chip {
     -fx-background-color: -fx-text-box-border, -fx-body-color;
     -fx-background-radius: 0.75em;

@@ -26,7 +26,10 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
     }
 
     private val readOnlyListStringWrapper: ReadOnlyListWrapper<String> = ReadOnlyListWrapper(EasyBind.map(list, Chip::content))
-    val flowPane: FlowPane = FlowPane(Orientation.HORIZONTAL, 0.5.em, 0.5.em)
+    val flowPane: FlowPane = FlowPane(Orientation.HORIZONTAL).apply {
+        styleClass += "chip-pane"
+        styleClass += "flow-pane"
+    }
     private val textField: TextField = TextField().apply {
         style = """-fx-background-color: none;"""
         setOnAction { _ ->
