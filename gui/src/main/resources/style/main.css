@@ -62,3 +62,11 @@
 .chip > .close-button:hover {
     -fx-background-color: red;
 }
+
+.bad-list-cell {
+    -fx-text-fill: red;
+}
+
+.warning-list-cell {
+    -fx-text-fill: orange;
+}

@@ -21,7 +21,3 @@
     -fx-font-style: italic;
     -fx-text-fill: darkgray;
 }
-
-.bad-list-cell {
-    -fx-text-fill: red;
-}

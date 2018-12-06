@@ -144,6 +144,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                             validator.forceUpdate()
                         } / 1_000_000.0)
                         val result = validator.getValidationResult()
+                        fireUpdate()
                         statusBar.text = Localization["editor.status.validation", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
                     }
                 }
@@ -160,6 +161,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                             validators.forEach(HasValidator::forceUpdate)
                         } / 1_000_000.0)
                         val result = validators.fold(ValidationResult()) { acc, it -> acc.combine(it.getValidationResult()) }
+                        fireUpdate()
                         statusBar.text = Localization["editor.status.validation.all", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
                     }
                 }

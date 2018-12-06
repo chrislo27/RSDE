@@ -290,10 +290,11 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 text = ""
                 graphic = null
             } else {
+                val style = "bad-list-cell"
                 if (item.valid) {
-                    styleClass -= "bad-custom-sfx"
+                    styleClass -= style
                 } else {
-                    styleClass += "bad-custom-sfx"
+                    styleClass += style
                 }
                 if (item.isEmpty) {
                     graphic = ProgressIndicator()

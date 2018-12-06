@@ -68,7 +68,10 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
     open fun update() {
     }
 
-    override fun isInvalid(): Boolean {
+    open fun refreshLists() {
+    }
+
+    override fun hasErrors(): Boolean {
         return validation.isInvalid
     }
 
@@ -77,7 +80,7 @@ abstract class StructPane<T : JsonStruct>(val editor: Editor, val struct: T) : B
     }
 
     override fun getValidationResult(): ValidationResult {
-        return validation.validationResult
+        return validation.validationResult ?: ValidationResult()
     }
 }
 
@@ -117,8 +120,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         cuesPane.update()
     }
 
-    override fun isInvalid(): Boolean {
-        return super.isInvalid() || cuesPane.isInvalid()
+    override fun hasErrors(): Boolean {
+        return super.hasErrors() || cuesPane.hasErrors()
     }
 
     override fun forceUpdate() {
@@ -128,6 +131,11 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
 
     override fun getValidationResult(): ValidationResult {
         return super.getValidationResult().combine(cuesPane.getValidationResult())
+    }
+
+    override fun refreshLists() {
+        super.refreshLists()
+        cuesPane.cuesListView.refresh()
     }
 
     @Suppress("LeakingThis")
@@ -152,12 +160,18 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         } else {
                             val pane = getPaneForCuePointer(item)
                             if (pane != null) {
-                                val anyErrors = pane.isInvalid()
+                                val anyErrors = pane.hasErrors()
                                 val sClass = "bad-list-cell"
                                 if (anyErrors) {
                                     if (sClass !in styleClass) this.styleClass += sClass
                                 } else {
                                     if (sClass in styleClass) this.styleClass -= sClass
+                                    val warningStyle = "warning-list-cell"
+                                    if (pane.getValidationResult().warnings.isNotEmpty()) {
+                                        if (warningStyle !in styleClass) styleClass += warningStyle
+                                    } else {
+                                        styleClass -= warningStyle
+                                    }
                                 }
                             }
                             "${this.index + 1}. " + (item.id.takeUnless { it.isEmpty() } ?: Localization["editor.missingID"])
@@ -320,8 +334,8 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             updateObjectsList()
         }
 
-        override fun isInvalid(): Boolean {
-            return parentPane.struct.cues.any { cue -> paneMap[cue]?.isInvalid() == true }
+        override fun hasErrors(): Boolean {
+            return parentPane.struct.cues.any { cue -> paneMap[cue]?.hasErrors() == true }
         }
 
         override fun forceUpdate() {
@@ -385,24 +399,30 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
 
         init {
             // Bind to struct
+            val editor = parentPane.parentPane.editor
             idField.textProperty().addListener { _, _, newValue ->
                 cuePointer.id = newValue
-                parentPane.update()
+                editor.refreshLists()
             }
             beatField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.beat = newValue.toFloat()
+                editor.refreshLists()
             }
             durationField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.duration = newValue.toFloat()
+                editor.refreshLists()
             }
             semitoneField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.semitone = newValue
+                editor.refreshLists()
             }
             trackField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.track = newValue
+                editor.refreshLists()
             }
             volumeField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.volume = newValue
+                editor.refreshLists()
             }
         }
 
@@ -421,7 +441,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             return ++gridPaneRowIndex
         }
 
-        override fun isInvalid(): Boolean {
+        override fun hasErrors(): Boolean {
             return validation.isInvalid
         }
 
@@ -430,7 +450,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         }
 
         override fun getValidationResult(): ValidationResult {
-            return validation.validationResult
+            return validation.validationResult ?: ValidationResult()
         }
     }
 }

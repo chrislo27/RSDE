@@ -1,7 +1,3 @@
 #label {
     -fx-padding: 0.25em 0.5em 0.25em 0.5em;
 }
-
-.bad-data-node {
-    -fx-text-fill: red;
-}

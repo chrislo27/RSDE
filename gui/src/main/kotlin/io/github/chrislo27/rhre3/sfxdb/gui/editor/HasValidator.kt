@@ -5,7 +5,7 @@ import org.controlsfx.validation.ValidationResult
 
 interface HasValidator {
 
-    fun isInvalid(): Boolean
+    fun hasErrors(): Boolean
 
     fun forceUpdate()
 

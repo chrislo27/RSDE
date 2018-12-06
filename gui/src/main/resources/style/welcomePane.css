@@ -35,10 +35,6 @@
     -fx-pref-height: 1em
 }
 
-.bad-custom-sfx {
-    -fx-text-fill: red;
-}
-
 #db-version {
     -fx-label-padding: 0.25em 0.5em 0.25em 0.5em;
 }

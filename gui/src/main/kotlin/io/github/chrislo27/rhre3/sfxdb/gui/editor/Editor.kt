@@ -103,6 +103,11 @@ class Editor(val folder: File, val editorPane: EditorPane) {
         paneMap.keys.filter { it !in gameObject.objects }.filterIsInstance<Datamodel>().forEach { paneMap.remove(it) }
     }
 
+    fun refreshLists() {
+        paneMap.values.forEach { (it as? StructPane<*>)?.refreshLists() }
+        editorPane.structurePane.treeView.refresh()
+    }
+
     fun switchToPane(pane: Pane?) {
         mainPane.children.clear()
         mainPane.children += pane ?: pickFirstLabel

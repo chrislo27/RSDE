@@ -55,14 +55,20 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     text = if (item == null || empty) {
                         null
                     } else {
-                        val pane = editor.getPane(item) as? StructPane<*>
+                        val pane = editor.getPane(item) as? HasValidator
                         if (pane != null) {
-                            val anyErrors = pane.validation.isInvalid
+                            val anyErrors = pane.hasErrors()
                             val sClass = "bad-list-cell"
                             if (anyErrors) {
                                 if (sClass !in styleClass) this.styleClass += sClass
                             } else {
                                 if (sClass in styleClass) this.styleClass -= sClass
+                                val warningStyle = "warning-list-cell"
+                                if (pane.getValidationResult().warnings.isNotEmpty()) {
+                                    if (warningStyle !in styleClass) styleClass += warningStyle
+                                } else {
+                                    styleClass -= warningStyle
+                                }
                             }
                         }
                         (item as? Datamodel)?.id.takeUnless { it.isNullOrEmpty() } ?: Localization["editor.missingID"]
@@ -243,9 +249,9 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         }
     }
 
-    override fun isInvalid(): Boolean {
+    override fun hasErrors(): Boolean {
         return validation.isInvalid ||
-                gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().any { it.isInvalid() }
+                gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().any { it.hasErrors() }
     }
 
     override fun forceUpdate() {
@@ -254,9 +260,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     }
 
     override fun getValidationResult(): ValidationResult {
-        return gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().fold(validation.validationResult) { acc, it ->
+        return gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().fold(validation.validationResult ?: ValidationResult()) { acc, it ->
             acc.combine(it.getValidationResult())
         }
+    }
+
+    override fun refreshLists() {
+        objectsListView.refresh()
     }
 
     private fun addDatamodel(datamodel: Datamodel) {

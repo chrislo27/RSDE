@@ -130,10 +130,17 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                 } else null
                 val pane = item.editor.getPane(item.struct)
                 if (pane != null && pane is HasValidator) {
-                    if (pane.isInvalid()) {
-                        if ("bad-data-node" !in styleClass) styleClass += "bad-data-node"
+                    val style = "bad-list-cell"
+                    if (pane.hasErrors()) {
+                        if (style !in styleClass) styleClass += style
                     } else {
-                        styleClass -= "bad-data-node"
+                        styleClass -= style
+                        val warningStyle = "warning-list-cell"
+                        if (pane.getValidationResult().warnings.isNotEmpty()) {
+                            if (warningStyle !in styleClass) styleClass += warningStyle
+                        } else {
+                            styleClass -= warningStyle
+                        }
                     }
                 }
             }
