@@ -147,7 +147,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         statusBar.text = Localization["editor.status.validation", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
                     }
                 }
-                accelerator = KeyCombination.keyCombination("Shortcut+F9")
+                accelerator = KeyCombination.keyCombination("F6")
                 disableProperty().bind(Bindings.createBooleanBinding(Callable { currentEditor == null }, centreTabPane.selectionModel.selectedItemProperty()))
             }
             items += MenuItem().bindLocalized("editor.toolbar.analyze.validateAll").apply {
@@ -163,7 +163,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         statusBar.text = Localization["editor.status.validation.all", DecimalFormat("0.000").format(time), result.errors.size, result.warnings.size]
                     }
                 }
-                accelerator = KeyCombination.keyCombination("Shortcut+Shift+F9")
+                accelerator = KeyCombination.keyCombination("Shift+F6")
                 disableProperty().bind(Bindings.isEmpty(editors))
             }
         }
