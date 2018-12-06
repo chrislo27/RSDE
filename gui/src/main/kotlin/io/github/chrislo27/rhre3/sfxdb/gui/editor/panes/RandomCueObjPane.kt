@@ -22,9 +22,13 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
         addProperty(Label().bindLocalized("datamodel.type"), Label("randomCue").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
-        addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
+        }, deprecatedIDsField)
 
-        addProperty(Label().bindLocalized("datamodel.responseIDs"), responseIDsField)
+        addProperty(Label().bindLocalized("datamodel.responseIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.responseIDs.tooltip")
+        }, responseIDsField)
 
         centreVbox.children += cuesPane
     }
@@ -54,7 +58,9 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
                 tooltip = Tooltip().bindLocalized("cuePointer.duration.tooltip")
             }, durationField)
             addProperty(Label().bindLocalized("cuePointer.semitone"), semitoneField)
-            addProperty(Label().bindLocalized("cuePointer.track"), trackField)
+            addProperty(Label().bindLocalized("cuePointer.track").apply {
+                tooltip = Tooltip().bindLocalized("cuePointer.track.tooltip")
+            }, trackField)
             addProperty(Label().bindLocalized("cuePointer.volume"), volumeField)
         }
     }

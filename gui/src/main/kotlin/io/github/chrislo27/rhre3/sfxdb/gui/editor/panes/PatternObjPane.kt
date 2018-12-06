@@ -19,9 +19,13 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
         addProperty(Label().bindLocalized("datamodel.type"), Label("pattern").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
-        addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
+        }, deprecatedIDsField)
 
-        addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
+        addProperty(Label().bindLocalized("datamodel.stretchable").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.stretchable.tooltip")
+        }, stretchableField)
 
         centreVbox.children += cuesPane
     }
@@ -45,7 +49,9 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
                 tooltip = Tooltip().bindLocalized("cuePointer.duration.tooltip")
             }, durationField)
             addProperty(Label().bindLocalized("cuePointer.semitone"), semitoneField)
-            addProperty(Label().bindLocalized("cuePointer.track"), trackField)
+            addProperty(Label().bindLocalized("cuePointer.track").apply {
+                tooltip = Tooltip().bindLocalized("cuePointer.track.tooltip")
+            }, trackField)
             addProperty(Label().bindLocalized("cuePointer.volume"), volumeField)
         }
     }

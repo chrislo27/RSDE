@@ -19,9 +19,13 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
         addProperty(Label().bindLocalized("datamodel.type"), Label("keepTheBeat").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
-        addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
+        }, deprecatedIDsField)
 
-        addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration"), defaultDurationField)
+        addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.defaultDuration.tooltip")
+        }, defaultDurationField)
 
         centreVbox.children += cuesPane
     }
@@ -46,7 +50,9 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
                 tooltip = Tooltip().bindLocalized("cuePointer.duration.tooltip")
             }, durationField)
             addProperty(Label().bindLocalized("cuePointer.semitone"), semitoneField)
-            addProperty(Label().bindLocalized("cuePointer.track"), trackField)
+            addProperty(Label().bindLocalized("cuePointer.track").apply {
+                tooltip = Tooltip().bindLocalized("cuePointer.track.tooltip")
+            }, trackField)
             addProperty(Label().bindLocalized("cuePointer.volume"), volumeField)
         }
     }

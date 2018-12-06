@@ -46,19 +46,29 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("datamodel.type"), Label("cue").apply { styleClass += "monospaced" })
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
-        addProperty(Label().bindLocalized("datamodel.deprecatedIDs"), deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
+        }, deprecatedIDsField)
         
         addProperty(Label().bindLocalized("cueObject.duration"), durationField)
-        addProperty(Label().bindLocalized("datamodel.stretchable"), stretchableField)
+        addProperty(Label().bindLocalized("datamodel.stretchable").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.stretchable.tooltip")
+        }, stretchableField)
         addProperty(Label().bindLocalized("cueObject.repitchable"), repitchableField)
         addProperty(Label().bindLocalized("cueObject.loops"), loopsField)
         addProperty(Label().bindLocalized("cueObject.baseBpm").apply {
             tooltip = Tooltip().bindLocalized("cueObject.baseBpm.tooltip")
         }, baseBpmField)
-        addProperty(Label().bindLocalized("cueObject.introSound"), introSoundField)
-        addProperty(Label().bindLocalized("cueObject.endingSound"), endingSoundField)
+        addProperty(Label().bindLocalized("cueObject.introSound").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.introSound.tooltip")
+        }, introSoundField)
+        addProperty(Label().bindLocalized("cueObject.endingSound").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.endingSound.tooltip")
+        }, endingSoundField)
         addProperty(Label().bindLocalized("cueObject.fileExtension"), fileExtField)
-        addProperty(Label().bindLocalized("datamodel.responseIDs"), responseIDsField)
+        addProperty(Label().bindLocalized("datamodel.responseIDs").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.responseIDs.tooltip")
+        }, responseIDsField)
     }
 
     init {

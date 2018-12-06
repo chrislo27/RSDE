@@ -83,12 +83,24 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
 
         addProperty(Label().bindLocalized("datamodel.id"), idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
-        addProperty(Label().bindLocalized("gameObject.series"), seriesComboBox)
-        addProperty(Label().bindLocalized("gameObject.group"), groupField)
-        addProperty(Label().bindLocalized("gameObject.groupDefault"), groupDefaultCheckbox)
-        addProperty(Label().bindLocalized("gameObject.priority"), prioritySpinner)
-        addProperty(Label().bindLocalized("gameObject.searchHints"), searchHintsField)
-        addProperty(Label().bindLocalized("gameObject.noDisplay"), noDisplayCheckbox)
+        addProperty(Label().bindLocalized("gameObject.series").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.series.tooltip")
+        }, seriesComboBox)
+        addProperty(Label().bindLocalized("gameObject.group").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.group.tooltip")
+        }, groupField)
+        addProperty(Label().bindLocalized("gameObject.groupDefault").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.groupDefault.tooltip")
+        }, groupDefaultCheckbox)
+        addProperty(Label().bindLocalized("gameObject.priority").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.priority.tooltip")
+        }, prioritySpinner)
+        addProperty(Label().bindLocalized("gameObject.searchHints").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.searchHints.tooltip")
+        }, searchHintsField)
+        addProperty(Label().bindLocalized("gameObject.noDisplay").apply {
+            tooltip = Tooltip().bindLocalized("gameObject.noDisply.tooltip")
+        }, noDisplayCheckbox)
 
         centreVbox.children += Separator().apply {
             maxWidth = Double.MAX_VALUE
