@@ -11,6 +11,7 @@ import javafx.application.Application
 import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.control.ButtonType
+import javafx.scene.control.DialogPane
 import javafx.scene.image.Image
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
@@ -99,7 +100,7 @@ class RSDE : Application() {
 
         val scene = Scene(WelcomePane(this)).apply {
             addDebugAccelerators()
-            stylesheets += "style/main.css"
+            addBaseStyleToScene(this)
         }
         scene.rootProperty().addListener { _, _, newValue ->
             if (newValue is ChangesPresenceState) {
@@ -119,7 +120,7 @@ class RSDE : Application() {
             e.printStackTrace()
             Platform.runLater {
                 val exitButton = ButtonType(Localization["opts.closeProgram"])
-                val buttonType: Optional<ButtonType> = ExceptionAlert(e, "An uncaught exception occurred in thread ${t.name}\n${e::class.java.simpleName}", "An uncaught exception occurred").apply {
+                val buttonType: Optional<ButtonType> = ExceptionAlert(null, e, "An uncaught exception occurred in thread ${t.name}\n${e::class.java.simpleName}", "An uncaught exception occurred").apply {
                     this.buttonTypes += exitButton
                 }.showAndWait()
                 if (buttonType.isPresent) {
@@ -130,6 +131,35 @@ class RSDE : Application() {
             }
         }
 
+    }
+
+    /**
+     * Adds the base style + night mode listener
+     */
+    fun addBaseStyleToScene(scene: Scene) {
+        scene.stylesheets += "style/main.css"
+        val nightStyle = "style/nightMode.css"
+        settings.nightModeProperty.addListener { _, _, newValue ->
+            if (newValue) {
+                if (nightStyle !in scene.stylesheets) scene.stylesheets += nightStyle
+            } else {
+                scene.stylesheets -= nightStyle
+            }
+        }
+        if (settings.nightMode) scene.stylesheets += nightStyle
+    }
+
+    fun addBaseStyleToDialog(dialogPane: DialogPane) {
+        dialogPane.stylesheets += "style/main.css"
+        val nightStyle = "style/nightMode.css"
+        settings.nightModeProperty.addListener { _, _, newValue ->
+            if (newValue) {
+                if (nightStyle !in dialogPane.stylesheets) dialogPane.stylesheets += nightStyle
+            } else {
+                dialogPane.stylesheets -= nightStyle
+            }
+        }
+        if (settings.nightMode) dialogPane.stylesheets += nightStyle
     }
 
     override fun stop() {

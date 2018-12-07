@@ -205,7 +205,7 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     Parser.parseGameDefinition(JsonHandler.OBJECT_MAPPER.readTree(dataJsonFile)).producePerfectADT()
                 } catch (e: BadResultException) {
                     e.printStackTrace()
-                    ExceptionAlert(e, "The copied data.json file is invalid").showAndWait()
+                    ExceptionAlert(app, e, "The copied data.json file is invalid").showAndWait()
                     return@setOnAction
                 }
 
@@ -214,7 +214,7 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ExceptionAlert(e).showAndWait()
+                ExceptionAlert(app, e).showAndWait()
             }
         }
     }

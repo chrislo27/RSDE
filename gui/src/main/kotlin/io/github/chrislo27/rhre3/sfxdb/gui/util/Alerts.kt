@@ -11,7 +11,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 
-class ExceptionAlert(val exception: Throwable,
+class ExceptionAlert(app: RSDE?, val exception: Throwable,
                      contentText: String = exception.message ?: "",
                      windowTitle: String = Localization["alert.exception.title"],
                      headerText: String = windowTitle,
@@ -23,6 +23,10 @@ class ExceptionAlert(val exception: Throwable,
         this.contentText = contentText
         this.headerText = headerText
         this.addWindowIcons()
+
+        this.dialogPane?.let {
+            app?.addBaseStyleToDialog(it)
+        }
 
         val exceptionText = StringWriter().let {
             exception.printStackTrace(PrintWriter(it))

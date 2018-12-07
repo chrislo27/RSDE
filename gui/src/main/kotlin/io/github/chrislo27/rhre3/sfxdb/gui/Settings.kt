@@ -22,18 +22,6 @@ class Settings(val app: RSDE) {
         get() = dividerPositionProperty.value
         set(value) = dividerPositionProperty.set(value)
 
-    init {
-        nightModeProperty.addListener { _, _, newValue ->
-            val style = "style/nightMode.css"
-            val stylesheets = app.primaryStage.scene.stylesheets
-            if (newValue) {
-                if (style !in stylesheets) stylesheets += style
-            } else {
-                if (style in stylesheets) stylesheets -= style
-            }
-        }
-    }
-
     fun loadFromStorage() {
         if (!prefsFile.exists()) return
         try {

@@ -20,7 +20,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
     private val app: RSDE get() = editorPane.app
 
     val treeView: TreeView<DataNode> = TreeView<DataNode>().apply {
-        this.cellFactory = Callback { DataNodeCell() }
+        this.cellFactory = Callback { DataNodeCell(app) }
     }
 
     init {
@@ -40,7 +40,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                     item.editor.getPane(item.struct)
                 } catch (e: Throwable) {
                     e.printStackTrace()
-                    ExceptionAlert(e).showAndWait()
+                    ExceptionAlert(app, e).showAndWait()
                     return@setOnMouseClicked
                 }
                 item.editor.switchToPane(pane)
@@ -75,7 +75,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         val struct: JsonStruct, val text: String
     )
 
-    class DataNodeCell : TreeCell<DataNode>() {
+    class DataNodeCell(private val app: RSDE) : TreeCell<DataNode>() {
         private val datamodelContextMenu: ContextMenu = ContextMenu().apply {
             items += MenuItem("", ImageView(Image("/image/ui/remove.png", 16.0, 16.0, true, true, true))).apply {
                 bindLocalized("editor.remove")
@@ -87,6 +87,9 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
                         this.titleProperty().bind(text)
                         this.contentTextProperty().bind(text)
                         this.addWindowIcons()
+                        this.dialogPane?.let {
+                            app.addBaseStyleToDialog(it)
+                        }
                     }
                     val result = dialog.showAndWait()
                     if (result.orElse(null) == ButtonType.OK) {

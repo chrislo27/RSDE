@@ -208,7 +208,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                                         this.bindLocalized("welcome.error")
                                         this.textAlignment = TextAlignment.CENTER
                                     }
-                                    ExceptionAlert(gameResult.exceptionOrNull()!!, Localization["welcome.error"])
+                                    ExceptionAlert(app, gameResult.exceptionOrNull()!!, Localization["welcome.error"])
                                         .showAndWait()
                                     exitProcess(0)
                                 }

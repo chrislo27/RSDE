@@ -248,6 +248,9 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         this.titleProperty().bind(text)
                         this.contentTextProperty().bind(text)
                         this.addWindowIcons()
+                        this.dialogPane?.let {
+                            parentPane.editor.editorPane.app.addBaseStyleToDialog(it)
+                        }
                     }
                     val result = dialog.showAndWait()
                     if (result.orElse(null) == ButtonType.OK) {

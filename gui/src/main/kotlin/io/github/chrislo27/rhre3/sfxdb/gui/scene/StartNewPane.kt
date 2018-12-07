@@ -164,7 +164,7 @@ class StartNewPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                ExceptionAlert(e).showAndWait()
+                ExceptionAlert(app, e).showAndWait()
             }
         }
     }

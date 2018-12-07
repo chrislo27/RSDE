@@ -140,6 +140,9 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     this.titleProperty().bind(text)
                     this.contentTextProperty().bind(text)
                     this.addWindowIcons()
+                    this.dialogPane?.let {
+                        editor.editorPane.app.addBaseStyleToDialog(it)
+                    }
                 }
                 val result = dialog.showAndWait()
                 if (result.orElse(null) == ButtonType.OK) {
@@ -212,7 +215,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     editor.getPane(item)
                 } catch (e: Throwable) {
                     e.printStackTrace()
-                    ExceptionAlert(e).showAndWait()
+                    ExceptionAlert(editor.editorPane.app, e).showAndWait()
                     return@setOnMouseClicked
                 }
                 editor.switchToPane(pane)
@@ -295,7 +298,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             editor.getPane(datamodel)
         } catch (e: Throwable) {
             e.printStackTrace()
-            ExceptionAlert(e).showAndWait()
+            ExceptionAlert(editor.editorPane.app, e).showAndWait()
             return
         }
         editor.switchToPane(pane)
