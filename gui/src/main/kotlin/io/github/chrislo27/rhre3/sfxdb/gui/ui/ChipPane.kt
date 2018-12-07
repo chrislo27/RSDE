@@ -1,6 +1,5 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.ui
 
-import io.github.chrislo27.rhre3.sfxdb.gui.util.em
 import javafx.beans.property.ReadOnlyListWrapper
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
@@ -47,7 +46,8 @@ open class ChipPane(val list: ObservableList<Chip> = FXCollections.observableArr
                 }
             }
         }
-        prefWidth = 14.0.em
+//        prefWidth = Double.MAX_VALUE
+        maxWidth = Double.MAX_VALUE
     }
     val canAddProperty = SimpleBooleanProperty(canAdd)
     var canAdd: Boolean
