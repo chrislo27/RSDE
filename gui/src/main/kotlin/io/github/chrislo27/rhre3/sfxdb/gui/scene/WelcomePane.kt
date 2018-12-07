@@ -54,7 +54,24 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
     val logo = ImageView("icon/256.png")
     val title = Label(RSDE.TITLE).apply { id = "title" }
-    val version = Label(RSDE.VERSION.toString()).apply { id = "version-subtitle" }
+    val version = Label(RSDE.VERSION.toString()).apply {
+        id = "version-subtitle"
+        fun setWarning(ver: Version) {
+            styleClass += "warning-list-cell"
+            tooltip = Tooltip().bindLocalized("welcome.outOfDate", ver.toString())
+        }
+        val gh = app.githubVersion.get()
+        if (!gh.isUnknown && gh > RSDE.VERSION) {
+            setWarning(gh)
+        } else if (gh.isUnknown) {
+            app.githubVersion.addListener { _, _, newValue ->
+                val v = newValue
+                if (!v.isUnknown && v > RSDE.VERSION) {
+                    setWarning(v)
+                }
+            }
+        }
+    }
     val sfxdbLabel: Label
     val settingsButton: Button
 

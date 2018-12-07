@@ -2,6 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.LibrariesUsed
+import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
 import javafx.geometry.Insets
@@ -9,6 +10,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.Hyperlink
 import javafx.scene.control.Label
 import javafx.scene.control.Tab
+import javafx.scene.control.Tooltip
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
@@ -45,7 +47,25 @@ class AboutPane(val app: RSDE) : BorderPane() {
             styleClass += "title"
         }, 1, 0)
         var row = 1
-        gridPane.add(Label(RSDE.VERSION.toString()).apply { styleClass += "version" }, 1, row++)
+        gridPane.add(Label(RSDE.VERSION.toString()).apply {
+            styleClass += "version"
+
+            fun setWarning(ver: Version) {
+                styleClass += "warning-list-cell"
+                tooltip = Tooltip().bindLocalized("welcome.outOfDate", ver.toString())
+            }
+            val gh = app.githubVersion.get()
+            if (!gh.isUnknown && gh > RSDE.VERSION) {
+                setWarning(gh)
+            } else if (gh.isUnknown) {
+                app.githubVersion.addListener { _, _, newValue ->
+                    val v = newValue
+                    if (!v.isUnknown && v > RSDE.VERSION) {
+                        setWarning(v)
+                    }
+                }
+            }
+        }, 1, row++)
         gridPane.add(Hyperlink(RSDE.GITHUB).apply {
             setOnAction {
                 app.hostServices.showDocument(RSDE.GITHUB)

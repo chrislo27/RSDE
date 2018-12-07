@@ -9,15 +9,21 @@ import io.github.chrislo27.rhre3.sfxdb.gui.scene.WelcomePane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import javafx.application.Application
 import javafx.application.Platform
+import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Scene
 import javafx.scene.control.ButtonType
 import javafx.scene.control.DialogPane
 import javafx.scene.image.Image
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -66,6 +72,7 @@ class RSDE : Application() {
         private set
 
     val settings: Settings = Settings(this)
+    val githubVersion: ObjectProperty<Version> = SimpleObjectProperty(Version.RETRIEVING)
 
     private val editorPane: EditorPane by lazy { EditorPane(this) }
 
@@ -90,6 +97,34 @@ class RSDE : Application() {
         } catch (e: Exception) {
             e.printStackTrace()
             databasePresent = DatabaseStatus.ERROR
+        }
+
+        GlobalScope.launch {
+            try {
+                val apiUrl = URL("https://api.github.com/repos/chrislo27/RSDE/releases/latest")
+                val con = apiUrl.openConnection() as HttpURLConnection
+                con.requestMethod = "GET"
+                val status = con.responseCode
+                if (status == 200) {
+                    val content = con.inputStream.bufferedReader().let {
+                        val text = it.readText()
+                        it.close()
+                        text
+                    }
+
+                    Platform.runLater {
+                        githubVersion.set(Version.fromStringOrNull(JsonHandler.OBJECT_MAPPER.readTree(content)["tag_name"].asText()) ?: Version.UNKNOWN)
+                        LOGGER.info("Got version from server: ${githubVersion.get()}")
+                    }
+                }
+
+                con.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Platform.runLater {
+                    githubVersion.set(Version.UNKNOWN)
+                }
+            }
         }
     }
 
