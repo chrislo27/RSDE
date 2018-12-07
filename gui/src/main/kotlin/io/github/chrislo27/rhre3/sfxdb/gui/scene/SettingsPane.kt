@@ -7,6 +7,7 @@ import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.ScrollPane
 import javafx.scene.control.Tab
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
@@ -39,7 +40,10 @@ class SettingsPane(val app: RSDE) : BorderPane() {
         val gridPane = GridPane().apply {
             styleClass += "grid-pane"
         }
-        center = gridPane
+        center = ScrollPane(gridPane).apply {
+            hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+            vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+        }
 
         gridPane.alignment = Pos.CENTER
         gridPane.hgap = 1.0.em
