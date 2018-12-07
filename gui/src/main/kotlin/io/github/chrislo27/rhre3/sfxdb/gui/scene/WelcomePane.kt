@@ -102,11 +102,12 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             this.alignment = Pos.CENTER_RIGHT
             this.id = "db-version"
         }
-        settingsButton = Button("", ImageView(Image("image/ui/settings.png", 24.0, 24.0, true, true, true))).apply {
+        settingsButton = Button("", ImageView(Image("image/ui/settings24.png", 24.0, 24.0, true, true, true))).apply {
             HBox.setMargin(this, Insets(0.25.em))
             setOnAction { _ ->
                 app.primaryStage.scene.root = SettingsPane(app, true)
             }
+            padding = Insets(0.35.em)
             isDisable = true
         }
         centrePane.bottom = BorderPane().apply {
