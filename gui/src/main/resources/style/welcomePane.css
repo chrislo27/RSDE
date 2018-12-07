@@ -38,3 +38,7 @@
 #db-version {
     -fx-label-padding: 0.25em 0.5em 0.25em 0.5em;
 }
+
+#settings-button {
+    -fx-padding: 0.35em;
+}
