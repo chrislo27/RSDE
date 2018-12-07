@@ -8,15 +8,13 @@ import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.PresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
-import io.github.chrislo27.rhre3.sfxdb.gui.util.ExceptionAlert
-import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Localization
-import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
+import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.image.Image
@@ -58,6 +56,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val title = Label(RSDE.TITLE).apply { id = "title" }
     val version = Label(RSDE.VERSION.toString()).apply { id = "version-subtitle" }
     val sfxdbLabel: Label
+    val settingsButton: Button
 
     val customSfxList: ObservableList<CustomSFX> = FXCollections.observableArrayList()
     val customSfxView: ListView<CustomSFX> = ListView(customSfxList).apply {
@@ -86,10 +85,21 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             this.alignment = Pos.CENTER_RIGHT
             this.id = "db-version"
         }
+        settingsButton = Button("", ImageView(Image("image/ui/settings.png", 24.0, 24.0, true, true, true))).apply {
+            HBox.setMargin(this, Insets(0.25.em))
+            setOnAction { _ ->
+                app.primaryStage.scene.root = SettingsPane(app, true)
+            }
+            isDisable = true
+        }
         centrePane.bottom = BorderPane().apply {
             right = HBox().apply {
-                this.alignment = Pos.BASELINE_RIGHT
+                this.alignment = Pos.CENTER_RIGHT
                 children += sfxdbLabel
+            }
+            left = HBox().apply {
+                this.alignment = Pos.CENTER_LEFT
+                children += settingsButton
             }
         }
 
@@ -137,6 +147,8 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                         }
                     }
                     customSfxList += EMPTY_CUSTOM_SFX
+
+                    settingsButton.isDisable = false
                 }
 
                 // Recent projects

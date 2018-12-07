@@ -3,6 +3,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.scene
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.control.Button
@@ -13,10 +14,11 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.GridPane
+import javafx.scene.layout.HBox
 import org.controlsfx.control.ToggleSwitch
 
 
-class SettingsPane(val app: RSDE) : BorderPane() {
+class SettingsPane(val app: RSDE, backToWelcome: Boolean = false) : BorderPane() {
     class SettingsTab(pane: SettingsPane) : Tab() {
         constructor(app: RSDE) : this(SettingsPane(app))
 
@@ -43,6 +45,29 @@ class SettingsPane(val app: RSDE) : BorderPane() {
         center = ScrollPane(gridPane).apply {
             hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
             vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+        }
+
+        if (backToWelcome) {
+            val bottom = BorderPane().apply {
+                this@SettingsPane.bottom = this
+                id = "bottom-box"
+            }
+            val bottomLeft = HBox().apply {
+                bottom.left = this
+                BorderPane.setMargin(this, Insets(1.0.em))
+            }
+            val bottomRight = HBox().apply {
+                bottom.right = this
+                BorderPane.setMargin(this, Insets(1.0.em))
+            }
+            val backButton = Button().apply {
+                bindLocalized("opts.back")
+                setOnAction { _ ->
+                    app.primaryStage.scene.root = WelcomePane(app)
+                }
+                alignment = Pos.CENTER_LEFT
+            }
+            bottomLeft.children += backButton
         }
 
         gridPane.alignment = Pos.CENTER
