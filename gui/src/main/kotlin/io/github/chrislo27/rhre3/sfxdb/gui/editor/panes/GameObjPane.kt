@@ -99,7 +99,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             tooltip = Tooltip().bindLocalized("gameObject.searchHints.tooltip")
         }, searchHintsField)
         addProperty(Label().bindLocalized("gameObject.noDisplay").apply {
-            tooltip = Tooltip().bindLocalized("gameObject.noDisply.tooltip")
+            tooltip = Tooltip().bindLocalized("gameObject.noDisplay.tooltip")
         }, noDisplayCheckbox)
 
         centreVbox.children += Separator().apply {
@@ -192,6 +192,11 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                 }
             }
         }
+
+        removeButton.isDisable = true
+        copyButton.isDisable = true
+        moveUpButton.isDisable = true
+        moveDownButton.isDisable = true
 
         selectionModel.selectionMode = SelectionMode.MULTIPLE
         selectionModel.selectedItemProperty().addListener { _, _, newValue ->

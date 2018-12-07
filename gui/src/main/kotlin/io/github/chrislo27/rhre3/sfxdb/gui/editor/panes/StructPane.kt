@@ -300,6 +300,11 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 }
             }
 
+            removeButton.isDisable = true
+            copyButton.isDisable = true
+            moveUpButton.isDisable = true
+            moveDownButton.isDisable = true
+
             selectionModel.selectionMode = SelectionMode.MULTIPLE
             selectionModel.selectedItemProperty().addListener { _, _, newValue ->
                 removeButton.isDisable = newValue == null
