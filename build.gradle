@@ -75,7 +75,7 @@ project(":main") {
     dependencies {
         implementation "com.fasterxml.jackson.module:jackson-module-afterburner:${jackson_version}"
         implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
-        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
+        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
         implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
