@@ -59,7 +59,9 @@ class SettingsPane(val app: RSDE) : BorderPane() {
         val settings = app.settings
         addProperty(Label().bindLocalized("settings.nightMode"), ToggleSwitch().apply {
             selectedProperty().bindBidirectional(settings.nightModeProperty)
-            settings.persistToStorage()
+            selectedProperty().addListener { _, _, _ ->
+                settings.persistToStorage()
+            }
         })
         gridPane.add(Button().bindLocalized("settings.resetDivider").apply {
             setOnAction { _ ->
