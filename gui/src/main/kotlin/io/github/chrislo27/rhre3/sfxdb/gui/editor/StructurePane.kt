@@ -35,7 +35,7 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         treeView.setOnMouseClicked { evt ->
             val node = treeView.selectionModel.selectedItem
             val item = node?.value
-            if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= (if (node == treeView.root) 1 else 2)) {
+            if (item != null && evt.button == MouseButton.PRIMARY && evt.clickCount >= 1) {
                 val pane = try {
                     item.editor.getPane(item.struct)
                 } catch (e: Throwable) {
