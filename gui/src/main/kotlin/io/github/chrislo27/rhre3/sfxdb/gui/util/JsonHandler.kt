@@ -15,35 +15,23 @@ import java.io.OutputStream
 
 object JsonHandler {
 
-    val OBJECT_MAPPER: ObjectMapper = createObjectMapper(false)
+    val OBJECT_MAPPER: ObjectMapper = createObjectMapper()
 
     @JvmStatic
-    fun createObjectMapper(failOnUnknown: Boolean = false): ObjectMapper {
+    fun createObjectMapper(): ObjectMapper {
         val mapper = ObjectMapper()
-                .enable(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID)
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .enable(MapperFeature.USE_ANNOTATIONS)
-                .enable(JsonParser.Feature.ALLOW_COMMENTS)
-                .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
-                .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
-                .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-                .registerModule(AfterburnerModule())
-                .registerModule(KotlinModule())
-
-        if (!failOnUnknown) {
-            mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        }
+            .enable(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID)
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .enable(MapperFeature.USE_ANNOTATIONS)
+            .enable(JsonParser.Feature.ALLOW_COMMENTS)
+            .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+            .registerModule(AfterburnerModule())
+            .registerModule(KotlinModule())
 
         return mapper
-    }
-
-    @JvmStatic
-    fun setFailOnUnknown(fail: Boolean) {
-        if (fail) {
-            OBJECT_MAPPER.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        } else {
-            OBJECT_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        }
     }
 
     @JvmStatic
