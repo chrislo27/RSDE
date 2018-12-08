@@ -94,6 +94,12 @@ class SettingsPane(val app: RSDE, backToWelcome: Boolean = false) : BorderPane()
                 settings.persistToStorage()
             }
         }, 2, 0)
+        addProperty(Label().bindLocalized("settings.discordRichPresence"), ToggleSwitch().apply {
+            selectedProperty().bindBidirectional(settings.richPresenceProperty)
+            selectedProperty().addListener { _, _, _ ->
+                settings.persistToStorage()
+            }
+        })
 
     }
 }

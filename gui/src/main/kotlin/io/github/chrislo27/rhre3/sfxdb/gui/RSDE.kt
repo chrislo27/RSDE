@@ -77,8 +77,6 @@ class RSDE : Application() {
     private val editorPane: EditorPane by lazy { EditorPane(this) }
 
     override fun init() {
-        DiscordHelper.init(enabled = true)
-
         val currentJson = rhreSfxRoot.resolve("current.json")
         if (rhreSfxRoot.exists() && currentJson.exists())
             databasePresent = DatabaseStatus.EXISTS
@@ -150,6 +148,7 @@ class RSDE : Application() {
 
         settings.loadFromStorage()
 
+        DiscordHelper.init(enabled = settings.richPresence)
         DiscordHelper.updatePresence((scene.root as? ChangesPresenceState?)?.getPresenceState() ?: DefaultRichPresence())
         Thread.currentThread().setUncaughtExceptionHandler { t, e ->
             e.printStackTrace()
