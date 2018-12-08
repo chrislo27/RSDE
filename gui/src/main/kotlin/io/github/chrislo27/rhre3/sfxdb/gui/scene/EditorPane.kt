@@ -14,6 +14,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
+import javafx.beans.binding.ObjectBinding
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -54,11 +55,12 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
     val bottomPane: Pane = VBox()
 
     val editors: ObservableList<Editor> = FXCollections.observableArrayList()
+    val currentEditorProperty: ObjectBinding<Editor?> = Bindings.createObjectBinding(Callable {
+        val currentTab = centreTabPane.selectionModel.selectedItem ?: return@Callable null
+        editors.find { it.tab == currentTab }
+    }, centreTabPane.selectionModel.selectedItemProperty(), editors)
     val currentEditor: Editor?
-        get() {
-            val currentTab = centreTabPane.selectionModel.selectedItem ?: return null
-            return editors.find { it.tab == currentTab }
-        }
+        get() = currentEditorProperty.value
 
     val structurePane: StructurePane
     val statusBar: StatusBar = StatusBar().apply {

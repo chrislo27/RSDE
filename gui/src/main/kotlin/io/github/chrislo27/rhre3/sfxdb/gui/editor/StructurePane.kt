@@ -4,12 +4,18 @@ import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.adt.JsonStruct
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GameObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
+import javafx.application.Platform
+import javafx.beans.binding.Bindings
+import javafx.geometry.Pos
 import javafx.scene.control.*
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
+import javafx.scene.layout.BorderPane
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import javafx.util.Callback
@@ -27,8 +33,27 @@ class StructurePane(val editorPane: EditorPane) : VBox() {
         stylesheets += "style/structure.css"
         VBox.setVgrow(treeView, Priority.ALWAYS)
 
-        children += Label().bindLocalized("editor.structure").apply {
-            id = "label"
+        children += BorderPane().apply {
+            alignment = Pos.CENTER_LEFT
+            this.left = HBox().apply {
+                children += Label().bindLocalized("editor.structure").apply {
+                    id = "label"
+                    alignment = Pos.CENTER_LEFT
+                }
+                this.children += Button("", ImageView(Image("/image/ui/add.png", 16.0, 16.0, true, true, true))).apply {
+                    id = "add-button"
+                    setOnAction { _ ->
+                        val editor = editorPane.currentEditor ?: return@setOnAction
+                        val pane: GameObjPane = (editor.getPane(editor.gameObject) as? GameObjPane) ?: return@setOnAction
+                        editor.switchToPane(pane)
+                        Platform.runLater {
+                            pane.addButton.fire()
+                        }
+                    }
+                    visibleProperty().bind(Bindings.isNotNull(editorPane.currentEditorProperty))
+                    tooltip = Tooltip().bindLocalized("editor.add.datamodel")
+                }
+            }
         }
         children += treeView
 

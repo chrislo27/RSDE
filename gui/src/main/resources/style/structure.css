@@ -1,3 +1,7 @@
 #label {
+    -fx-padding: 0.25em 3em 0.25em 0.5em;
+}
+
+#add-button {
     -fx-padding: 0.25em 0.5em 0.25em 0.5em;
 }

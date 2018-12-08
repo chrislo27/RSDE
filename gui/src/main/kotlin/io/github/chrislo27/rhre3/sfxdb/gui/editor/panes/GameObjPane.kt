@@ -224,6 +224,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         }
 
         updateObjectsList()
+        refreshLists()
     }
 
     init {
@@ -311,6 +312,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             it.idField.end()
         }
         editor.editorPane.fireUpdate()
+        editor.refreshLists()
     }
 
     inner class AddMenuItem(text: String, factory: () -> Datamodel) : MenuItem(text) {
