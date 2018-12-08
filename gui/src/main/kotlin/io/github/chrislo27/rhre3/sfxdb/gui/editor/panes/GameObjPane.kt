@@ -24,6 +24,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     val idField = TextField(struct.id).apply {
         isEditable = false
         isDisable = true
+        tooltip = Tooltip().bindLocalized("editor.cannotEditGameIDs")
     }
     val nameField = TextField(struct.name)
     val seriesComboBox =
