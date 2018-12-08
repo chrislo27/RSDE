@@ -303,14 +303,14 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             ExceptionAlert(editor.editorPane.app, e).showAndWait()
             return
         }
-        editor.switchToPane(pane)
-        (pane as? DatamodelPane<*>)?.let {
-            if (it.idField.text.isEmpty()) {
-                it.idField.text = if (pane.struct is Cue) "*/" else "*_"
-            }
-            it.idField.requestFocus()
-            it.idField.end()
-        }
+//        editor.switchToPane(pane)
+//        (pane as? DatamodelPane<*>)?.let {
+//            if (it.idField.text.isEmpty()) {
+//                it.idField.text = if (pane.struct is Cue) "*/" else "*_"
+//            }
+//            it.idField.requestFocus()
+//            it.idField.end()
+//        }
         editor.editorPane.fireUpdate()
         editor.refreshLists()
     }
