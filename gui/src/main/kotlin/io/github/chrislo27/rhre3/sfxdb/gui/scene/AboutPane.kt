@@ -1,10 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
-import io.github.chrislo27.rhre3.sfxdb.gui.util.LibrariesUsed
-import io.github.chrislo27.rhre3.sfxdb.gui.util.Version
-import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
-import io.github.chrislo27.rhre3.sfxdb.gui.util.em
+import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.Hyperlink
@@ -93,6 +90,20 @@ class AboutPane(val app: RSDE) : BorderPane() {
             }, i % 2, i / 2)
         }
         gridPane.add(librariesGridPane, 1, row++, 2, 1)
+        val creditsGridPane = GridPane().apply {
+            id = "credits-gp"
+        }
+        var creditsRow = 0
+        Credits.generateList().forEach { credit ->
+            creditsGridPane.add(Label().bindLocalized(credit.localization).apply { styleClass += "oss" }, 0, creditsRow++)
+            credit.persons.forEachIndexed { i, s ->
+                creditsGridPane.add(Label(s), i % 2, creditsRow)
+                if (i % 2 == 1) creditsRow++
+            }
+            creditsRow++
+        }
+        gridPane.add(Label().bindLocalized("about.credits").apply { styleClass += "oss" }, 1, row++)
+        gridPane.add(creditsGridPane, 1, row++, 2, 1)
 
         center = gridPane
     }

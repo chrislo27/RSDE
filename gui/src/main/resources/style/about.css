@@ -19,3 +19,7 @@
 #libraries-gp {
     -fx-hgap: 2em;
 }
+
+#credits-gp {
+    -fx-hgap: 1em;
+}
