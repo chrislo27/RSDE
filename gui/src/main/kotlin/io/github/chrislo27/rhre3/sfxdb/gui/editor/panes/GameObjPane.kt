@@ -23,6 +23,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
 
     val idField = TextField(struct.id).apply {
         isEditable = false
+        isDisable = true
     }
     val nameField = TextField(struct.name)
     val seriesComboBox =
