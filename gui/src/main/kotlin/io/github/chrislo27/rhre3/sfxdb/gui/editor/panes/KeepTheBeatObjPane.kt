@@ -24,7 +24,7 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
         }, deprecatedIDsField)
 
         addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration").apply {
-            tooltip = Tooltip().bindLocalized("datamodel.defaultDuration.tooltip")
+            tooltip = Tooltip().bindLocalized("keepTheBeatObj.defaultDuration.tooltip")
         }, defaultDurationField)
 
         centreVbox.children += cuesPane
