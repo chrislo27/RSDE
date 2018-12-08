@@ -245,6 +245,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             addButton.setOnAction { _ ->
                 val pointer = CuePointer("*/")
                 addPointer(pointer)
+                parentPane.editor.markDirty()
             }
             val selectionModel = cuesListView.selectionModel
             removeButton.setOnAction {
@@ -263,6 +264,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                     if (result.orElse(null) == ButtonType.OK) {
                         parentPane.struct.cues.removeAll(current)
                         parentPane.editor.editorPane.fireUpdate()
+                        parentPane.editor.markDirty()
                     }
                 }
             }
@@ -270,6 +272,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 val current = selectionModel.selectedItem
                 if (current != null) {
                     addPointer(current.copy())
+                    parentPane.editor.markDirty()
                 }
             }
             moveUpButton.setOnAction { _ ->
@@ -283,10 +286,13 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         current.forEachIndexed { i, it ->
                             list.add(first - 1 + i, it)
                         }
-                        parentPane.editor.editorPane.fireUpdate()
-                        selectionModel.clearSelection()
-                        val newIndices = indices.map { it - 1 }
-                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        Platform.runLater {
+                            parentPane.editor.editorPane.fireUpdate()
+                            selectionModel.clearSelection()
+                            val newIndices = indices.map { it - 1 }
+                            selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                            parentPane.editor.markDirty()
+                        }
                     }
                 }
             }
@@ -302,10 +308,13 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         current.forEachIndexed { i, it ->
                             list.add(first + 1 + i, it)
                         }
-                        parentPane.editor.editorPane.fireUpdate()
-                        selectionModel.clearSelection()
-                        val newIndices = indices.map { it + 1 }
-                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        Platform.runLater {
+                            parentPane.editor.editorPane.fireUpdate()
+                            selectionModel.clearSelection()
+                            val newIndices = indices.map { it + 1 }
+                            selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                            parentPane.editor.markDirty()
+                        }
                     }
                 }
             }
@@ -320,7 +329,7 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                 removeButton.isDisable = newValue == null
                 copyButton.isDisable = newValue == null || selectionModel.selectedIndices.size != 1
                 moveUpButton.isDisable = newValue == null || selectionModel.selectedIndices.min() ?: -1 <= 0 || !selectionModel.isSelectionContiguous()
-                moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE > cuesListView.items.size - 1 || !selectionModel.isSelectionContiguous()
+                moveDownButton.isDisable = newValue == null || selectionModel.selectedIndices.max() ?: Int.MAX_VALUE >= cuesListView.items.size - 1 || !selectionModel.isSelectionContiguous()
             }
             cuesListView.setOnMouseClicked { evt ->
                 val item = selectionModel.selectedItem

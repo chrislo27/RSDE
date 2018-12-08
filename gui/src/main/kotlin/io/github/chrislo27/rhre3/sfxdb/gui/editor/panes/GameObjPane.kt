@@ -8,6 +8,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.ui.Chip
 import io.github.chrislo27.rhre3.sfxdb.gui.ui.ChipPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.*
 import io.github.chrislo27.rhre3.sfxdb.gui.validation.Validators
+import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.scene.control.*
@@ -151,6 +152,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                 if (result.orElse(null) == ButtonType.OK) {
                     gameObject.objects.removeAll(current)
                     editor.editorPane.fireUpdate()
+                    editor.markDirty()
                 }
             }
         }
@@ -159,6 +161,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             if (current != null) {
                 val datamodel = current.copy()
                 addDatamodel(datamodel)
+                editor.markDirty()
             }
         }
         moveUpButton.setOnAction { _ ->
@@ -172,10 +175,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     current.forEachIndexed { i, it ->
                         list.add(first - 1 + i, it)
                     }
-                    editor.editorPane.fireUpdate()
-                    selectionModel.clearSelection()
-                    val newIndices = indices.map { it - 1 }
-                    selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                    Platform.runLater {
+                        editor.editorPane.fireUpdate()
+                        selectionModel.clearSelection()
+                        val newIndices = indices.map { it - 1 }
+                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        editor.markDirty()
+                    }
                 }
             }
         }
@@ -191,10 +197,13 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                     current.forEachIndexed { i, it ->
                         list.add(first + 1 + i, it)
                     }
-                    editor.editorPane.fireUpdate()
-                    selectionModel.clearSelection()
-                    val newIndices = indices.map { it + 1 }
-                    selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                    Platform.runLater {
+                        editor.editorPane.fireUpdate()
+                        selectionModel.clearSelection()
+                        val newIndices = indices.map { it + 1 }
+                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        editor.markDirty()
+                    }
                 }
             }
         }
@@ -344,6 +353,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             setOnAction { _ ->
                 val datamodel: Datamodel = factory()
                 addDatamodel(datamodel)
+                editor.markDirty()
             }
         }
     }
