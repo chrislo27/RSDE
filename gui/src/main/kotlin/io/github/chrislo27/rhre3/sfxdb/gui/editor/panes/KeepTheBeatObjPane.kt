@@ -32,7 +32,10 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
 
     init {
         // Bind to struct
-        defaultDurationField.valueProperty().addListener { _, _, newValue -> struct.defaultDuration = newValue.toFloat() }
+        defaultDurationField.valueProperty().addListener { _, _, newValue ->
+            struct.defaultDuration = newValue.toFloat()
+            editor.markDirty()
+        }
 
         defaultDurationField.valueProperty().addListener { _, _, _ ->
             editor.refreshLists()

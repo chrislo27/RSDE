@@ -24,7 +24,6 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     val idField = TextField(struct.id).apply {
         isEditable = false
         isDisable = true
-        tooltip = Tooltip().bindLocalized("editor.cannotEditGameIDs")
     }
     val nameField = TextField(struct.name)
     val seriesComboBox =
@@ -83,7 +82,9 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     init {
         titleLabel.textProperty().bind(idField.textProperty())
 
-        addProperty(Label().bindLocalized("datamodel.id"), idField)
+        addProperty(Label().bindLocalized("datamodel.id").apply {
+            tooltip = Tooltip().bindLocalized("editor.cannotEditGameIDs")
+        }, idField)
         addProperty(Label().bindLocalized("datamodel.name"), nameField)
         addProperty(Label().bindLocalized("gameObject.series").apply {
             tooltip = Tooltip().bindLocalized("gameObject.series.tooltip")
@@ -230,20 +231,42 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
 
     init {
         // Bind to struct
-        idField.textProperty().addListener { _, _, newValue -> struct.id = newValue }
-        nameField.textProperty().addListener { _, _, newValue -> struct.name = newValue }
-        seriesComboBox.selectionModel.selectedItemProperty().addListener { _, _, newValue -> struct.series = newValue }
-        groupField.textProperty().addListener { _, _, newValue -> struct.group = newValue?.takeUnless { it.isBlank() } }
-        groupDefaultCheckbox.selectedProperty().addListener { _, _, newValue -> struct.groupDefault = newValue }
-        prioritySpinner.valueProperty().addListener { _, _, newValue -> struct.priority = newValue }
+        idField.textProperty().addListener { _, _, newValue ->
+            struct.id = newValue
+            editor.markDirty()
+        }
+        nameField.textProperty().addListener { _, _, newValue ->
+            struct.name = newValue
+            editor.markDirty()
+        }
+        seriesComboBox.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+            struct.series = newValue
+            editor.markDirty()
+        }
+        groupField.textProperty().addListener { _, _, newValue ->
+            struct.group = newValue?.takeUnless { it.isBlank() }
+            editor.markDirty()
+        }
+        groupDefaultCheckbox.selectedProperty().addListener { _, _, newValue ->
+            struct.groupDefault = newValue
+            editor.markDirty()
+        }
+        prioritySpinner.valueProperty().addListener { _, _, newValue ->
+            struct.priority = newValue
+            editor.markDirty()
+        }
         searchHintsField.list.addListener(ListChangeListener { evt ->
             val list = mutableListOf<String>()
             while (evt.next()) {
                 list.addAll(evt.list.map { chip -> chip.label.text })
             }
             struct.searchHints = list.distinct().toMutableList().takeUnless { it.isEmpty() }
+            editor.markDirty()
         })
-        noDisplayCheckbox.selectedProperty().addListener { _, _, newValue -> struct.noDisplay = newValue }
+        noDisplayCheckbox.selectedProperty().addListener { _, _, newValue ->
+            struct.noDisplay = newValue
+            editor.markDirty()
+        }
 
         idField.textProperty().addListener { _, _, _ ->
             editor.refreshLists()

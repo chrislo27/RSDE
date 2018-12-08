@@ -37,8 +37,14 @@ class EquidistantObjPane(editor: Editor, struct: Equidistant) : MultipartStructP
 
     init {
         // Bind to struct
-        distanceField.valueProperty().addListener { _, _, newValue -> struct.distance = newValue.toFloat() }
-        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
+        distanceField.valueProperty().addListener { _, _, newValue ->
+            struct.distance = newValue.toFloat()
+            editor.markDirty()
+        }
+        stretchableField.selectedProperty().addListener { _, _, newValue ->
+            struct.stretchable = newValue
+            editor.markDirty()
+        }
 
         distanceField.valueProperty().addListener { _, _, _ ->
             editor.refreshLists()

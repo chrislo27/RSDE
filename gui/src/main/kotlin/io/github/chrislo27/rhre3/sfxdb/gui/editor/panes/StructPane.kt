@@ -93,14 +93,21 @@ abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructP
         titleLabel.textProperty().bind(idField.textProperty())
 
         // Bind to struct fields
-        idField.textProperty().addListener { _, _, newValue -> struct.id = newValue }
-        nameField.textProperty().addListener { _, _, newValue -> struct.name = newValue }
+        idField.textProperty().addListener { _, _, newValue ->
+            struct.id = newValue
+            editor.markDirty()
+        }
+        nameField.textProperty().addListener { _, _, newValue ->
+            struct.name = newValue
+            editor.markDirty()
+        }
         deprecatedIDsField.list.addListener(ListChangeListener { evt ->
             val list = mutableListOf<String>()
             while (evt.next()) {
                 list.addAll(evt.list.map { chip -> chip.label.text })
             }
             struct.deprecatedIDs = list
+            editor.markDirty()
         })
         idField.textProperty().addListener { _, _, _ ->
             editor.refreshLists()
@@ -411,26 +418,32 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
             idField.textProperty().addListener { _, _, newValue ->
                 cuePointer.id = newValue
                 editor.refreshLists()
+                editor.markDirty()
             }
             beatField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.beat = newValue.toFloat()
                 editor.refreshLists()
+                editor.markDirty()
             }
             durationField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.duration = newValue.toFloat()
                 editor.refreshLists()
+                editor.markDirty()
             }
             semitoneField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.semitone = newValue
                 editor.refreshLists()
+                editor.markDirty()
             }
             trackField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.track = newValue
                 editor.refreshLists()
+                editor.markDirty()
             }
             volumeField.valueProperty().addListener { _, _, newValue ->
                 cuePointer.volume = newValue
                 editor.refreshLists()
+                editor.markDirty()
             }
         }
 

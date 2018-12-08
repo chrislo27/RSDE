@@ -32,7 +32,10 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
 
     init {
         // Bind to struct
-        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
+        stretchableField.selectedProperty().addListener { _, _, newValue ->
+            struct.stretchable = newValue
+            editor.markDirty()
+        }
     }
 
     init {

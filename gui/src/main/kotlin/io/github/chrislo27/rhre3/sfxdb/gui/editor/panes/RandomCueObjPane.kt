@@ -43,6 +43,7 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
             struct.responseIDs = list.distinct().takeUnless { it.isEmpty() }
 
             editor.refreshLists()
+            editor.markDirty()
         })
     }
 

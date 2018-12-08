@@ -16,11 +16,11 @@ import javafx.util.StringConverter
 
 
 class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struct) {
-    
+
     val durationField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), struct.duration.toDouble(), 0.5)
-    val stretchableField = CheckBox().apply { this.isSelected = struct.stretchable}
+    val stretchableField = CheckBox().apply { this.isSelected = struct.stretchable }
     val repitchableField = CheckBox().apply { this.isSelected = struct.repitchable }
-    val loopsField = CheckBox().apply { this.isSelected = struct.loops}
+    val loopsField = CheckBox().apply { this.isSelected = struct.loops }
     val baseBpmField = Spinner<Double>().apply {
         valueFactory = SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, Float.MAX_VALUE.toDouble(), struct.baseBpm.toDouble(), 1.0).apply {
             this.converter = object : StringConverter<Double>() {
@@ -49,7 +49,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
-        
+
         addProperty(Label().bindLocalized("cueObject.duration"), durationField)
         addProperty(Label().bindLocalized("datamodel.stretchable").apply {
             tooltip = Tooltip().bindLocalized("datamodel.stretchable.tooltip")
@@ -73,20 +73,45 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
 
     init {
         // Bind to struct
-        durationField.valueProperty().addListener { _, _, newValue -> struct.duration = newValue.toFloat() }
-        stretchableField.selectedProperty().addListener { _, _, newValue -> struct.stretchable = newValue }
-        repitchableField.selectedProperty().addListener { _, _, newValue -> struct.repitchable = newValue }
-        loopsField.selectedProperty().addListener { _, _, newValue -> struct.loops = newValue }
-        baseBpmField.valueProperty().addListener { _, _, newValue -> struct.baseBpm = newValue.toFloat() }
-        introSoundField.textProperty().addListener { _, _, newValue -> struct.introSound = newValue?.takeUnless { it.isBlank() } }
-        endingSoundField.textProperty().addListener { _, _, newValue -> struct.endingSound = newValue?.takeUnless { it.isBlank() } }
-        fileExtField.textProperty().addListener { _, _, newValue -> struct.fileExtension = newValue?.takeUnless { it.isBlank() } ?: SoundFileExtensions.DEFAULT.fileExt }
+        durationField.valueProperty().addListener { _, _, newValue ->
+            struct.duration = newValue.toFloat()
+            editor.markDirty()
+        }
+        stretchableField.selectedProperty().addListener { _, _, newValue ->
+            struct.stretchable = newValue
+            editor.markDirty()
+        }
+        repitchableField.selectedProperty().addListener { _, _, newValue ->
+            struct.repitchable = newValue
+            editor.markDirty()
+        }
+        loopsField.selectedProperty().addListener { _, _, newValue ->
+            struct.loops = newValue
+            editor.markDirty()
+        }
+        baseBpmField.valueProperty().addListener { _, _, newValue ->
+            struct.baseBpm = newValue.toFloat()
+            editor.markDirty()
+        }
+        introSoundField.textProperty().addListener { _, _, newValue ->
+            struct.introSound = newValue?.takeUnless { it.isBlank() }
+            editor.markDirty()
+        }
+        endingSoundField.textProperty().addListener { _, _, newValue ->
+            struct.endingSound = newValue?.takeUnless { it.isBlank() }
+            editor.markDirty()
+        }
+        fileExtField.textProperty().addListener { _, _, newValue ->
+            struct.fileExtension = newValue?.takeUnless { it.isBlank() } ?: SoundFileExtensions.DEFAULT.fileExt
+            editor.markDirty()
+        }
         responseIDsField.list.addListener(ListChangeListener { evt ->
             val list = mutableListOf<String>()
             while (evt.next()) {
                 list.addAll(evt.list.map { chip -> chip.label.text })
             }
             struct.responseIDs = list.takeUnless { it.isEmpty() }
+            editor.markDirty()
         })
 
         fileExtField.textProperty().addListener { _, _, _ ->

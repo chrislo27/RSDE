@@ -259,6 +259,7 @@ class EditorPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
         val datajson = editor.folder.resolve("data.json")
         datajson.copyTo(editor.folder.resolve("OLD-data.json"), true)
         datajson.writeText(JsonHandler.OBJECT_MAPPER.writeValueAsString(editor.gameObject))
+        editor.isDirty = false
         return 0 to result.warnings.size
     }
 

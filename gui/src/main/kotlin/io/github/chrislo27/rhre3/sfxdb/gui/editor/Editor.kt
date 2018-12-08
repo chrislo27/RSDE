@@ -9,6 +9,7 @@ import io.github.chrislo27.rhre3.sfxdb.gui.util.JsonHandler
 import io.github.chrislo27.rhre3.sfxdb.gui.util.bindLocalized
 import io.github.chrislo27.rhre3.sfxdb.gui.util.em
 import io.github.chrislo27.rhre3.sfxdb.validation.GameObject
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.Tab
@@ -31,6 +32,10 @@ class Editor(val folder: File, val editorPane: EditorPane) {
     val mainPane: StackPane = StackPane()
     val iconGraphic: Image
     val tab: Tab
+    val dirtyProperty = SimpleBooleanProperty(false)
+    var isDirty: Boolean
+        get() = dirtyProperty.get()
+        set(value) = dirtyProperty.set(value)
 
     init {
         val iconFile = folder.resolve("icon.png").takeIf { it.exists() }
@@ -40,6 +45,9 @@ class Editor(val folder: File, val editorPane: EditorPane) {
                 this.isPreserveRatio = true
                 this.fitWidth = 1.5.em
                 this.fitHeight = 1.5.em
+            }
+            dirtyProperty.addListener { _, _, v ->
+                this.text = "${folder.name}${if (isDirty) "*" else ""}"
             }
             setOnClosed {
                 editorPane.removeEditor(this@Editor)
@@ -65,8 +73,6 @@ class Editor(val folder: File, val editorPane: EditorPane) {
             mainPane.children += pickFirstLabel
         } else {
             mainPane.children += gamePane
-            tab.textProperty().unbind()
-            tab.textProperty().bind(gamePane.idField.textProperty())
         }
     }
 
@@ -95,6 +101,10 @@ class Editor(val folder: File, val editorPane: EditorPane) {
             is SubtitleEntity, is ShakeEntity, is EndRemixEntity, is TextureEntity -> null
             else -> throw IllegalStateException("JsonStruct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
         }
+    }
+
+    fun markDirty() {
+        isDirty = true
     }
 
     fun update() {
