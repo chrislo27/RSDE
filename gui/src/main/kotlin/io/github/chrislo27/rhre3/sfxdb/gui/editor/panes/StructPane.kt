@@ -369,15 +369,15 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
         }
 
         override fun hasErrors(): Boolean {
-            return parentPane.struct.cues.any { cue -> paneMap[cue]?.hasErrors() == true }
+            return parentPane.struct.cues.any { cue -> getPaneForCuePointer(cue)?.hasErrors() == true }
         }
 
         override fun forceUpdate() {
-            parentPane.struct.cues.forEach { cue -> paneMap[cue]?.forceUpdate() }
+            parentPane.struct.cues.forEach { cue -> getPaneForCuePointer(cue)?.forceUpdate() }
         }
 
         override fun getValidationResult(): ValidationResult {
-            return parentPane.struct.cues.mapNotNull { cue -> paneMap[cue]?.getValidationResult() }.fold(ValidationResult()) { acc, it ->
+            return parentPane.struct.cues.mapNotNull { cue -> getPaneForCuePointer(cue)?.getValidationResult() }.fold(ValidationResult()) { acc, it ->
                 acc.combine(it)
             }
         }

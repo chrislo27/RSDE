@@ -319,7 +319,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
 
     override fun hasErrors(): Boolean {
         return validation.isInvalid ||
-                gameObject.objects.mapNotNull { editor.paneMap[it] }.filterIsInstance<HasValidator>().any { it.hasErrors() }
+                gameObject.objects.mapNotNull { editor.getPane(it) }.filterIsInstance<HasValidator>().any { it.hasErrors() }
     }
 
     override fun forceUpdate() {
