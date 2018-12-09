@@ -289,8 +289,13 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         Platform.runLater {
                             parentPane.editor.editorPane.fireUpdate()
                             selectionModel.clearSelection()
-                            val newIndices = indices.map { it - 1 }
-                            selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                            if (indices.size == 2) {
+                                // Workaround to a IndexOutOfBoundsException
+                                selectionModel.select(indices.first() - 1)
+                                selectionModel.select(indices.last() - 1)
+                            } else {
+                                selectionModel.selectRange(indices.first() - 1, indices.last())
+                            }
                             parentPane.editor.markDirty()
                         }
                     }
@@ -311,8 +316,13 @@ abstract class MultipartStructPane<T : MultipartDatamodel>(editor: Editor, struc
                         Platform.runLater {
                             parentPane.editor.editorPane.fireUpdate()
                             selectionModel.clearSelection()
-                            val newIndices = indices.map { it + 1 }
-                            selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                            if (indices.size == 2) {
+                                // Workaround to a IndexOutOfBoundsException
+                                selectionModel.select(indices.first() + 1)
+                                selectionModel.select(indices.last() + 1)
+                            } else {
+                                selectionModel.selectRange(indices.first() + 1, indices.last() + 2)
+                            }
                             parentPane.editor.markDirty()
                         }
                     }

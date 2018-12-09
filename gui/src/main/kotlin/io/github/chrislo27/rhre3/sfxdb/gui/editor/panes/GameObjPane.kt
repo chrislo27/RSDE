@@ -171,15 +171,20 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                 val indices = selectionModel.selectedIndices.toList()
                 val first = indices.min() ?: -1
                 if (indices.isNotEmpty() && first - 1 >= 0) {
-                    list.removeAll(current)
-                    current.forEachIndexed { i, it ->
-                        list.add(first - 1 + i, it)
-                    }
                     Platform.runLater {
+                        list.removeAll(current)
+                        current.forEachIndexed { i, it ->
+                            list.add(first - 1 + i, it)
+                        }
                         editor.editorPane.fireUpdate()
                         selectionModel.clearSelection()
-                        val newIndices = indices.map { it - 1 }
-                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        if (indices.size == 2) {
+                            // Workaround to a IndexOutOfBoundsException
+                            selectionModel.select(indices.first() - 1)
+                            selectionModel.select(indices.last() - 1)
+                        } else {
+                            selectionModel.selectRange(indices.first() - 1, indices.last())
+                        }
                         editor.markDirty()
                     }
                 }
@@ -193,15 +198,20 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
                 val first = indices.min() ?: -1
                 val last = indices.max() ?: Int.MAX_VALUE
                 if (indices.isNotEmpty() && last + 1 < list.size) {
-                    list.removeAll(current)
-                    current.forEachIndexed { i, it ->
-                        list.add(first + 1 + i, it)
-                    }
                     Platform.runLater {
+                        list.removeAll(current)
+                        current.forEachIndexed { i, it ->
+                            list.add(first + 1 + i, it)
+                        }
                         editor.editorPane.fireUpdate()
                         selectionModel.clearSelection()
-                        val newIndices = indices.map { it + 1 }
-                        selectionModel.selectIndices(newIndices.first(), *newIndices.drop(1).toIntArray())
+                        if (indices.size == 2) {
+                            // Workaround to a IndexOutOfBoundsException
+                            selectionModel.select(indices.first() + 1)
+                            selectionModel.select(indices.last() + 1)
+                        } else {
+                            selectionModel.selectRange(indices.first() + 1, indices.last() + 2)
+                        }
                         editor.markDirty()
                     }
                 }
