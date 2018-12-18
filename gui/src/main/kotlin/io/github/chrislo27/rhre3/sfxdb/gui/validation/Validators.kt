@@ -132,6 +132,10 @@ object Validators {
         fromWarningIf(t, UiLocalization["validation.cueFileExt", SoundFileExtensions.DEFAULT.fileExt], !u.isNullOrEmpty() && u.toLowerCase() != SoundFileExtensions.DEFAULT.fileExt)
     }
 
+    val UNSUPPORTED_FILE_EXT: Validator<String> = Validator { t, u ->
+        fromErrorIf(t, UiLocalization["validation.unsupportedFileExt", SoundFileExtensions.DEFAULT.fileExt], !u.isNullOrEmpty() && u.toLowerCase() !in SoundFileExtensions.VALUES.map { it.fileExt })
+    }
+
     fun soundFileNotFound(parentFolder: File, cue: Cue): Validator<String> = Validator { t, u ->
         val expectedFile = parentFolder.resolve("${cue.id.replaceFirst("*/", "")}.${cue.fileExtension}")
         fromWarningIf(t, UiLocalization["validation.cueFileNotFound", expectedFile.name], cue.id.startsWith("*/") && !expectedFile.exists())

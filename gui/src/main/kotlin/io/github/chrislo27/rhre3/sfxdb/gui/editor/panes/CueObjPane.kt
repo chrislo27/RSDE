@@ -136,7 +136,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         // Validators
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.OBJ_ID_REGEX, Validators.CUE_ID_STAR_SUB, Validators.identicalObjID(editor.gameObject, this.struct), Validators.soundFileNotFound(editor.folder, this.struct))
         validation.registerValidators(nameField, Validators.NAME_BLANK)
-        validation.registerValidators(fileExtField, Validators.FILE_EXT_NOT_OGG)
+        validation.registerValidators(fileExtField, Validators.FILE_EXT_NOT_OGG, Validators.UNSUPPORTED_FILE_EXT)
         validation.registerValidators(introSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(endingSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject))
