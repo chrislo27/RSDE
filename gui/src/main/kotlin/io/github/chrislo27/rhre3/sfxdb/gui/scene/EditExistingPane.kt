@@ -29,7 +29,7 @@ import javafx.util.Callback
 
 class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
-    val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name })
+    val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name }.filter { it.id != "special" })
     val gameListView: ListView<Game>
     val continueButton: Button
     val gameIDField: TextField
