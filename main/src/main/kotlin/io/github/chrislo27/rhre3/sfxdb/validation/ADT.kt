@@ -218,6 +218,16 @@ class TextureEntityObject : DatamodelObject() {
     }
 }
 
+class TapeMeasureObject : DatamodelObject() {
+    override fun producePerfectADT(): TapeMeasure {
+        return TapeMeasure(id.orException(), name.orException(), deprecatedIDs.orException())
+    }
+
+    override fun produceImperfectADT(): TapeMeasure {
+        return TapeMeasure(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
+    }
+}
+
 class SubtitleEntityObject : DatamodelObject() {
     val subtitleType: Result<SubtitleTypes> by Property(Transformers.subtitleTypesTransformer)
 

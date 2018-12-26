@@ -139,3 +139,10 @@ class TextureEntity(id: String, name: String, deprecatedIDs: MutableList<String>
         return TextureEntity(id, name, deprecatedIDs)
     }
 }
+
+class TapeMeasure(id: String, name: String, deprecatedIDs: MutableList<String>)
+    : Datamodel("tapeMeasure", id, name, deprecatedIDs) {
+    override fun copy(): Datamodel {
+        return TapeMeasure(id, name, deprecatedIDs)
+    }
+}
