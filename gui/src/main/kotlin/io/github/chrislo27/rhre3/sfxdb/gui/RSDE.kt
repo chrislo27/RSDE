@@ -41,7 +41,8 @@ class RSDE : Application() {
         val customSFXFolder: File = rhreRoot.resolve("customSounds/").apply {
             mkdirs()
         }
-        val SFX_DB_BRANCH = "master"
+        @Suppress("MayBeConstant")
+        val SFX_DB_BRANCH = "prototype"
         const val GITHUB = "https://github.com/chrislo27/RSDE"
         const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"
         val rhreSfxRoot: File = rhreRoot.resolve("sfx/$SFX_DB_BRANCH/")
@@ -85,8 +86,8 @@ class RSDE : Application() {
             val root = JsonHandler.OBJECT_MAPPER.readTree(currentJson)
             val verNum = root["v"].asInt(0)
             val rsdeNode = root["rsde"]
-            if (rsdeNode == null || rsdeNode is NullNode) {
-                databasePresent = DatabaseStatus.INCOMPATIBLE
+            if (rsdeNode == null || rsdeNode !is NullNode) {
+                databasePresent = DatabaseStatus.TOO_OLD
             } else {
                 val rsdeVersion = Version.fromString(rsdeNode.asText())
 

@@ -144,6 +144,17 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     }
                 }
             }
+            DatabaseStatus.TOO_OLD -> {
+                centreBox.children += Label().apply {
+                    this.bindLocalized("welcome.needsRSDEField")
+                    this.textAlignment = TextAlignment.CENTER
+                }
+                centreBox.children += Hyperlink(RSDE.RHRE_GITHUB).apply {
+                    setOnAction {
+                        app.hostServices.showDocument(RSDE.RHRE_GITHUB)
+                    }
+                }
+            }
             DatabaseStatus.EXISTS -> {
                 fun addStartButtons() {
                     centreBox.children += Button().apply {
