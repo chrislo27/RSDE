@@ -202,7 +202,7 @@ class WelcomePane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                     removeLoadingElements()
                     addStartButtons()
                     val registry = app.gameRegistry
-                    sfxdbLabel.bindLocalized("welcome.sfxDatabase", registry.version, registry.editorVersion, RSDE.SFX_DB_BRANCH)
+                    sfxdbLabel.bindLocalized("welcome.sfxDatabase", registry.version, registry.rsdeVersion, RSDE.SFX_DB_BRANCH)
 
                     // Add detected custom SFX
                     GlobalScope.launch {

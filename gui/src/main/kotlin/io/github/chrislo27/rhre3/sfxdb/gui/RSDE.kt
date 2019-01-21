@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui
 
+import com.fasterxml.jackson.databind.node.NullNode
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.ChangesPresenceState
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DefaultRichPresence
 import io.github.chrislo27.rhre3.sfxdb.gui.discord.DiscordHelper
@@ -33,7 +34,6 @@ class RSDE : Application() {
     companion object {
         const val TITLE = "RHRE SFX Database Editor"
         val VERSION = Version(1, 0, 6, "DEVELOPMENT")
-        val MIN_RHRE_VERSION = Version(3, 16, 0)
         val rootFolder: File = File(System.getProperty("user.home")).resolve(".rsde/").apply { mkdirs() }
         val rhreRoot: File = File(System.getProperty("user.home")).resolve(".rhre3/").apply {
             mkdirs()
@@ -84,13 +84,17 @@ class RSDE : Application() {
         try {
             val root = JsonHandler.OBJECT_MAPPER.readTree(currentJson)
             val verNum = root["v"].asInt(0)
-            val editor: String = root["editor"].asText()
-            val editorVersion = Version.fromString(editor)
-
-            if (editorVersion.minor > MIN_RHRE_VERSION.minor) {
+            val rsdeNode = root["rsde"]
+            if (rsdeNode == null || rsdeNode is NullNode) {
                 databasePresent = DatabaseStatus.INCOMPATIBLE
             } else {
-                gameRegistry = GameRegistry(verNum, editorVersion)
+                val rsdeVersion = Version.fromString(rsdeNode.asText())
+
+                if (rsdeVersion > RSDE.VERSION) {
+                    databasePresent = DatabaseStatus.INCOMPATIBLE
+                } else {
+                    gameRegistry = GameRegistry(verNum, rsdeVersion)
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

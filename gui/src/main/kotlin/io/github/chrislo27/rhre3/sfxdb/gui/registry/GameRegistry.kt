@@ -10,7 +10,7 @@ import javafx.scene.image.Image
 import java.io.File
 
 
-class GameRegistry(val version: Int, val editorVersion: Version) {
+class GameRegistry(val version: Int, val rsdeVersion: Version) {
 
     companion object {
         val missingIconImage: Image by lazy { Image("image/missing_game_icon.png", 32.0, 32.0, false, true, true) }
