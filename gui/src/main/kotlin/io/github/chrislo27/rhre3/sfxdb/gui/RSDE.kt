@@ -86,7 +86,7 @@ class RSDE : Application() {
             val root = JsonHandler.OBJECT_MAPPER.readTree(currentJson)
             val verNum = root["v"].asInt(0)
             val rsdeNode = root["rsde"]
-            if (rsdeNode == null || rsdeNode !is NullNode) {
+            if (rsdeNode == null || rsdeNode is NullNode) {
                 databasePresent = DatabaseStatus.TOO_OLD
             } else {
                 val rsdeVersion = Version.fromString(rsdeNode.asText())
