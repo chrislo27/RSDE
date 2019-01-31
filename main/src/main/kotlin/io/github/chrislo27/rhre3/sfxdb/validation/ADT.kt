@@ -241,3 +241,13 @@ class SubtitleEntityObject : DatamodelObject() {
         )
     }
 }
+
+class PlayalongEntityObject : DatamodelObject() {
+    override fun producePerfectADT(): PlayalongEntity {
+        return PlayalongEntity(id.orException(), name.orException(), deprecatedIDs.orException())
+    }
+
+    override fun produceImperfectADT(): PlayalongEntity {
+        return PlayalongEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
+    }
+}
