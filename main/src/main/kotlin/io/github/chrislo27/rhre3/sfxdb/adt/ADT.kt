@@ -58,10 +58,13 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_EMPTY) var endingSound: String? = null,
     @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: MutableList<String>? = null,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpm: Float = 0f,
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loops: Boolean = false
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loops: Boolean = false,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var earliness: Float = 0f,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopStart: Float = 0f,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopEnd: Float = -1f
 ) : Datamodel("cue", id, name, deprecatedIDs) {
     override fun copy(): Datamodel {
-        return Cue(id, name, deprecatedIDs, duration, stretchable, repitchable, fileExtension, introSound, endingSound, responseIDs?.toMutableList(), baseBpm, loops)
+        return Cue(id, name, deprecatedIDs, duration, stretchable, repitchable, fileExtension, introSound, endingSound, responseIDs?.toMutableList(), baseBpm, loops, earliness, loopStart, loopEnd)
     }
 }
 

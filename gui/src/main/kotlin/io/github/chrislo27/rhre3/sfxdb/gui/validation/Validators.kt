@@ -6,6 +6,7 @@ import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
 import io.github.chrislo27.rhre3.sfxdb.adt.Datamodel
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
+import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.CueObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.GameObjPane
 import io.github.chrislo27.rhre3.sfxdb.gui.util.UiLocalization
 import io.github.chrislo27.rhre3.sfxdb.validation.Transformers
@@ -143,6 +144,19 @@ object Validators {
 
     val ZERO_DURATION: Validator<Double> = Validator { t, u ->
         fromErrorIf(t, UiLocalization["validation.zeroDuration"], u <= 0.0)
+    }
+
+    fun loopStartWithoutLooping(cueObjPane: CueObjPane): Validator<Double> = Validator { t, u ->
+        Validators.fromWarningIf(t, UiLocalization["validation.loopPointsWithoutLooping"]) { !cueObjPane.loopsField.isSelected && u > 0.0 }
+    }
+
+    fun loopEndWithoutLooping(cueObjPane: CueObjPane): Validator<Double> = Validator { t, u ->
+        Validators.fromWarningIf(t, UiLocalization["validation.loopPointsWithoutLooping"]) { !cueObjPane.loopsField.isSelected && u >= 0.0 }
+    }
+
+    fun loopStartAheadOfEnd(cueObjPane: CueObjPane): Validator<Double> = Validator { t, u ->
+        val loopEndValue = cueObjPane.loopEndField.value
+        Validators.fromErrorIf(t, UiLocalization["validation.loopStartAheadOfEnd"]) { loopEndValue >= 0.0 && u > loopEndValue }
     }
 
     // MultipartObject

@@ -40,6 +40,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
     val fileExtField = TextField(struct.endingSound).apply {
         this.promptText = SoundFileExtensions.DEFAULT.fileExt
     }
+    val earlinessField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
+    val loopStartField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
+    val loopEndField = doubleSpinnerFactory(-1.0, Float.MAX_VALUE.toDouble(), -1.0, 0.1)
     val responseIDsField = ChipPane(FXCollections.observableArrayList((struct.responseIDs ?: mutableListOf()).map { Chip(it) }))
 
     init {
@@ -66,6 +69,15 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
             tooltip = Tooltip().bindLocalized("cueObject.endingSound.tooltip")
         }, endingSoundField)
         addProperty(Label().bindLocalized("cueObject.fileExtension"), fileExtField)
+        addProperty(Label().bindLocalized("cueObject.earliness").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.earliness.tooltip")
+        }, earlinessField)
+        addProperty(Label().bindLocalized("cueObject.loopStart").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.loopStart.tooltip")
+        }, loopStartField)
+        addProperty(Label().bindLocalized("cueObject.loopEnd").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.loopEnd.tooltip")
+        }, loopEndField)
         addProperty(Label().bindLocalized("datamodel.responseIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.responseIDs.tooltip")
         }, responseIDsField)
@@ -88,6 +100,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         loopsField.selectedProperty().addListener { _, _, newValue ->
             struct.loops = newValue
             editor.markDirty()
+            forceUpdate()
         }
         baseBpmField.valueProperty().addListener { _, _, newValue ->
             struct.baseBpm = newValue.toFloat()
@@ -113,6 +126,18 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
             struct.responseIDs = list.takeUnless { it.isEmpty() }
             editor.markDirty()
         })
+        earlinessField.valueProperty().addListener { _, _, n ->
+            struct.earliness = n.toFloat()
+            editor.markDirty()
+        }
+        loopStartField.valueProperty().addListener { _, _, n ->
+            struct.loopStart = n.toFloat()
+            editor.markDirty()
+        }
+        loopEndField.valueProperty().addListener { _, _, n ->
+            struct.loopEnd = n.toFloat()
+            editor.markDirty()
+        }
 
         fileExtField.textProperty().addListener { _, _, _ ->
             editor.refreshLists()
@@ -130,6 +155,15 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         durationField.valueProperty().addListener { _, _, _ ->
             editor.refreshLists()
         }
+        earlinessField.valueProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
+        loopStartField.valueProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
+        loopEndField.valueProperty().addListener { _, _, _ ->
+            editor.refreshLists()
+        }
     }
 
     init {
@@ -141,6 +175,8 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         validation.registerValidators(endingSoundField, Validators.EXTERNAL_CUE_POINTER, Validators.cuePointerPointsNowhere(editor.gameObject))
         validation.registerValidators(responseIDsField, Validators.EXTERNAL_RESPONSE_IDS, Validators.responseIDsPointsNowhere(editor.gameObject))
         validation.registerValidators(durationField, Validators.ZERO_DURATION)
+        validation.registerValidators(loopStartField, Validators.loopStartAheadOfEnd(this), Validators.loopStartWithoutLooping(this))
+        validation.registerValidators(loopEndField, Validators.loopEndWithoutLooping(this))
     }
 
 }

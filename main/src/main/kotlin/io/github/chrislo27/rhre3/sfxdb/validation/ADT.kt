@@ -86,12 +86,16 @@ class CueObject : DatamodelObject() {
     var introSound: Result<String> by Property(Transformers.idTransformer, "")
     var endingSound: Result<String> by Property(Transformers.idTransformer, "")
     var responseIDs: Result<MutableList<String>> by Property(Transformers.responseIDsTransformer, mutableListOf())
+    var earliness: Result<Float> by Property(Transformers.positiveFloatTransformer("Earliness must be positive"), 0f)
+    var loopStart: Result<Float> by Property(Transformers.positiveFloatTransformer("Loop start must be positive"), 0f)
+    var loopEnd: Result<Float> by Property(Transformers.floatTransformer, -1f)
 
     override fun producePerfectADT(): Cue {
         return Cue(
             id.orException(), name.orException(), deprecatedIDs.orException(), duration.orException(),
             stretchable.orException(), repitchable.orException(), fileExtension.orException(), introSound.orException(),
-            endingSound.orException(), responseIDs.orException(), baseBpm.orException(), loops.orException()
+            endingSound.orException(), responseIDs.orException(), baseBpm.orException(), loops.orException(),
+            earliness.orException(), loopStart.orException(), loopEnd.orException()
         )
     }
 
@@ -99,7 +103,8 @@ class CueObject : DatamodelObject() {
         return Cue(
             id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()), duration.orElse(0f),
             stretchable.orElse(false), repitchable.orElse(false), fileExtension.orElse(""), introSound.orNull(),
-            endingSound.orNull(), responseIDs.orNull(), baseBpm.orElse(0f), loops.orElse(false)
+            endingSound.orNull(), responseIDs.orNull(), baseBpm.orElse(0f), loops.orElse(false),
+            earliness.orElse(0f), loopStart.orElse(0f), loopEnd.orElse(-1f)
         )
     }
 }
