@@ -156,3 +156,10 @@ class PlayalongEntity(id: String, name: String, deprecatedIDs: MutableList<Strin
         return PlayalongEntity(id, name, deprecatedIDs)
     }
 }
+
+class MusicDistortEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
+    : Datamodel("musicDistortEntity", id, name, deprecatedIDs) {
+    override fun copy(): Datamodel {
+        return MusicDistortEntity(id, name, deprecatedIDs)
+    }
+}

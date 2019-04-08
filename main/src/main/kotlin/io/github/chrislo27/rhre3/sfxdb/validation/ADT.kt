@@ -256,3 +256,13 @@ class PlayalongEntityObject : DatamodelObject() {
         return PlayalongEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
     }
 }
+
+class MusicDistortEntityObject : DatamodelObject() {
+    override fun producePerfectADT(): MusicDistortEntity {
+        return MusicDistortEntity(id.orException(), name.orException(), deprecatedIDs.orException())
+    }
+
+    override fun produceImperfectADT(): MusicDistortEntity {
+        return MusicDistortEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
+    }
+}
