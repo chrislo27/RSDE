@@ -42,7 +42,7 @@ class RSDE : Application() {
             mkdirs()
         }
         @Suppress("MayBeConstant")
-        val SFX_DB_BRANCH = "master"
+        val SFX_DB_BRANCH = "prototype"
         const val GITHUB = "https://github.com/chrislo27/RSDE"
         const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"
         val rhreSfxRoot: File = rhreRoot.resolve("sfx/$SFX_DB_BRANCH/")

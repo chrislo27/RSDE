@@ -2,6 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.gui.editor
 
 import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.adt.*
+import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.panes.*
 import io.github.chrislo27.rhre3.sfxdb.gui.registry.GameRegistry
 import io.github.chrislo27.rhre3.sfxdb.gui.scene.EditorPane
@@ -98,8 +99,11 @@ class Editor(val folder: File, val editorPane: EditorPane) {
             is Equidistant -> EquidistantObjPane(this, struct)
             is RandomCue -> RandomCueObjPane(this, struct)
             is CuePointer -> null
-            is SubtitleEntity, is ShakeEntity, is EndRemixEntity, is TextureEntity -> null
-            else -> throw IllegalStateException("JsonStruct ${struct::class.java.name} is not supported for editing. Please tell the developer!")
+            is SubtitleEntity, is ShakeEntity, is EndRemixEntity, is TextureEntity, is PlayalongEntity, is TapeMeasure, is MusicDistortEntity -> null
+            else -> {
+                RSDE.LOGGER.warn("JsonStruct ${struct::class.java.name} is not supported for editing, implicitly returning null")
+                null
+            }
         }
     }
 
