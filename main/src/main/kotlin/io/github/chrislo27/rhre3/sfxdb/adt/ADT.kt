@@ -150,10 +150,11 @@ class TapeMeasure(id: String, name: String, deprecatedIDs: MutableList<String>)
     }
 }
 
-class PlayalongEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
+class PlayalongEntity(id: String, name: String, deprecatedIDs: MutableList<String>,
+                      var stretchable: Boolean, var method: String, var input: String)
     : Datamodel("playalongEntity", id, name, deprecatedIDs) {
     override fun copy(): Datamodel {
-        return PlayalongEntity(id, name, deprecatedIDs)
+        return PlayalongEntity(id, name, deprecatedIDs, stretchable, method, input)
     }
 }
 

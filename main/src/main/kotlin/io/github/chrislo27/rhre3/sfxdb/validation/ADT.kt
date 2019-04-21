@@ -1,5 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.validation
 
+import io.github.chrislo27.rhre3.sfxdb.PlayalongInput
+import io.github.chrislo27.rhre3.sfxdb.PlayalongMethod
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SubtitleTypes
 import io.github.chrislo27.rhre3.sfxdb.adt.*
@@ -248,12 +250,16 @@ class SubtitleEntityObject : DatamodelObject() {
 }
 
 class PlayalongEntityObject : DatamodelObject() {
+    var stretchable: Result<Boolean> by Property(Transformers.booleanTransformer)
+    var input: Result<PlayalongInput> by Property(Transformers.playalongInputTransformer)
+    var method: Result<PlayalongMethod> by Property(Transformers.playalongMethodTransformer)
+
     override fun producePerfectADT(): PlayalongEntity {
-        return PlayalongEntity(id.orException(), name.orException(), deprecatedIDs.orException())
+        return PlayalongEntity(id.orException(), name.orException(), deprecatedIDs.orException(), stretchable.orException(), method.orException().name, input.orException().id)
     }
 
     override fun produceImperfectADT(): PlayalongEntity {
-        return PlayalongEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
+        return PlayalongEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()), stretchable.orElse(false), method.orElse(PlayalongMethod.PRESS).name, input.orElse(PlayalongInput.BUTTON_A).id)
     }
 }
 

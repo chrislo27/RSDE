@@ -128,6 +128,24 @@ object Transformers {
         node.checkNodeType(JsonNodeType.OBJECT)
         Result.Success(ObjectMapper().convertValue(node, Map::class.java) as MutableMap<String, Any?>)
     }
+    val playalongInputTransformer: JsonTransformer<PlayalongInput> = { node ->
+        node.checkNodeType(JsonNodeType.STRING)
+        val st = node.textValue() ?: error("Escaped node type check!")
+        val type: PlayalongInput? = PlayalongInput.VALUES.find { it.id == st || st in it.deprecatedIDs }
+        if (type == null)
+            Result.Failure(node, st, "No playalong input type found with that name. Supported: ${PlayalongInput.VALUES.map(PlayalongInput::id)}")
+        else
+            Result.Success(type)
+    }
+    val playalongMethodTransformer: JsonTransformer<PlayalongMethod> = { node ->
+        node.checkNodeType(JsonNodeType.STRING)
+        val st = node.textValue() ?: error("Escaped node type check!")
+        val type: PlayalongMethod? = PlayalongMethod.VALUES.find { it.name == st }
+        if (type == null)
+            Result.Failure(node, st, "No playalong method type found with that name. Supported: ${PlayalongMethod.VALUES.map(PlayalongMethod::name)}")
+        else
+            Result.Success(type)
+    }
 
     val datamodelTransformer: JsonTransformer<DatamodelObject> = transformer@{ node ->
         val typeNode: JsonNode = node["type"]
