@@ -151,7 +151,7 @@ object Validators {
     }
 
     fun loopEndWithoutLooping(cueObjPane: CueObjPane): Validator<Double> = Validator { t, u ->
-        Validators.fromWarningIf(t, UiLocalization["validation.loopPointsWithoutLooping"]) { !cueObjPane.loopsField.isSelected && u >= 0.0 }
+        Validators.fromWarningIf(t, UiLocalization["validation.loopPointsWithoutLooping"]) { !cueObjPane.loopsField.isSelected && u > 0.0 }
     }
 
     fun loopStartAheadOfEnd(cueObjPane: CueObjPane): Validator<Double> = Validator { t, u ->

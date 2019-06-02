@@ -42,7 +42,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
     }
     val earlinessField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
     val loopStartField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
-    val loopEndField = doubleSpinnerFactory(-1.0, Float.MAX_VALUE.toDouble(), -1.0, 0.1)
+    val loopEndField = doubleSpinnerFactory(-1.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
     val responseIDsField = ChipPane(FXCollections.observableArrayList((struct.responseIDs ?: mutableListOf()).map { Chip(it) }))
 
     init {
