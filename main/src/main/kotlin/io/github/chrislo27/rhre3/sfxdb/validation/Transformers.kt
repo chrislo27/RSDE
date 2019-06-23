@@ -252,14 +252,14 @@ object Transformers {
     inline fun <reified T : Any> anyNonSuccess(obj: T): Boolean {
         return findDelegatingPropertyInstances(obj, Property::class).any {
             val result = it.property.get(obj) as Result<*>
-            result !is Result.Success<*> || (result.value is List<*> && result.value.any { ele -> ele is Result<*> && ele !is Result.Success<*> })
+            result !is Result.Success<*> || (result.value is List<*> && (result.value as List<*>).any { ele -> ele is Result<*> && ele !is Result.Success<*> })
         }
     }
 
     inline fun <reified T : Any> getNonSuccess(obj: T): List<Pair<String, Result<*>>> {
         return findDelegatingPropertyInstances(obj, Property::class).filter {
             val result = it.property.get(obj) as Result<*>
-            result !is Result.Success<*> || (result.value is List<*> && result.value.any { ele -> ele is Result<*> && ele !is Result.Success<*> })
+            result !is Result.Success<*> || (result.value is List<*> && (result.value as List<*>).any { ele -> ele is Result<*> && ele !is Result.Success<*> })
         }.map { it.property.name to it.property.get(obj) as Result<*> }
     }
 
