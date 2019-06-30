@@ -1,9 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.validation
 
-import io.github.chrislo27.rhre3.sfxdb.PlayalongInput
-import io.github.chrislo27.rhre3.sfxdb.PlayalongMethod
-import io.github.chrislo27.rhre3.sfxdb.Series
-import io.github.chrislo27.rhre3.sfxdb.SubtitleTypes
+import io.github.chrislo27.rhre3.sfxdb.*
 import io.github.chrislo27.rhre3.sfxdb.adt.*
 
 
@@ -19,6 +16,7 @@ class GameObject : Struct {
     val objects: Result<MutableList<Result<DatamodelObject>>> by Property(Transformers.transformerToList(Transformers.datamodelTransformer))
 
     // Optional after this line
+    val language: Result<Language> by Property(Transformers.languageTransformer, Language.NONE)
     val group: Result<String> by Property(Transformers.stringTransformer, "")
     val groupDefault: Result<Boolean> by Property(Transformers.booleanTransformer, false)
     val priority: Result<Int> by Property(Transformers.intTransformer, 0)
@@ -28,6 +26,7 @@ class GameObject : Struct {
     override fun producePerfectADT(): Game {
         return Game(
             id.orException(), name.orException(), series.orException(),
+            language.orException(),
             group.orException(), groupDefault.orException(), priority.orException(), searchHints.orException(), noDisplay.orException(),
             objects.orException().map { it.orException().producePerfectADT() }.toMutableList()
         )
@@ -36,6 +35,7 @@ class GameObject : Struct {
     override fun produceImperfectADT(): Game {
         return Game(
             id.orElse(""), name.orElse(""), series.orElse(Series.OTHER),
+            language.orElse(Language.NONE),
             group.orElse(""), groupDefault.orElse(false), priority.orElse(0), searchHints.orElse(mutableListOf()), noDisplay.orElse(false),
             objects.orElse(mutableListOf()).mapNotNull { it.orNull()?.produceImperfectADT() }.toMutableList()
         )

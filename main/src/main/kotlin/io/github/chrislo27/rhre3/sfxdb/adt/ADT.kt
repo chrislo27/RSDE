@@ -2,23 +2,25 @@ package io.github.chrislo27.rhre3.sfxdb.adt
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import io.github.chrislo27.rhre3.sfxdb.Language
 import io.github.chrislo27.rhre3.sfxdb.Series
 
 
 interface JsonStruct
 
 class Game(
-        var id: String,
-        var name: String,
-        var series: Series,
+    var id: String,
+    var name: String,
+    var series: Series,
 
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) var group: String? = null,
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) var groupDefault: Boolean = false,
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) var priority: Int = 0,
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) var searchHints: MutableList<String>? = null,
-        @JsonInclude(JsonInclude.Include.NON_DEFAULT) var noDisplay: Boolean = false,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var language: Language = Language.NONE,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var group: String? = null,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var groupDefault: Boolean = false,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var priority: Int = 0,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var searchHints: MutableList<String>? = null,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var noDisplay: Boolean = false,
 
-        var objects: MutableList<Datamodel>
+    var objects: MutableList<Datamodel>
 ) : JsonStruct
 
 class CuePointer(

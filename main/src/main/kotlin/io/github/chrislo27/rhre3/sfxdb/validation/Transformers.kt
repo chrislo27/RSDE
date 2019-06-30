@@ -88,7 +88,7 @@ object Transformers {
         val st = node.textValue() ?: error("Escaped node type check!")
         val series: Series? = Series.VALUES.find { it.jsonName.toLowerCase() == st.toLowerCase() }
         if (series == null)
-            Result.Failure(node, st, "No series found with that name. Supported: ${Series.VALUES.map(Series::jsonName)}")
+            Result.Failure(node, st, "No series found with that name ($st). Supported: ${Series.VALUES.map(Series::jsonName)}")
         else
             Result.Success(series)
     }
@@ -119,7 +119,7 @@ object Transformers {
         val st = node.textValue() ?: error("Escaped node type check!")
         val type: SubtitleTypes? = SubtitleTypes.VALUES.find { it.type == st }
         if (type == null)
-            Result.Failure(node, st, "No subtitle type found with that name. Supported: ${SubtitleTypes.VALUES.map(SubtitleTypes::type)}")
+            Result.Failure(node, st, "No subtitle type found with that name ($st). Supported: ${SubtitleTypes.VALUES.map(SubtitleTypes::type)}")
         else
             Result.Success(type)
     }
@@ -133,7 +133,7 @@ object Transformers {
         val st = node.textValue() ?: error("Escaped node type check!")
         val type: PlayalongInput? = PlayalongInput.VALUES.find { it.id == st || st in it.deprecatedIDs }
         if (type == null)
-            Result.Failure(node, st, "No playalong input type found with that name. Supported: ${PlayalongInput.VALUES.map(PlayalongInput::id)}")
+            Result.Failure(node, st, "No playalong input type found with that name ($st). Supported: ${PlayalongInput.VALUES.map(PlayalongInput::id)}")
         else
             Result.Success(type)
     }
@@ -142,7 +142,16 @@ object Transformers {
         val st = node.textValue() ?: error("Escaped node type check!")
         val type: PlayalongMethod? = PlayalongMethod.VALUES.find { it.name == st }
         if (type == null)
-            Result.Failure(node, st, "No playalong method type found with that name. Supported: ${PlayalongMethod.VALUES.map(PlayalongMethod::name)}")
+            Result.Failure(node, st, "No playalong method type found with that name ($st). Supported: ${PlayalongMethod.VALUES.map(PlayalongMethod::name)}")
+        else
+            Result.Success(type)
+    }
+    val languageTransformer: JsonTransformer<Language> = { node ->
+        node.checkNodeType(JsonNodeType.STRING)
+        val st = node.textValue() ?: error("Escaped node type check!")
+        val type: Language? = if (st == null || st == "null") Language.NONE else Language.CODE_MAP[st]
+        if (type == null)
+            Result.Failure(node, st, "No language code found with that name ($st). Supported: ${Language.VALID_VALUES.map(Language::code)}")
         else
             Result.Success(type)
     }

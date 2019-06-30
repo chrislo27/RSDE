@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.Language
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.adt.*
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
@@ -17,6 +18,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.input.MouseButton
 import javafx.scene.layout.GridPane
 import javafx.util.Callback
+import javafx.util.StringConverter
 import org.controlsfx.validation.ValidationResult
 
 
@@ -30,6 +32,19 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
     val seriesComboBox =
         ComboBox<Series>(FXCollections.observableArrayList(Series.VALUES - listOf(Series.SWITCH))).apply {
             this.selectionModel.select(struct.series)
+        }
+    val languageComboBox =
+        ComboBox<Language>(FXCollections.observableArrayList(Language.ALL_VALUES)).apply {
+            this.converter = object : StringConverter<Language>() {
+                override fun toString(lang: Language?): String {
+                    return if (lang == Language.NONE) "<no language>" else "${lang?.langName} (${lang?.code})"
+                }
+
+                override fun fromString(string: String?): Language {
+                    return Language.NONE // not implemented
+                }
+            }
+            this.selectionModel.select(struct.language)
         }
     val groupField = TextField(struct.group)
     val groupDefaultCheckbox = CheckBox().apply {
@@ -90,6 +105,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         addProperty(Label().bindLocalized("gameObject.series").apply {
             tooltip = Tooltip().bindLocalized("gameObject.series.tooltip")
         }, seriesComboBox)
+        addProperty(Label().bindLocalized("gameObject.language"), languageComboBox)
         addProperty(Label().bindLocalized("gameObject.group").apply {
             tooltip = Tooltip().bindLocalized("gameObject.group.tooltip")
         }, groupField)
@@ -262,6 +278,10 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
             struct.series = newValue
             editor.markDirty()
         }
+        languageComboBox.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+            struct.language = newValue
+            editor.markDirty()
+        }
         groupField.textProperty().addListener { _, _, newValue ->
             struct.group = newValue?.takeUnless { it.isBlank() }
             editor.markDirty()
@@ -303,6 +323,7 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         validation.registerValidators(idField, Validators.OBJ_ID_BLANK, Validators.GAME_ID)
         validation.registerValidators(nameField, Validators.NAME_BLANK, Validators.appropriateNameSuffixFromSeries(this), Validators.deprecatedFeverName(this))
         validation.registerValidator(noDisplayCheckbox, Validators.NO_DISPLAY)
+        validation.registerValidator(languageComboBox, Validators.idLanguageMismatch(this))
     }
 
     override fun update() {

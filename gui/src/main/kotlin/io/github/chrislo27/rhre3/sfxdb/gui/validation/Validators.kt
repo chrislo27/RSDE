@@ -1,6 +1,7 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.validation
 
 import io.github.chrislo27.rhre3.sfxdb.Constants
+import io.github.chrislo27.rhre3.sfxdb.Language
 import io.github.chrislo27.rhre3.sfxdb.Series
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
@@ -126,6 +127,11 @@ object Validators {
     fun deprecatedFeverName(gameObjPane: GameObjPane): Validator<String> = Validator { t, u ->
         val selectedSeries: Series? = gameObjPane.seriesComboBox.value
         fromWarningIf(t, UiLocalization["validation.deprecatedFeverName"], if (selectedSeries == null || selectedSeries.properName.isEmpty()) false else (selectedSeries == Series.FEVER && u.contains("Wii")))
+    }
+    
+    fun idLanguageMismatch(gameObjPane: GameObjPane): Validator<Language> = Validator {t, u ->
+        val selectedLang: Language = gameObjPane.languageComboBox.value
+        Validators.fromWarningIf(t, UiLocalization["validation.languageMismatch", selectedLang.code.capitalize()], selectedLang != Language.NONE && !gameObjPane.idField.text.endsWith(selectedLang.code.capitalize()))
     }
 
     // CueObject

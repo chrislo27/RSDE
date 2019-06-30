@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.scene
 
+import io.github.chrislo27.rhre3.sfxdb.Language
 import io.github.chrislo27.rhre3.sfxdb.Parser
 import io.github.chrislo27.rhre3.sfxdb.adt.Game
 import io.github.chrislo27.rhre3.sfxdb.gui.RSDE
@@ -29,7 +30,10 @@ import javafx.util.Callback
 
 class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
-    val games: ObservableList<Game> = FXCollections.observableArrayList(app.gameRegistry.gameMap.values.sortedBy { it.name }.filter { it.id != "special" })
+    val gameCorrectNames: Map<Game, String> =
+        app.gameRegistry.gameMap.values.associateWith { if (it.language != Language.NONE) "${it.name} (${it.language.langName})" else it.name }
+    val games: ObservableList<Game> =
+        FXCollections.observableArrayList(gameCorrectNames.entries.sortedBy { it.value }.filter { it.key.id != "special" }.map { it.key })
     val gameListView: ListView<Game>
     val continueButton: Button
     val gameIDField: TextField
@@ -105,7 +109,8 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             maxWidth = Double.MAX_VALUE
             textProperty().addListener { _, _, newValue ->
                 val query = newValue.toLowerCase()
-                gameListView.items = games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
+                gameListView.items =
+                    games.filtered { game -> query in game.name.toLowerCase() || query in game.id.toLowerCase() || game.searchHints?.any { query in it.toLowerCase() } == true }
             }
         }
         gameSelBox.children += searchBar
@@ -185,11 +190,14 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
             continueButton.isDisable = true
 
             val selectedGame: Game = gameListView.selectionModel.selectedItems.firstOrNull() ?: return@setOnAction
-            val selectedGameID: String = gameIDField.text.takeUnless { it.isBlank() || GameIDResult.processGameID(it) != GameIDResult.SUCCESS }?.trim() ?: return@setOnAction
+            val selectedGameID: String =
+                gameIDField.text.takeUnless { it.isBlank() || GameIDResult.processGameID(it) != GameIDResult.SUCCESS }?.trim()
+                    ?: return@setOnAction
 
             // Copy folder over
             try {
-                val existingFolder = app.gameRegistry.gameMetaMap[selectedGame]?.folder ?: throw IllegalStateException("Game metadata doesn't exist for ${selectedGame.id}")
+                val existingFolder = app.gameRegistry.gameMetaMap[selectedGame]?.folder
+                    ?: throw IllegalStateException("Game metadata doesn't exist for ${selectedGame.id}")
                 if (!existingFolder.exists()) throw IllegalStateException("Existing folder for game ${selectedGame.id} does not exist")
                 val folder = RSDE.customSFXFolder.resolve(selectedGameID)
                 if (!folder.mkdirs()) throw RuntimeException("Could not create folder")
@@ -242,7 +250,7 @@ class EditExistingPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
                 graphic = null
                 text = null
             } else {
-                text = item.name
+                text = gameCorrectNames[item]
                 graphic = ImageView(app.gameRegistry.gameMetaMap[item]?.icon ?: GameRegistry.missingIconImage)
             }
         }
