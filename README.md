@@ -6,10 +6,10 @@ RSDE is a GUI SFX Database editor for [RHRE](https://github.com/chrislo27/Rhythm
 
 [![Downloads](https://img.shields.io/github/downloads/chrislo27/RSDE/total.svg)](https://github.com/chrislo27/RSDE/releases)
 [![License](https://img.shields.io/github/license/chrislo27/RSDE.svg)](https://github.com/chrislo27/RSDE/blob/master/LICENSE.txt)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VA45DPLCC4958)
+[![Donate to the project maintainer](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VA45DPLCC4958)†
 
 ## Requirements
-* [Java 8u60 minimum up to Java 10](https://java.com/en/download/)
+* [Minimum Java 8u60 up to Java 10](https://java.com/en/download/)
 * A compatible [RHRE](https://github.com/chrislo27/RhythmHeavenRemixEditor) version to have already been installed and ran at least once
 
 ## Other information
@@ -18,5 +18,7 @@ This program is **NOT** endorsed or sponsored in any way by Nintendo.<br>
 All used properties of Nintendo (such as names, audio, graphics, etc.) in this software are not intended to maliciously infringe trademark rights.<br>
 This is a community project and this is available for others to use
 however they like (abiding by the code's Apache-2.0 license), for free.
+
+† Donations are only made to the project maintainer, [@chrislo27](https://github.com/chrislo27).
 
 RSDE logo designed by [GlitchyPSIX](https://www.youtube.com/user/supermarioglitchy33/).<br>
