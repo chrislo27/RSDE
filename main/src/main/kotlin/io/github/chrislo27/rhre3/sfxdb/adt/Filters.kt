@@ -13,6 +13,16 @@ class CueFileExtFilter {
     }
 }
 
+class UseTimeStretchingFilter {
+    override fun equals(other: Any?): Boolean {
+        if (other is Boolean) {
+            return other
+        }
+
+        return super.equals(other)
+    }
+}
+
 class BeatFilter {
     override fun equals(other: Any?): Boolean {
         if (other is Float) {
