@@ -86,6 +86,7 @@ class CueObject : DatamodelObject() {
     var loops: Result<Boolean> by Property(Transformers.booleanTransformer, false)
     var baseBpm: Result<Float> by Property(Transformers.positiveFloatTransformer("Base BPM must be positive"), 0f)
     var useTimeStretching: Result<Boolean> by Property(Transformers.booleanTransformer, true)
+    var baseBpmOnlyWhenNotTimeStretching: Result<Boolean> by Property(Transformers.booleanTransformer, false)
     var introSound: Result<String> by Property(Transformers.idTransformer, "")
     var endingSound: Result<String> by Property(Transformers.idTransformer, "")
     var responseIDs: Result<MutableList<String>> by Property(Transformers.responseIDsTransformer, mutableListOf())
@@ -98,6 +99,7 @@ class CueObject : DatamodelObject() {
             id.orException(), name.orException(), deprecatedIDs.orException(), duration.orException(),
             stretchable.orException(), repitchable.orException(), fileExtension.orException(), introSound.orException(),
             endingSound.orException(), responseIDs.orException(), baseBpm.orException(), useTimeStretching.orException(),
+            baseBpmOnlyWhenNotTimeStretching.orException(),
             loops.orException(), earliness.orException(), loopStart.orException(), loopEnd.orException()
         )
     }
@@ -107,6 +109,7 @@ class CueObject : DatamodelObject() {
             id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()), duration.orElse(0f),
             stretchable.orElse(false), repitchable.orElse(false), fileExtension.orElse(""), introSound.orNull(),
             endingSound.orNull(), responseIDs.orNull(), baseBpm.orElse(0f), useTimeStretching.orElse(true),
+            baseBpmOnlyWhenNotTimeStretching.orElse(false),
             loops.orElse(false), earliness.orElse(0f), loopStart.orElse(0f), loopEnd.orElse(0f)
         )
     }

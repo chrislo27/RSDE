@@ -36,6 +36,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         isEditable = true
     }
     val useTimeStretchingField = CheckBox().apply { this.isSelected = struct.useTimeStretching }
+    val baseBpmOnlyWhenNotTSField = CheckBox().apply { this.isSelected = struct.baseBpmOnlyWhenNotTimeStretching }
     val introSoundField = TextField(struct.introSound)
     val endingSoundField = TextField(struct.endingSound)
     val fileExtField = TextField(struct.endingSound).apply {
@@ -66,6 +67,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("cueObject.useTimeStretching").apply {
             tooltip = Tooltip().bindLocalized("cueObject.useTimeStretching.tooltip")
         }, useTimeStretchingField)
+        addProperty(Label().bindLocalized("cueObject.baseBpmOnlyWhenNotTimeStretching").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.baseBpmOnlyWhenNotTimeStretching.tooltip")
+        }, baseBpmOnlyWhenNotTSField)
         addProperty(Label().bindLocalized("cueObject.introSound").apply {
             tooltip = Tooltip().bindLocalized("cueObject.introSound.tooltip")
         }, introSoundField)
@@ -112,6 +116,10 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         }
         useTimeStretchingField.selectedProperty().addListener { _, _, newValue ->
             struct.useTimeStretching = newValue
+            editor.markDirty()
+        }
+        baseBpmOnlyWhenNotTSField.selectedProperty().addListener { _, _, newValue ->
+            struct.baseBpmOnlyWhenNotTimeStretching = newValue
             editor.markDirty()
         }
         introSoundField.textProperty().addListener { _, _, newValue ->
