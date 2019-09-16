@@ -2,6 +2,7 @@ package io.github.chrislo27.rhre3.sfxdb.adt
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import io.github.chrislo27.rhre3.sfxdb.BaseBpmRules
 import io.github.chrislo27.rhre3.sfxdb.Language
 import io.github.chrislo27.rhre3.sfxdb.Series
 
@@ -61,14 +62,14 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: MutableList<String>? = null,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpm: Float = 0f,
     @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = UseTimeStretchingFilter::class) var useTimeStretching: Boolean = true,
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpmOnlyWhenNotTimeStretching: Boolean = false,
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpmRules: BaseBpmRules = BaseBpmRules.ALWAYS,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loops: Boolean = false,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var earliness: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopStart: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopEnd: Float = 0f
 ) : Datamodel("cue", id, name, deprecatedIDs) {
     override fun copy(): Datamodel {
-        return Cue(id, name, deprecatedIDs, duration, stretchable, repitchable, fileExtension, introSound, endingSound, responseIDs?.toMutableList(), baseBpm, useTimeStretching, baseBpmOnlyWhenNotTimeStretching, loops, earliness, loopStart, loopEnd)
+        return Cue(id, name, deprecatedIDs, duration, stretchable, repitchable, fileExtension, introSound, endingSound, responseIDs?.toMutableList(), baseBpm, useTimeStretching, baseBpmRules, loops, earliness, loopStart, loopEnd)
     }
 }
 

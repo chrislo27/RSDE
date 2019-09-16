@@ -1,5 +1,6 @@
 package io.github.chrislo27.rhre3.sfxdb.gui.editor.panes
 
+import io.github.chrislo27.rhre3.sfxdb.BaseBpmRules
 import io.github.chrislo27.rhre3.sfxdb.SoundFileExtensions
 import io.github.chrislo27.rhre3.sfxdb.adt.Cue
 import io.github.chrislo27.rhre3.sfxdb.gui.editor.Editor
@@ -36,7 +37,18 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         isEditable = true
     }
     val useTimeStretchingField = CheckBox().apply { this.isSelected = struct.useTimeStretching }
-    val baseBpmOnlyWhenNotTSField = CheckBox().apply { this.isSelected = struct.baseBpmOnlyWhenNotTimeStretching }
+    val baseBpmRulesComboBox = ComboBox<BaseBpmRules>(FXCollections.observableArrayList(BaseBpmRules.VALUES)).apply {
+        this.selectionModel.select(struct.baseBpmRules)
+        this.converter = object : StringConverter<BaseBpmRules>() {
+            override fun toString(rule: BaseBpmRules?): String {
+                return rule?.properName ?: "???"
+            }
+
+            override fun fromString(string: String?): BaseBpmRules {
+                return BaseBpmRules.MAP[string] ?: BaseBpmRules.ALWAYS
+            }
+        }
+    }
     val introSoundField = TextField(struct.introSound)
     val endingSoundField = TextField(struct.endingSound)
     val fileExtField = TextField(struct.endingSound).apply {
@@ -67,9 +79,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("cueObject.useTimeStretching").apply {
             tooltip = Tooltip().bindLocalized("cueObject.useTimeStretching.tooltip")
         }, useTimeStretchingField)
-        addProperty(Label().bindLocalized("cueObject.baseBpmOnlyWhenNotTimeStretching").apply {
-            tooltip = Tooltip().bindLocalized("cueObject.baseBpmOnlyWhenNotTimeStretching.tooltip")
-        }, baseBpmOnlyWhenNotTSField)
+        addProperty(Label().bindLocalized("cueObject.baseBpmRules").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.baseBpmRules.tooltip")
+        }, baseBpmRulesComboBox)
         addProperty(Label().bindLocalized("cueObject.introSound").apply {
             tooltip = Tooltip().bindLocalized("cueObject.introSound.tooltip")
         }, introSoundField)
@@ -118,8 +130,8 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
             struct.useTimeStretching = newValue
             editor.markDirty()
         }
-        baseBpmOnlyWhenNotTSField.selectedProperty().addListener { _, _, newValue ->
-            struct.baseBpmOnlyWhenNotTimeStretching = newValue
+        baseBpmRulesComboBox.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
+            struct.baseBpmRules = newValue
             editor.markDirty()
         }
         introSoundField.textProperty().addListener { _, _, newValue ->

@@ -92,6 +92,15 @@ object Transformers {
         else
             Result.Success(series)
     }
+    val baseBpmRulesTransformer: JsonTransformer<BaseBpmRules> = { node ->
+        node.checkNodeType(JsonNodeType.STRING)
+        val st = node.textValue() ?: error("Escaped node type check!")
+        val rule: BaseBpmRules? = BaseBpmRules.MAP[st]
+        if (rule == null)
+            Result.Failure(node, st, "No base BPM rule found with that name ($st). Supported: ${BaseBpmRules.VALUES.map{it.jsonName}}")
+        else
+            Result.Success(rule)
+    }
     val responseIDsTransformer: JsonTransformer<MutableList<String>> = transformer@{ node ->
         val initial = stringArrayTransformer(node)
         if (initial is Result.Success) {
@@ -149,7 +158,7 @@ object Transformers {
     val languageTransformer: JsonTransformer<Language> = { node ->
         node.checkNodeType(JsonNodeType.STRING)
         val st = node.textValue() ?: error("Escaped node type check!")
-        val type: Language? = if (st == null || st == "null") Language.NONE else Language.CODE_MAP[st]
+        val type: Language? = if (st == "null") Language.NONE else Language.CODE_MAP[st]
         if (type == null)
             Result.Failure(node, st, "No language code found with that name ($st). Supported: ${Language.VALID_VALUES.map(Language::code)}")
         else
