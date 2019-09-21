@@ -58,6 +58,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
     val loopStartField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
     val loopEndField = doubleSpinnerFactory(-1.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
     val responseIDsField = ChipPane(FXCollections.observableArrayList((struct.responseIDs ?: mutableListOf()).map { Chip(it) }))
+    val pitchBendingField = CheckBox().apply { this.isSelected = struct.pitchBending }
 
     init {
         addProperty(Label().bindLocalized("datamodel.type"), Label("cue").apply { styleClass += "monospaced" })
@@ -98,6 +99,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("cueObject.loopEnd").apply {
             tooltip = Tooltip().bindLocalized("cueObject.loopEnd.tooltip")
         }, loopEndField)
+        addProperty(Label().bindLocalized("cueObject.pitchBending").apply {
+            tooltip = Tooltip().bindLocalized("cueObject.pitchBending.tooltip")
+        }, pitchBendingField)
         addProperty(Label().bindLocalized("datamodel.responseIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.responseIDs.tooltip")
         }, responseIDsField)
@@ -164,6 +168,10 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         }
         loopEndField.valueProperty().addListener { _, _, n ->
             struct.loopEnd = n.toFloat()
+            editor.markDirty()
+        }
+        pitchBendingField.selectedProperty().addListener { _, _, n ->
+            struct.pitchBending = n
             editor.markDirty()
         }
 
