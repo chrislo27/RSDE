@@ -276,3 +276,13 @@ class MusicDistortEntityObject : DatamodelObject() {
         return MusicDistortEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
     }
 }
+
+class PitchBenderEntityObject : DatamodelObject() {
+    override fun producePerfectADT(): PitchBenderEntity {
+        return PitchBenderEntity(id.orException(), name.orException(), deprecatedIDs.orException())
+    }
+
+    override fun produceImperfectADT(): PitchBenderEntity {
+        return PitchBenderEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
+    }
+}

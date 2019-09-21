@@ -222,6 +222,10 @@ object Transformers {
                 Parser.buildStruct(this, node, printProperties)
                 this to getNonSuccess(this)
             }
+            "pitchBenderEntity" -> PitchBenderEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
+            }
             else -> return@transformer Result.Failure(node, type, "Type of datamodel is not valid or not implemented")
         }
         if (datamodel.second.isNotEmpty())
