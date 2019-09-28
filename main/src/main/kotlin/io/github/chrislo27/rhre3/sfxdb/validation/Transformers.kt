@@ -137,6 +137,11 @@ object Transformers {
         node.checkNodeType(JsonNodeType.OBJECT)
         Result.Success(ObjectMapper().convertValue(node, Map::class.java) as MutableMap<String, Any?>)
     }
+    @Suppress("UNCHECKED_CAST")
+    val stringStringMapTransformer: JsonTransformer<MutableMap<String, String>> = { node ->
+        node.checkNodeType(JsonNodeType.OBJECT)
+        Result.Success(ObjectMapper().convertValue(node, Map::class.java) as MutableMap<String, String>)
+    }
     val playalongInputTransformer: JsonTransformer<PlayalongInput> = { node ->
         node.checkNodeType(JsonNodeType.STRING)
         val st = node.textValue() ?: error("Escaped node type check!")
@@ -223,6 +228,10 @@ object Transformers {
                 this to getNonSuccess(this)
             }
             "pitchBenderEntity" -> PitchBenderEntityObject().run {
+                Parser.buildStruct(this, node, printProperties)
+                this to getNonSuccess(this)
+            }
+            "pitchDependent" -> PitchDependentEntityObject().run {
                 Parser.buildStruct(this, node, printProperties)
                 this to getNonSuccess(this)
             }

@@ -289,3 +289,18 @@ class PitchBenderEntityObject : DatamodelObject() {
         return PitchBenderEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()))
     }
 }
+
+class PitchDependentEntityObject : DatamodelObject() {
+    var intervals: Result<MutableMap<String, String>> by Property(Transformers.stringStringMapTransformer, mutableMapOf())
+    // Optional after this line
+    var responseIDs: Result<MutableList<String>> by Property(Transformers.responseIDsTransformer, mutableListOf())
+    
+    override fun producePerfectADT(): PitchDependentEntity {
+        return PitchDependentEntity(id.orException(), name.orException(), deprecatedIDs.orException(), intervals.orException(), responseIDs.orException())
+    }
+
+    override fun produceImperfectADT(): PitchDependentEntity {
+        return PitchDependentEntity(id.orElse(""), name.orElse(""), deprecatedIDs.orElse(mutableListOf()),
+                intervals.orElse(mutableMapOf()), responseIDs.orElse(mutableListOf()))
+    }
+}

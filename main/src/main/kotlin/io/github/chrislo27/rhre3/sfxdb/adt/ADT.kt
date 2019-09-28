@@ -177,3 +177,12 @@ class PitchBenderEntity(id: String, name: String, deprecatedIDs: MutableList<Str
         return PitchBenderEntity(id, name, deprecatedIDs)
     }
 }
+
+class PitchDependentEntity(id: String, name: String, deprecatedIDs: MutableList<String>,
+                           var intervals: MutableMap<String, String>,
+                           @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: List<String>? = null)
+    : Datamodel("pitchBenderEntity", id, name, deprecatedIDs) {
+    override fun copy(): Datamodel {
+        return PitchDependentEntity(id, name, deprecatedIDs, intervals.toMutableMap(), responseIDs?.toList())
+    }
+}
