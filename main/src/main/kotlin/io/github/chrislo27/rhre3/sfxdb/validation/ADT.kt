@@ -94,6 +94,7 @@ class CueObject : DatamodelObject() {
     var loopStart: Result<Float> by Property(Transformers.positiveFloatTransformer("Loop start must be positive"), 0f)
     var loopEnd: Result<Float> by Property(Transformers.floatTransformer, 0f)
     var pitchBending: Result<Boolean> by Property(Transformers.booleanTransformer, false)
+    var writtenPitch: Result<Int> by Property(Transformers.intTransformer, 0)
 
     override fun producePerfectADT(): Cue {
         return Cue(
@@ -102,7 +103,7 @@ class CueObject : DatamodelObject() {
             endingSound.orException(), responseIDs.orException(), baseBpm.orException(), useTimeStretching.orException(),
             baseBpmRules.orException(),
             loops.orException(), earliness.orException(), loopStart.orException(), loopEnd.orException(),
-            pitchBending.orException()
+            pitchBending.orException(), writtenPitch.orException()
         )
     }
 
@@ -113,7 +114,7 @@ class CueObject : DatamodelObject() {
             endingSound.orNull(), responseIDs.orNull(), baseBpm.orElse(0f), useTimeStretching.orElse(true),
             baseBpmRules.orElse(BaseBpmRules.ALWAYS),
             loops.orElse(false), earliness.orElse(0f), loopStart.orElse(0f), loopEnd.orElse(0f),
-            pitchBending.orElse(false)
+            pitchBending.orElse(false), writtenPitch.orElse(0)
         )
     }
 }
