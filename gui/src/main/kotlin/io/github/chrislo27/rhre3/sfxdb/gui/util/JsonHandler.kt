@@ -26,6 +26,7 @@ object JsonHandler {
             .enable(JsonParser.Feature.ALLOW_COMMENTS)
             .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
             .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
             .registerModule(AfterburnerModule())
