@@ -68,6 +68,9 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.subtext").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.subtext.tooltip")
+        }, subtextField)
 
         addProperty(Label().bindLocalized("cueObject.duration"), durationField)
         addProperty(Label().bindLocalized("datamodel.stretchable").apply {

@@ -23,6 +23,16 @@ class UseTimeStretchingFilter {
     }
 }
 
+class SubtextFilter {
+    override fun equals(other: Any?): Boolean {
+        if (other is String?) {
+            return other.isNullOrEmpty()
+        }
+
+        return super.equals(other)
+    }
+}
+
 class BeatFilter {
     override fun equals(other: Any?): Boolean {
         if (other is Float) {

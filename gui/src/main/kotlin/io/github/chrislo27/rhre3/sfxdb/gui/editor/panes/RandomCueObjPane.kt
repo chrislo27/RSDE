@@ -25,6 +25,9 @@ class RandomCueObjPane(editor: Editor, struct: RandomCue) : MultipartStructPane<
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.subtext").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.subtext.tooltip")
+        }, subtextField)
 
         addProperty(Label().bindLocalized("datamodel.responseIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.responseIDs.tooltip")

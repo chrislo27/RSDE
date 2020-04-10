@@ -22,6 +22,9 @@ class PatternObjPane(editor: Editor, struct: Pattern) : MultipartStructPane<Patt
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.subtext").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.subtext.tooltip")
+        }, subtextField)
 
         addProperty(Label().bindLocalized("datamodel.stretchable").apply {
             tooltip = Tooltip().bindLocalized("datamodel.stretchable.tooltip")

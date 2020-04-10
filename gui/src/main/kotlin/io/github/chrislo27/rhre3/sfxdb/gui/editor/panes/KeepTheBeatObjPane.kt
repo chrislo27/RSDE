@@ -22,6 +22,9 @@ class KeepTheBeatObjPane(editor: Editor, struct: KeepTheBeat) : MultipartStructP
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.subtext").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.subtext.tooltip")
+        }, subtextField)
 
         addProperty(Label().bindLocalized("keepTheBeatObj.defaultDuration").apply {
             tooltip = Tooltip().bindLocalized("keepTheBeatObj.defaultDuration.tooltip")

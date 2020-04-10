@@ -46,6 +46,7 @@ abstract class DatamodelObject : Struct {
     val id: Result<String> by Property(Transformers.idTransformer)
     val name: Result<String> by Property(Transformers.nonEmptyStringTransformer)
     val deprecatedIDs: Result<MutableList<String>> by Property(Transformers.stringArrayTransformer, mutableListOf())
+    val subtext: Result<String> by Property(Transformers.stringTransformer, "")
 
     abstract override fun producePerfectADT(): Datamodel
     abstract override fun produceImperfectADT(): Datamodel

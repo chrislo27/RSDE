@@ -24,6 +24,9 @@ class EquidistantObjPane(editor: Editor, struct: Equidistant) : MultipartStructP
         addProperty(Label().bindLocalized("datamodel.deprecatedIDs").apply {
             tooltip = Tooltip().bindLocalized("datamodel.deprecatedIDs.tooltip")
         }, deprecatedIDsField)
+        addProperty(Label().bindLocalized("datamodel.subtext").apply {
+            tooltip = Tooltip().bindLocalized("datamodel.subtext.tooltip")
+        }, subtextField)
 
         addProperty(Label().bindLocalized("equidistantObj.distance").apply {
             tooltip = Tooltip().bindLocalized("equidistantObj.distance.tooltip")

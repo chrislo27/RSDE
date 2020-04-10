@@ -42,7 +42,8 @@ class CuePointer(
 abstract class Datamodel(@JsonInclude(JsonInclude.Include.ALWAYS) var type: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var id: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var name: String,
-                         @JsonInclude(JsonInclude.Include.ALWAYS) var deprecatedIDs: MutableList<String>) : JsonStruct {
+                         @JsonInclude(JsonInclude.Include.ALWAYS) var deprecatedIDs: MutableList<String>,
+@JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = SubtextFilter::class) var subtext: String = "") : JsonStruct {
     abstract fun copy(): Datamodel
 }
 

@@ -88,6 +88,7 @@ abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructP
     val idField: TextField = TextField(struct.id)
     val nameField: TextField = TextField(struct.name)
     val deprecatedIDsField: ChipPane = ChipPane(FXCollections.observableArrayList(struct.deprecatedIDs.map { Chip(it) }))
+    val subtextField: TextField = TextField(struct.subtext)
 
     init {
         titleLabel.textProperty().bind(idField.textProperty())
@@ -109,6 +110,10 @@ abstract class DatamodelPane<T : Datamodel>(editor: Editor, struct: T) : StructP
             struct.deprecatedIDs = list
             editor.markDirty()
         })
+        subtextField.textProperty().addListener { _, _, newValue ->
+            struct.subtext = newValue
+            editor.markDirty()
+        }
         idField.textProperty().addListener { _, _, _ ->
             editor.refreshLists()
         }
