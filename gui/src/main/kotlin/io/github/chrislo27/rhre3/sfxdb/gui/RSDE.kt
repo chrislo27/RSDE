@@ -33,7 +33,7 @@ class RSDE : Application() {
 
     companion object {
         const val TITLE = "RHRE SFX Database Editor"
-        val VERSION = Version(1, 1, 3, "")
+        val VERSION = Version(1, 1, 4, "DEVELOPMENT")
         val rootFolder: File = File(System.getProperty("user.home")).resolve(".rsde/").apply { mkdirs() }
         val rhreRoot: File = File(System.getProperty("user.home")).resolve(".rhre3/").apply {
             mkdirs()
@@ -42,7 +42,7 @@ class RSDE : Application() {
             mkdirs()
         }
         @Suppress("MayBeConstant")
-        val SFX_DB_BRANCH = "master"
+        val SFX_DB_BRANCH = "prototype"
         const val GITHUB = "https://github.com/chrislo27/RSDE"
         const val RHRE_GITHUB = "https://github.com/chrislo27/RhythmHeavenRemixEditor"
         val rhreSfxRoot: File = rhreRoot.resolve("sfx/$SFX_DB_BRANCH/")
