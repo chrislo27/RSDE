@@ -14,7 +14,7 @@ class Game(
     var name: String,
     var series: Series,
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var language: Language = Language.NONE,
+    @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = LanguageFilter::class) var language: Language = Language.NONE,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var group: String? = null,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var groupDefault: Boolean = false,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var priority: Int = 0,
@@ -38,12 +38,12 @@ class CuePointer(
     }
 }
 
-@JsonPropertyOrder("type", "id", "name", "deprecatedIDs")
+@JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "subtext")
 abstract class Datamodel(@JsonInclude(JsonInclude.Include.ALWAYS) var type: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var id: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var name: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var deprecatedIDs: MutableList<String>,
-@JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = SubtextFilter::class) var subtext: String = "") : JsonStruct {
+@JsonInclude(JsonInclude.Include.NON_EMPTY) var subtext: String = "") : JsonStruct {
     abstract fun copy(): Datamodel
 }
 
@@ -63,7 +63,7 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: MutableList<String>? = null,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpm: Float = 0f,
     @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = UseTimeStretchingFilter::class) var useTimeStretching: Boolean = true,
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT) var baseBpmRules: BaseBpmRules = BaseBpmRules.ALWAYS,
+    @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = BaseBpmRulesFilter::class) var baseBpmRules: BaseBpmRules = BaseBpmRules.ALWAYS,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loops: Boolean = false,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var earliness: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopStart: Float = 0f,
