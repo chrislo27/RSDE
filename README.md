@@ -4,7 +4,7 @@
 
 RSDE is a GUI SFX Database editor for [RHRE](https://github.com/chrislo27/RhythmHeavenRemixEditor).
 
-> This project is no longer in active development. (2020-08-16)
+> This project has been archived. (2020-10-25)
 
 [![Downloads](https://img.shields.io/github/downloads/chrislo27/RSDE/total.svg)](https://github.com/chrislo27/RSDE/releases)
 [![License](https://img.shields.io/github/license/chrislo27/RSDE.svg)](https://github.com/chrislo27/RSDE/blob/master/LICENSE.txt)
