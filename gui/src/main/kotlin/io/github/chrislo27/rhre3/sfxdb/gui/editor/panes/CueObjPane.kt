@@ -51,7 +51,7 @@ class CueObjPane(editor: Editor, struct: Cue) : DatamodelPane<Cue>(editor, struc
     }
     val introSoundField = TextField(struct.introSound)
     val endingSoundField = TextField(struct.endingSound)
-    val fileExtField = TextField(struct.endingSound).apply {
+    val fileExtField = TextField(struct.fileExtension).apply {
         this.promptText = SoundFileExtensions.DEFAULT.fileExt
     }
     val earlinessField = doubleSpinnerFactory(0.0, Float.MAX_VALUE.toDouble(), 0.0, 0.1)
