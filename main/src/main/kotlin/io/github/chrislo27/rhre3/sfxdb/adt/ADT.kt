@@ -26,7 +26,7 @@ class Game(
 
 class CuePointer(
         var id: String,
-        @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = BeatFilter::class) var beat: Float = Float.MIN_VALUE,
+        @JsonInclude(JsonInclude.Include.ALWAYS) var beat: Float = Float.MIN_VALUE,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) var duration: Float = 0f,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) var semitone: Int = 0,
         @JsonInclude(JsonInclude.Include.CUSTOM, valueFilter = VolumeFilter::class) var volume: Int = 100,
