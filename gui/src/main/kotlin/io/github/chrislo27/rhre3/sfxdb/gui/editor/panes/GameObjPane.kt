@@ -144,12 +144,12 @@ class GameObjPane(editor: Editor) : StructPane<Game>(editor, editor.gameObject),
         moveDownButton.tooltip = Tooltip().bindLocalized("editor.moveDown")
 
         addButton.items.addAll(
-            AddMenuItem("CueObject") { Cue("", "", mutableListOf(), 0f) },
+            AddMenuItem("CueObject") { Cue("", "", mutableListOf(), "", 0f) },
             SeparatorMenuItem(),
-            AddMenuItem("PatternObject") { Pattern("", "", mutableListOf(), mutableListOf()) },
-            AddMenuItem("EquidistantObject") { Equidistant("", "", mutableListOf(), mutableListOf()) },
-            AddMenuItem("KeepTheBeatObject") { KeepTheBeat("", "", mutableListOf(), mutableListOf()) },
-            AddMenuItem("RandomCueObject") { RandomCue("", "", mutableListOf(), mutableListOf()) }
+            AddMenuItem("PatternObject") { Pattern("", "", mutableListOf(), "", mutableListOf()) },
+            AddMenuItem("EquidistantObject") { Equidistant("", "", mutableListOf(), "", mutableListOf()) },
+            AddMenuItem("KeepTheBeatObject") { KeepTheBeat("", "", mutableListOf(), "", mutableListOf()) },
+            AddMenuItem("RandomCueObject") { RandomCue("", "", mutableListOf(), "", mutableListOf()) }
         )
         val selectionModel = objectsListView.selectionModel
         removeButton.setOnAction {

@@ -43,17 +43,17 @@ abstract class Datamodel(@JsonInclude(JsonInclude.Include.ALWAYS) var type: Stri
                          @JsonInclude(JsonInclude.Include.ALWAYS) var id: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var name: String,
                          @JsonInclude(JsonInclude.Include.ALWAYS) var deprecatedIDs: MutableList<String>,
-@JsonInclude(JsonInclude.Include.NON_EMPTY) var subtext: String = "") : JsonStruct {
+                         @JsonInclude(JsonInclude.Include.NON_EMPTY) var subtext: String) : JsonStruct {
     abstract fun copy(): Datamodel
 }
 
-abstract class MultipartDatamodel(type: String, id: String, name: String, deprecatedIDs: MutableList<String>,
-                                  var cues: MutableList<CuePointer>) : Datamodel(type, id, name, deprecatedIDs) {
+abstract class MultipartDatamodel(type: String, id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
+                                  var cues: MutableList<CuePointer>) : Datamodel(type, id, name, deprecatedIDs, subtext) {
     protected fun getCopyOfCues(): MutableList<CuePointer> = cues.map { it.copy() }.toMutableList()
 }
 
 class Cue(
-    id: String, name: String, deprecatedIDs: MutableList<String>,
+    id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
     var duration: Float,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var stretchable: Boolean = false,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var repitchable: Boolean = false,
@@ -70,121 +70,123 @@ class Cue(
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var loopEnd: Float = 0f,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var pitchBending: Boolean = false,
     @JsonInclude(JsonInclude.Include.NON_DEFAULT) var writtenPitch: Int = 0
-) : Datamodel("cue", id, name, deprecatedIDs) {
+) : Datamodel("cue", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return Cue(id, name, deprecatedIDs, duration, stretchable, repitchable, fileExtension, introSound, endingSound, responseIDs?.toMutableList(), baseBpm, useTimeStretching, baseBpmRules, loops, earliness, loopStart, loopEnd, pitchBending, writtenPitch)
+        return Cue(id, name, deprecatedIDs, subtext, duration, stretchable, repitchable, fileExtension, introSound,
+            endingSound, responseIDs?.toMutableList(), baseBpm, useTimeStretching, baseBpmRules, loops, earliness,
+            loopStart, loopEnd, pitchBending, writtenPitch)
     }
 }
 
 @JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "stretchable", "cues")
 class Pattern(
-        id: String, name: String, deprecatedIDs: MutableList<String>,
+        id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
         cues: MutableList<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_DEFAULT) var stretchable: Boolean = false
-) : MultipartDatamodel("pattern", id, name, deprecatedIDs, cues) {
+) : MultipartDatamodel("pattern", id, name, deprecatedIDs, subtext, cues) {
     override fun copy(): Datamodel {
-        return Pattern(id, name, deprecatedIDs, getCopyOfCues(), stretchable)
+        return Pattern(id, name, deprecatedIDs, subtext, getCopyOfCues(), stretchable)
     }
 }
 
 @JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "distance", "stretchable", "cues")
 class Equidistant(
-        id: String, name: String, deprecatedIDs: MutableList<String>,
+        id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
         cues: MutableList<CuePointer>,
         var distance: Float = 0f,
         var stretchable: Boolean = false
-) : MultipartDatamodel("equidistant", id, name, deprecatedIDs, cues) {
+) : MultipartDatamodel("equidistant", id, name, deprecatedIDs, subtext, cues) {
     override fun copy(): Datamodel {
-        return Equidistant(id, name, deprecatedIDs, getCopyOfCues(), distance, stretchable)
+        return Equidistant(id, name, deprecatedIDs, subtext, getCopyOfCues(), distance, stretchable)
     }
 }
 
 @JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "defaultDuration", "cues")
 class KeepTheBeat(
-        id: String, name: String, deprecatedIDs: MutableList<String>,
+        id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
         cues: MutableList<CuePointer>,
         var defaultDuration: Float = 0f
-) : MultipartDatamodel("keepTheBeat", id, name, deprecatedIDs, cues) {
+) : MultipartDatamodel("keepTheBeat", id, name, deprecatedIDs, subtext, cues) {
     override fun copy(): Datamodel {
-        return KeepTheBeat(id, name, deprecatedIDs, getCopyOfCues(), defaultDuration)
+        return KeepTheBeat(id, name, deprecatedIDs, subtext, getCopyOfCues(), defaultDuration)
     }
 }
 
 @JsonPropertyOrder("type", "id", "name", "deprecatedIDs", "responseIDs", "cues")
 class RandomCue(
-        id: String, name: String, deprecatedIDs: MutableList<String>,
+        id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
         cues: MutableList<CuePointer>,
         @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: List<String>? = null
-) : MultipartDatamodel("randomCue", id, name, deprecatedIDs, cues) {
+) : MultipartDatamodel("randomCue", id, name, deprecatedIDs, subtext, cues) {
     override fun copy(): Datamodel {
-        return RandomCue(id, name, deprecatedIDs, getCopyOfCues(), responseIDs?.toList())
+        return RandomCue(id, name, deprecatedIDs, subtext, getCopyOfCues(), responseIDs?.toList())
     }
 }
 
 class SubtitleEntity(
-        id: String, name: String, deprecatedIDs: MutableList<String>,
+        id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
         @JsonInclude(JsonInclude.Include.NON_EMPTY) var subtitleType: String? = null
-) : Datamodel("subtitleEntity", id, name, deprecatedIDs) {
+) : Datamodel("subtitleEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return SubtitleEntity(id, name, deprecatedIDs, subtitleType)
+        return SubtitleEntity(id, name, deprecatedIDs, subtext, subtitleType)
     }
 }
 
-class EndRemixEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("endEntity", id, name, deprecatedIDs) {
+class EndRemixEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("endEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return EndRemixEntity(id, name, deprecatedIDs)
+        return EndRemixEntity(id, name, deprecatedIDs, subtext)
     }
 }
 
-class ShakeEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("shakeEntity", id, name, deprecatedIDs) {
+class ShakeEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("shakeEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return ShakeEntity(id, name, deprecatedIDs)
+        return ShakeEntity(id, name, deprecatedIDs, subtext)
     }
 }
 
-class TextureEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("textureEntity", id, name, deprecatedIDs) {
+class TextureEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("textureEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return TextureEntity(id, name, deprecatedIDs)
+        return TextureEntity(id, name, deprecatedIDs, subtext)
     }
 }
 
-class TapeMeasure(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("tapeMeasure", id, name, deprecatedIDs) {
+class TapeMeasure(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("tapeMeasure", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return TapeMeasure(id, name, deprecatedIDs)
+        return TapeMeasure(id, name, deprecatedIDs, subtext)
     }
 }
 
-class PlayalongEntity(id: String, name: String, deprecatedIDs: MutableList<String>,
+class PlayalongEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
                       var stretchable: Boolean, var method: String, var input: String)
-    : Datamodel("playalongEntity", id, name, deprecatedIDs) {
+    : Datamodel("playalongEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return PlayalongEntity(id, name, deprecatedIDs, stretchable, method, input)
+        return PlayalongEntity(id, name, deprecatedIDs, subtext, stretchable, method, input)
     }
 }
 
-class MusicDistortEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("musicDistortEntity", id, name, deprecatedIDs) {
+class MusicDistortEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("musicDistortEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return MusicDistortEntity(id, name, deprecatedIDs)
+        return MusicDistortEntity(id, name, deprecatedIDs, subtext)
     }
 }
 
-class PitchBenderEntity(id: String, name: String, deprecatedIDs: MutableList<String>)
-    : Datamodel("pitchBenderEntity", id, name, deprecatedIDs) {
+class PitchBenderEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String)
+    : Datamodel("pitchBenderEntity", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return PitchBenderEntity(id, name, deprecatedIDs)
+        return PitchBenderEntity(id, name, deprecatedIDs, subtext)
     }
 }
 
-class PitchDependentEntity(id: String, name: String, deprecatedIDs: MutableList<String>,
+class PitchDependentEntity(id: String, name: String, deprecatedIDs: MutableList<String>, subtext: String,
                            var intervals: MutableMap<String, String>,
                            @JsonInclude(JsonInclude.Include.NON_EMPTY) var responseIDs: List<String>? = null)
-    : Datamodel("pitchDependent", id, name, deprecatedIDs) {
+    : Datamodel("pitchDependent", id, name, deprecatedIDs, subtext) {
     override fun copy(): Datamodel {
-        return PitchDependentEntity(id, name, deprecatedIDs, intervals.toMutableMap(), responseIDs?.toList())
+        return PitchDependentEntity(id, name, deprecatedIDs, subtext, intervals.toMutableMap(), responseIDs?.toList())
     }
 }

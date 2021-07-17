@@ -153,7 +153,7 @@ class StartNewPane(val app: RSDE) : BorderPane(), ChangesPresenceState {
 
                 if (addCues.isSelected) {
                     folder.listFiles { f: File -> f.extension in SoundFileExtensions.VALUES.map { it.fileExt } }.forEach { f ->
-                        game.objects.add(Cue("*/" + f.nameWithoutExtension, f.nameWithoutExtension, mutableListOf(), 0f, fileExtension = f.extension))
+                        game.objects.add(Cue("*/" + f.nameWithoutExtension, f.nameWithoutExtension, mutableListOf(), "", 0f, fileExtension = f.extension))
                     }
                 }
 

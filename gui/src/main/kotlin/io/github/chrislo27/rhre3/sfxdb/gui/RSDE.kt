@@ -33,7 +33,7 @@ class RSDE : Application() {
 
     companion object {
         const val TITLE = "RHRE SFX Database Editor"
-        val VERSION = Version(1, 1, 6, "SNAPSHOT_20210511a")
+        val VERSION = Version(1, 1, 6, "SNAPSHOT_20210704a")
         val rootFolder: File = File(System.getProperty("user.home")).resolve(".rsde/").apply { mkdirs() }
         val rhreRoot: File = File(System.getProperty("user.home")).resolve(".rhre3/").apply {
             mkdirs()
