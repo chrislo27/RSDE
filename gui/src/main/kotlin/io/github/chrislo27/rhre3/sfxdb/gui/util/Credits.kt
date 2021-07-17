@@ -6,7 +6,8 @@ object Credits {
     fun generateList(): List<Credit> =
         listOf(
             "programming" crediting listOf("chrislo27"),
-            "earlyAccess" crediting listOf("Draster", "Lvl100Feraligatr")
+            "earlyAccess" crediting listOf("Draster", "Lvl100Feraligatr"),
+            "specialThanks" crediting listOf("Kievit")
         )
 
     private infix fun String.crediting(persons: List<String>): Credit =
